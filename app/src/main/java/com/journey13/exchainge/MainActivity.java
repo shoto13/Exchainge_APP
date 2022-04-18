@@ -100,7 +100,6 @@ public class MainActivity extends AppCompatActivity {
         TextView taglineText = headerLayout.findViewById(R.id.taglineTextView);
 
 
-
         firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
         reference = FirebaseDatabase.getInstance("https://exchainge-db047-default-rtdb.europe-west1.firebasedatabase.app/").getReference("Users").child(firebaseUser.getUid());
 
@@ -225,7 +224,7 @@ public class MainActivity extends AppCompatActivity {
 //
 //    }
 
-    //Get ans sync state for hamburger icon in action bar
+    //Get and sync state for hamburger icon in action bar
     @Override
     protected void onPostCreate(Bundle savedInstanceState)
     {

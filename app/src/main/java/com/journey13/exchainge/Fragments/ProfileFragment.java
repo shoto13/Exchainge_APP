@@ -157,6 +157,8 @@ public class ProfileFragment extends Fragment {
         return rootView;
     }
 
+    //ddddd
+
     private void openImage() {
         Intent intent = new Intent();
         intent.setType("image/*");
