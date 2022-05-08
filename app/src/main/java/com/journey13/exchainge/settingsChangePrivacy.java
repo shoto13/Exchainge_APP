@@ -15,7 +15,7 @@ public class settingsChangePrivacy extends AppCompatActivity {
     //SECURITY
     String[] securityItemHeads = {"Passcode Lock", "Two-Step Verification"};
     //PRIVACY
-    String[] privacyItemHeads = {"Search For Me", "Search With Phone Number", "Blocked Users"};
+    String[] privacyItemHeads = {"Search For Me", "Blocked Users"};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
