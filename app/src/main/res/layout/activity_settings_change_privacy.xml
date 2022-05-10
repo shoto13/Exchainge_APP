@@ -41,8 +41,8 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/securityCard"
         android:layout_marginLeft="6dp"
-        android:layout_marginRight="6dp"
         android:layout_marginTop="20dp"
+        android:layout_marginRight="6dp"
         app:cardBackgroundColor="@color/lightgrey">
 
         <TextView
@@ -55,6 +55,36 @@
 
         <ListView
             android:id="@+id/listPrivacy"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="50dp"
+            android:layout_marginBottom="20dp">
+
+        </ListView>
+
+    </androidx.cardview.widget.CardView>
+
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/contactsCard"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/privacyCard"
+        android:layout_marginLeft="6dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginRight="6dp"
+        app:cardBackgroundColor="@color/lightgrey">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="10dp"
+            android:text="Contacts"
+            android:textColor="@color/greenthree"
+            android:textSize="20sp" />
+
+        <ListView
+            android:id="@+id/listContacts"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="50dp"

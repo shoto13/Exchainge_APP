@@ -88,9 +88,7 @@ public class ProfileFragment extends Fragment {
         optionsList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view,int position, long id) {
-                // TODO Auto-generated method stub
                 if(position == 0) {
-                    //code specific to first list item
                     Intent intent = new Intent(getActivity(), settingsChangeUsername.class);
                     startActivity(intent);
                 }

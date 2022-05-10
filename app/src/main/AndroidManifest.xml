@@ -14,6 +14,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Exchainge">
         <activity
+            android:name=".blockedUsers"
+            android:exported="false" />
+        <activity
             android:name=".settingsChangePrivacy"
             android:exported="false" />
         <activity
