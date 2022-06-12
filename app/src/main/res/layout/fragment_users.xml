@@ -6,7 +6,7 @@
     tools:context=".Fragments.UsersFragment">
 
     <Button
-        android:id="@+id/find_friends_button"
+        android:id="@+id/find_contacts_button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="20dp"
@@ -24,7 +24,7 @@
         android:layout_marginTop="5dp"
         android:layout_marginEnd="5dp"
         android:layout_marginBottom="5dp"
-        android:layout_below="@id/find_friends_button"
+        android:layout_below="@id/find_contacts_button"
         android:hint="Search.." />
 
 

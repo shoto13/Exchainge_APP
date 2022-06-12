@@ -1,5 +1,6 @@
 package com.journey13.exchainge.Fragments;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -12,6 +13,7 @@ import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.EditText;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -25,6 +27,8 @@ import com.google.firebase.database.ValueEventListener;
 import com.journey13.exchainge.Adapter.UserAdapter;
 import com.journey13.exchainge.Model.User;
 import com.journey13.exchainge.R;
+import com.journey13.exchainge.contactsSearch;
+import com.journey13.exchainge.settingsChangePrivacy;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,6 +39,7 @@ public class UsersFragment extends Fragment {
     private RecyclerView recyclerView;
     private UserAdapter userAdapter;
     private List<User> mUsers;
+    private Button newContactsButton;
 
     private EditText search_users;
 
@@ -43,6 +48,19 @@ public class UsersFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_users, container, false);
+
+        newContactsButton = view.findViewById(R.id.find_contacts_button);
+
+        newContactsButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                //Go to contacts search
+                Intent intent = new Intent(getActivity(), contactsSearch.class);
+                startActivity(intent);
+
+            }
+        });
+
 
         recyclerView = view.findViewById(R.id.recycler_view);
         recyclerView.setHasFixedSize(true);
