@@ -50,7 +50,6 @@ public class UsersFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_users, container, false);
 
         newContactsButton = view.findViewById(R.id.find_contacts_button);
-
         newContactsButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -61,7 +60,7 @@ public class UsersFragment extends Fragment {
             }
         });
 
-
+        //SET UP THE USERS DISPLAY RECYCLER
         recyclerView = view.findViewById(R.id.recycler_view);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
