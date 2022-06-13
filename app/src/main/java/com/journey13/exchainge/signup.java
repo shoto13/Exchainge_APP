@@ -18,6 +18,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.journey13.exchainge.Notifications.Data;
 
 import java.util.HashMap;
 
@@ -28,6 +29,7 @@ public class signup extends AppCompatActivity {
 
     FirebaseAuth auth;
     DatabaseReference reference;
+    DatabaseReference walletReference;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,7 +56,7 @@ public class signup extends AppCompatActivity {
                 String txt_firstName = firstNameEditText.getText().toString();
                 String txt_secondName = secondNameEditText.getText().toString();
                 String txt_tagline = "I'm now on Exchainge!";
-                String preWallet_balance = "0.0001";
+                Float walletBalance = 0.001f;
 
 
                 //CHECK IF FIELDS ARE EMPTY (ADD ADDITIONAL FIELDS)
@@ -63,7 +65,7 @@ public class signup extends AppCompatActivity {
                 } else if (txt_password.length() < 6) {
                     Toast.makeText(signup.this, "Password must be at least 6 characters", Toast.LENGTH_SHORT).show();
                 } else {
-                    register(txt_username, txt_email, txt_password, txt_firstName, txt_secondName, txt_tagline, preWallet_balance);
+                    register(txt_username, txt_email, txt_password, txt_firstName, txt_secondName, txt_tagline, walletBalance);
                 }
             }
         });
@@ -71,7 +73,7 @@ public class signup extends AppCompatActivity {
     }
 
     //REGISTER A NEW USER USING FIREBASE
-    private void register(String username, String email, String password, String firstName, String secondName, String tagline, String preWalletBal) {
+    private void register(String username, String email, String password, String firstName, String secondName, String tagline, Float walletBal) {
         auth.createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                     @Override
@@ -82,6 +84,7 @@ public class signup extends AppCompatActivity {
                             String userid = firebaseUser.getUid();
 
                             reference = FirebaseDatabase.getInstance("https://exchainge-db047-default-rtdb.europe-west1.firebasedatabase.app/").getReference("Users").child(userid);
+                            walletReference = FirebaseDatabase.getInstance("https://exchainge-db047-default-rtdb.europe-west1.firebasedatabase.app/").getReference("Wallets").child(userid);
 
                             HashMap<String, String> hashMap = new HashMap<>();
                             hashMap.put("id", userid);
@@ -92,13 +95,24 @@ public class signup extends AppCompatActivity {
                             hashMap.put("secondName", secondName);
                             hashMap.put("status", "offline");
                             hashMap.put("search", username.toLowerCase());
-                            hashMap.put("pre-walletBalance", preWalletBal);
+
+                            HashMap<String, Float> walHashMap = new HashMap<>();
+                            walHashMap.put("wBalance", walletBal);
 
 
                             reference.setValue(hashMap).addOnCompleteListener(new OnCompleteListener<Void>() {
                                 @Override
                                 public void onComplete(@NonNull Task<Void> task) {
                                     if (task.isSuccessful()){
+                                        //successful user information storage
+                                    }
+                                }
+                            });
+
+                            walletReference.setValue(walHashMap).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                @Override
+                                public void onComplete(@NonNull Task<Void> task) {
+                                    if (task.isSuccessful()) {
                                         Intent intent = new Intent(signup.this, MainActivity.class);
                                         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
                                         startActivity(intent);
@@ -106,6 +120,7 @@ public class signup extends AppCompatActivity {
                                     }
                                 }
                             });
+
                         } else {
                             Toast.makeText(signup.this, "You cannot register with this email", Toast.LENGTH_SHORT);
                         }
