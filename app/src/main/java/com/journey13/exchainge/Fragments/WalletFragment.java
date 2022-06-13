@@ -40,6 +40,7 @@ import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.StorageTask;
 import com.google.firebase.storage.UploadTask;
 import com.journey13.exchainge.Model.User;
+import com.journey13.exchainge.Model.Wallet;
 import com.journey13.exchainge.MyListAdapter;
 import com.journey13.exchainge.R;
 import com.journey13.exchainge.settingsChangeTagline;
@@ -56,6 +57,9 @@ public class WalletFragment extends Fragment {
     private Button updateBalanceButton;
     private TextView monthlyFundsDollar, monthlyFundsEXCH, balanceDollar, balanceEXCH;
 
+    FirebaseUser fuser;
+    DatabaseReference reference;
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -64,7 +68,6 @@ public class WalletFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.fragment_wallet, container, false);
 
         updateBalanceButton = rootView.findViewById(R.id.getBalanceButton);
-
         monthlyFundsDollar = rootView.findViewById(R.id.monthlyFundsDollar);
         monthlyFundsEXCH = rootView.findViewById(R.id.monthlyFundsEXCH);
         balanceDollar = rootView.findViewById(R.id.balanceDollar);
@@ -77,7 +80,27 @@ public class WalletFragment extends Fragment {
                 monthlyFundsDollar.setText("$2.77");
                 monthlyFundsEXCH.setText("247.88 EXCH");
                 balanceDollar.setText("$12.88");
-                balanceEXCH.setText("1120 EXCH");
+                //balanceEXCH.setText("1120 EXCH");
+            }
+        });
+
+        //Firebase setup
+        fuser = FirebaseAuth.getInstance().getCurrentUser();
+        reference = FirebaseDatabase.getInstance("https://exchainge-db047-default-rtdb.europe-west1.firebasedatabase.app/").getReference("Wallets").child(fuser.getUid());
+
+        reference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                Wallet wallet = dataSnapshot.getValue(Wallet.class);
+                assert wallet != null;
+                String balString = wallet.getwBalance().toString() + " EXCH";
+                balanceEXCH.setText(balString);
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
             }
         });
 
