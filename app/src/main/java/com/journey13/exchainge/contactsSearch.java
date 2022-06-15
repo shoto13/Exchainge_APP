@@ -99,11 +99,9 @@ public class contactsSearch extends AppCompatActivity {
 
     private void readUsers() {
 
-
         FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
         DatabaseReference reference = FirebaseDatabase.getInstance("https://exchainge-db047-default-rtdb.europe-west1.firebasedatabase.app/").getReference("Users");
 
-        //TODO FIGURE OUT HOW TO ONLY GRAB DB USERS WHO ARE CONTACTS
         reference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {

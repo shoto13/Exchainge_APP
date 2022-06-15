@@ -55,12 +55,12 @@ public class ChatsFragment extends Fragment {
 
         View view = inflater.inflate(R.layout.fragment_chats, container, false);
 
+        //SET UP THE USERS DISPLAY RECYCLER
         recyclerView = view.findViewById(R.id.recycler_view);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
         fuser = FirebaseAuth.getInstance().getCurrentUser();
-
         usersList = new ArrayList<>();
 
         noMessagesText = view.findViewById(R.id.noMessagesText);
@@ -85,10 +85,8 @@ public class ChatsFragment extends Fragment {
                 chatList();
 
             }
-
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-
             }
         });
 
