@@ -33,6 +33,7 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
     private Context mContext;
     private List<User> mUsers;
     private boolean ischat;
+    private boolean isContact;
     private String lastMessage;
 
     public UserAdapter(Context mContext, List<User> mUsers, boolean ischat) {
@@ -41,8 +42,6 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
         this.ischat = ischat;
 
     }
-
-    //TODO ON TUE 14 - Figure out how to fix user adapter so that add contact option shows up
 
     //TODO ADD ADDITIONAL VARIABLE TO USERADAPTER CALLS WHICH IS A BOOLEAN VALUE REPRESENTING WHETHER OR NOT THE USER IS A CONTACT ALREADY
     // THIS WILL ALLOW US TO ADD/REMOVE FEATURES DEPENDING ON WHETHER WE ARE SEARCHING FOR A CONTACT OR INTERACTING WITH ONE WHICH ALREADY EXISTS.
