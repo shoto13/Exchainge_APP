@@ -6,6 +6,7 @@ import android.os.Message;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -36,10 +37,11 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
     private boolean isContact;
     private String lastMessage;
 
-    public UserAdapter(Context mContext, List<User> mUsers, boolean ischat) {
+    public UserAdapter(Context mContext, List<User> mUsers, boolean ischat, boolean isContact) {
         this.mUsers = mUsers;
         this.mContext = mContext;
         this.ischat = ischat;
+        this.isContact = isContact;
 
     }
 
@@ -82,6 +84,12 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
             holder.img_off.setVisibility(View.GONE);
         }
 
+        if (!isContact){
+            holder.add_contact_button.setVisibility(View.VISIBLE);
+        } else {
+            holder.add_contact_button.setVisibility(View.GONE);
+        }
+
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -104,6 +112,8 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
         private ImageView img_off;
         private ImageView img_on;
         private TextView last_message;
+        private Button add_contact_button;
+
 
         public ViewHolder(View itemView) {
             super(itemView);
@@ -113,6 +123,7 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
             img_on = itemView.findViewById(R.id.img_online);
             img_off = itemView.findViewById(R.id.img_offline);
             last_message = itemView.findViewById(R.id.last_message);
+            add_contact_button = itemView.findViewById(R.id.add_contact_button);
         }
     }
 

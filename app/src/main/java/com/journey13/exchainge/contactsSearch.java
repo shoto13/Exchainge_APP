@@ -85,7 +85,7 @@ public class contactsSearch extends AppCompatActivity {
                     }
                 }
 
-                userAdapter = new UserAdapter(getApplicationContext(), mUsers, false);
+                userAdapter = new UserAdapter(getApplicationContext(), mUsers, false, false);
                 recyclerView.setAdapter(userAdapter);
 
             }
@@ -121,7 +121,7 @@ public class contactsSearch extends AppCompatActivity {
                         }
                     }
 
-                    userAdapter = new UserAdapter(getApplicationContext(), mUsers, false);
+                    userAdapter = new UserAdapter(getApplicationContext(), mUsers, false, false);
                     recyclerView.setAdapter(userAdapter);
                 }
             }
