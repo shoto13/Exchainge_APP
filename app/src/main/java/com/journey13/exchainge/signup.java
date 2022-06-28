@@ -28,8 +28,7 @@ public class signup extends AppCompatActivity {
     Button registerButton;
 
     FirebaseAuth auth;
-    DatabaseReference reference;
-    DatabaseReference walletReference;
+    DatabaseReference reference, contactsReference, walletReference;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,7 +40,6 @@ public class signup extends AppCompatActivity {
         secondNameEditText = findViewById(R.id.secondNameEditText);
         emailEditText = findViewById(R.id.emailEditText);
         passwordEditText = findViewById(R.id.passwordEditText);
-
         registerButton = findViewById(R.id.registerButton);
 
         //CREATE FIREBASE AUTH INSTANCE
@@ -57,6 +55,9 @@ public class signup extends AppCompatActivity {
                 String txt_secondName = secondNameEditText.getText().toString();
                 String txt_tagline = "I'm now on Exchainge!";
                 Float walletBalance = 0.001f;
+                // TEST VALS BELOW - REMOVE THESE AFTER TEST
+                //TODO:: THIS NEEDS TO BE A LIST INSTEAD OF AN ARRAY STRING IN ORDER TO FUNCTION SO FIX THIS FIRST
+                String[] contacts = {"user1TEST", "user2TEST", "user3TEST"};
 
 
                 //CHECK IF FIELDS ARE EMPTY (ADD ADDITIONAL FIELDS)
@@ -65,7 +66,7 @@ public class signup extends AppCompatActivity {
                 } else if (txt_password.length() < 6) {
                     Toast.makeText(signup.this, "Password must be at least 6 characters", Toast.LENGTH_SHORT).show();
                 } else {
-                    register(txt_username, txt_email, txt_password, txt_firstName, txt_secondName, txt_tagline, walletBalance);
+                    register(txt_username, txt_email, txt_password, txt_firstName, txt_secondName, txt_tagline, walletBalance, contacts);
                 }
             }
         });
@@ -73,7 +74,7 @@ public class signup extends AppCompatActivity {
     }
 
     //REGISTER A NEW USER USING FIREBASE
-    private void register(String username, String email, String password, String firstName, String secondName, String tagline, Float walletBal) {
+    private void register(String username, String email, String password, String firstName, String secondName, String tagline, Float walletBal, String[] contacts) {
         auth.createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                     @Override
@@ -99,12 +100,24 @@ public class signup extends AppCompatActivity {
                             HashMap<String, Float> walHashMap = new HashMap<>();
                             walHashMap.put("wBalance", walletBal);
 
+                            HashMap<String, String[]> contactsHashMap = new HashMap<>();
+                            contactsHashMap.put("contacts", contacts);
+
 
                             reference.setValue(hashMap).addOnCompleteListener(new OnCompleteListener<Void>() {
                                 @Override
                                 public void onComplete(@NonNull Task<Void> task) {
                                     if (task.isSuccessful()){
                                         //successful user information storage
+                                    }
+                                }
+                            });
+
+                            reference.setValue(contactsHashMap).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                @Override
+                                public void onComplete(@NonNull Task<Void> task) {
+                                    if (task.isSuccessful()) {
+                                        //successful user contacts storage
                                     }
                                 }
                             });
@@ -120,6 +133,9 @@ public class signup extends AppCompatActivity {
                                     }
                                 }
                             });
+
+
+
 
                         } else {
                             Toast.makeText(signup.this, "You cannot register with this email", Toast.LENGTH_SHORT);
