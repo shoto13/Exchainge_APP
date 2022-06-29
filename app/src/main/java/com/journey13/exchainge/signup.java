@@ -20,7 +20,9 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.journey13.exchainge.Notifications.Data;
 
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 
 public class signup extends AppCompatActivity {
 
@@ -58,6 +60,7 @@ public class signup extends AppCompatActivity {
                 // TEST VALS BELOW - REMOVE THESE AFTER TEST
                 //TODO:: THIS NEEDS TO BE A LIST INSTEAD OF AN ARRAY STRING IN ORDER TO FUNCTION SO FIX THIS FIRST
                 String[] contacts = {"user1TEST", "user2TEST", "user3TEST"};
+                List<String> contactsList = Arrays.asList(contacts);
 
 
                 //CHECK IF FIELDS ARE EMPTY (ADD ADDITIONAL FIELDS)
@@ -66,7 +69,7 @@ public class signup extends AppCompatActivity {
                 } else if (txt_password.length() < 6) {
                     Toast.makeText(signup.this, "Password must be at least 6 characters", Toast.LENGTH_SHORT).show();
                 } else {
-                    register(txt_username, txt_email, txt_password, txt_firstName, txt_secondName, txt_tagline, walletBalance, contacts);
+                    register(txt_username, txt_email, txt_password, txt_firstName, txt_secondName, txt_tagline, walletBalance, contactsList);
                 }
             }
         });
@@ -74,7 +77,7 @@ public class signup extends AppCompatActivity {
     }
 
     //REGISTER A NEW USER USING FIREBASE
-    private void register(String username, String email, String password, String firstName, String secondName, String tagline, Float walletBal, String[] contacts) {
+    private void register(String username, String email, String password, String firstName, String secondName, String tagline, Float walletBal, List<String> contacts) {
         auth.createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                     @Override
@@ -85,6 +88,7 @@ public class signup extends AppCompatActivity {
                             String userid = firebaseUser.getUid();
 
                             reference = FirebaseDatabase.getInstance("https://exchainge-db047-default-rtdb.europe-west1.firebasedatabase.app/").getReference("Users").child(userid);
+                            contactsReference = FirebaseDatabase.getInstance("https://exchainge-db047-default-rtdb.europe-west1.firebasedatabase.app/").getReference("Contacts").child(userid);
                             walletReference = FirebaseDatabase.getInstance("https://exchainge-db047-default-rtdb.europe-west1.firebasedatabase.app/").getReference("Wallets").child(userid);
 
                             HashMap<String, String> hashMap = new HashMap<>();
@@ -100,7 +104,7 @@ public class signup extends AppCompatActivity {
                             HashMap<String, Float> walHashMap = new HashMap<>();
                             walHashMap.put("wBalance", walletBal);
 
-                            HashMap<String, String[]> contactsHashMap = new HashMap<>();
+                            HashMap<String, List<String>> contactsHashMap = new HashMap<>();
                             contactsHashMap.put("contacts", contacts);
 
 
@@ -113,7 +117,7 @@ public class signup extends AppCompatActivity {
                                 }
                             });
 
-                            reference.setValue(contactsHashMap).addOnCompleteListener(new OnCompleteListener<Void>() {
+                            contactsReference.setValue(contactsHashMap).addOnCompleteListener(new OnCompleteListener<Void>() {
                                 @Override
                                 public void onComplete(@NonNull Task<Void> task) {
                                     if (task.isSuccessful()) {
