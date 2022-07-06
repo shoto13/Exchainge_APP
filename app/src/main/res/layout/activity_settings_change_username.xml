@@ -17,17 +17,18 @@
         />
 
     <EditText
-        android:id="@+id/changeUNAmeEditText"
+        android:id="@+id/changeUNameEditText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/changeUName"
         android:layout_marginTop="20dp" />
 
     <Button
+        android:id="@+id/confirmChangesButton"
         android:layout_width="200dp"
         android:layout_height="wrap_content"
         android:text="Confirm changes"
-        android:layout_below="@id/changeUNAmeEditText"
+        android:layout_below="@id/changeUNameEditText"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="100dp"
         />
