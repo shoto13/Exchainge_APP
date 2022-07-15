@@ -181,11 +181,12 @@ public class MessageActivity extends AppCompatActivity {
 
         reference.child("Chats").push().setValue(hashMap);
 
-        // add user to chat fragment
+        // ADD message to sender (current user) chat list
         DatabaseReference chatRef = FirebaseDatabase.getInstance("https://exchainge-db047-default-rtdb.europe-west1.firebasedatabase.app/").getReference("Chatlist")
                 .child(fuser.getUid())
                 .child(userid);
 
+        // SETUP new chat instance if one does not exist for this sender
         chatRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -198,6 +199,28 @@ public class MessageActivity extends AppCompatActivity {
             public void onCancelled(@NonNull DatabaseError error) {
             }
         });
+
+        // ADD message to receiver chat list
+        DatabaseReference chatRef2 = FirebaseDatabase.getInstance("https://exchainge-db047-default-rtdb.europe-west1.firebasedatabase.app/").getReference("Chatlist")
+                .child(userid)
+                .child(fuser.getUid());
+
+
+        // SETUP new chat instance if one does not exist for this receiver
+        chatRef2.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if (!dataSnapshot.exists()) {
+                    chatRef2.child("id").setValue(fuser.getUid());
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+
 
         final String msg = message;
 

@@ -37,15 +37,11 @@ import java.util.Locale;
 public class ChatsFragment extends Fragment {
 
     private RecyclerView recyclerView;
-
     private UserAdapter userAdapter;
     private List<User> mUsers;
-
     FirebaseUser fuser;
     DatabaseReference reference;
-
     private List<Chatlist> usersList;
-
     private TextView noMessagesText;
     private ImageView noMessagesImage;
 
@@ -60,12 +56,15 @@ public class ChatsFragment extends Fragment {
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
+        // GET current user and init Array list
         fuser = FirebaseAuth.getInstance().getCurrentUser();
         usersList = new ArrayList<>();
 
+        // GET Display items for when there are no messages
         noMessagesText = view.findViewById(R.id.noMessagesText);
         noMessagesImage = view.findViewById(R.id.noMessagesImage);
 
+        // GET reference for list of chats
         reference = FirebaseDatabase.getInstance("https://exchainge-db047-default-rtdb.europe-west1.firebasedatabase.app/").getReference("Chatlist").child(fuser.getUid());
         reference.addValueEventListener(new ValueEventListener() {
             @Override

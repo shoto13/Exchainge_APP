@@ -29,6 +29,8 @@ public class MyFirebaseMessaging extends FirebaseMessagingService {
         String sentMessage = remoteMessage.getData().get("sentMessage");
         String user = remoteMessage.getData().get("user");
 
+        System.out.println("WE ARE HERE IN THE NOTIFICATION MESSAGING CODE");
+
         SharedPreferences preferences = getSharedPreferences("PREFS", MODE_PRIVATE);
         String currentUser = preferences.getString("currentuser", "none");
 
