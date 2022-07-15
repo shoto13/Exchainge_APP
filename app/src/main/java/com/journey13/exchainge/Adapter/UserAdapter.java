@@ -163,4 +163,10 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
         });
 
     }
+
+
+    // CREATE FUNCTION TO ADD USER WHEN BUTTON PRESSED
+    private void addUser () {
+
+    }
 }

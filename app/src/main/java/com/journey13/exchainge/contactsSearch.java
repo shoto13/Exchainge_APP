@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.widget.Button;
 import android.widget.EditText;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -32,6 +33,7 @@ public class contactsSearch extends AppCompatActivity {
     private List<User> mUsers;
     private EditText search_users;
     private static final String TAG = "MyActivity";
+    private Button addUserButton;
 
 
     @Override
