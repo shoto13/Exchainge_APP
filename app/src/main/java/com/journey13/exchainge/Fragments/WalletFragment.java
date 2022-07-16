@@ -51,7 +51,6 @@ import java.util.Objects;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
-
 public class WalletFragment extends Fragment {
 
     private Button updateBalanceButton;
@@ -59,7 +58,6 @@ public class WalletFragment extends Fragment {
 
     FirebaseUser fuser;
     DatabaseReference reference;
-
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -78,9 +76,9 @@ public class WalletFragment extends Fragment {
             public void onClick(View view) {
                 //TODO update hard coded values used for testing
                 monthlyFundsDollar.setText("$2.77");
-                monthlyFundsEXCH.setText("247.88 EXCH");
+                // monthlyFundsEXCH.setText("247.88 EXCH");
                 balanceDollar.setText("$12.88");
-                //balanceEXCH.setText("1120 EXCH");
+                // balanceEXCH.setText("1120 EXCH");
             }
         });
 
@@ -93,8 +91,10 @@ public class WalletFragment extends Fragment {
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 Wallet wallet = dataSnapshot.getValue(Wallet.class);
                 assert wallet != null;
-                String balString = wallet.getwBalance().toString() + " EXCH";
+                String balString = wallet.getwBalance().toString() + " ExCH";
+                String monthlyFString = wallet.getwMonthlyEarnings().toString() + " ExCH";
                 balanceEXCH.setText(balString);
+                monthlyFundsEXCH.setText(monthlyFString);
 
             }
 

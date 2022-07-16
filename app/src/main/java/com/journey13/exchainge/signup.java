@@ -57,6 +57,7 @@ public class signup extends AppCompatActivity {
                 String txt_secondName = secondNameEditText.getText().toString();
                 String txt_tagline = "I'm now on Exchainge!";
                 Float walletBalance = 0.001f;
+                Float wMonthlyEarnings = 0.000f;
                 // TEST VALS BELOW - REMOVE THESE AFTER TEST
                 //TODO:: THIS NEEDS TO BE A LIST INSTEAD OF AN ARRAY STRING IN ORDER TO FUNCTION SO FIX THIS FIRST
                 String[] contacts = {"user1TEST", "user2TEST", "user3TEST"};
@@ -69,7 +70,7 @@ public class signup extends AppCompatActivity {
                 } else if (txt_password.length() < 6) {
                     Toast.makeText(signup.this, "Password must be at least 6 characters", Toast.LENGTH_SHORT).show();
                 } else {
-                    register(txt_username, txt_email, txt_password, txt_firstName, txt_secondName, txt_tagline, walletBalance, contactsList);
+                    register(txt_username, txt_email, txt_password, txt_firstName, txt_secondName, txt_tagline, walletBalance, wMonthlyEarnings, contactsList);
                 }
             }
         });
@@ -77,7 +78,7 @@ public class signup extends AppCompatActivity {
     }
 
     //REGISTER A NEW USER USING FIREBASE
-    private void register(String username, String email, String password, String firstName, String secondName, String tagline, Float walletBal, List<String> contacts) {
+    private void register(String username, String email, String password, String firstName, String secondName, String tagline, Float walletBal, Float wMonthlyEarnings, List<String> contacts) {
         auth.createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                     @Override
@@ -103,6 +104,8 @@ public class signup extends AppCompatActivity {
 
                             HashMap<String, Float> walHashMap = new HashMap<>();
                             walHashMap.put("wBalance", walletBal);
+                            walHashMap.put("wMonthlyEarnings", wMonthlyEarnings);
+
 
                             HashMap<String, List<String>> contactsHashMap = new HashMap<>();
                             contactsHashMap.put("contacts", contacts);
