@@ -2,7 +2,7 @@
 <resources>
 
     <style name="MenuStyle" parent="Theme.AppCompat.Light">
-        <item name="android:background">@color/lightgrey</item>
+        <item name="android:background">@color/greenthree</item>
 
     </style>
 

@@ -18,15 +18,15 @@
 
         <TextView
             android:id="@+id/show_message"
-            android:textSize="16sp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
             android:background="@drawable/background_right"
             android:padding="10dp"
-            android:textColor="@color/black"
             android:text="I sure do love Exchainge"
-            android:layout_alignParentEnd="true"
-            android:layout_alignParentRight="true"/>
+            android:textColor="@color/offwhitetext"
+            android:textSize="16sp" />
 
 
         <TextView

@@ -1,20 +1,26 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Base application theme. -->
     <style name="Theme.Exchainge" parent="Theme.AppCompat.Light.NoActionBar">
-
-        <item name="android:actionMenuTextColor">@color/offwhitetext</item>
+        <item name="android:actionMenuTextColor">@color/deepSea</item>
 
         <!-- Primary brand color. -->
-        <item name="colorPrimary">@color/Papaya_IC</item>
-        <item name="colorPrimaryVariant">@color/purple_700</item>
-        <item name="colorOnPrimary">@color/white</item>
+        <item name="colorPrimary">@color/atlanticSea</item>
+        <item name="colorPrimaryVariant">@color/shallows</item>
+        <item name="colorOnPrimary">@color/Banana_IC</item>
         <!-- Secondary brand color. -->
-        <item name="colorSecondary">@color/teal_200</item>
+        <item name="colorSecondary">@color/deepSea</item>
         <item name="colorSecondaryVariant">@color/teal_700</item>
-        <item name="colorOnSecondary">@color/Papaya_IC</item>
+        <item name="colorOnSecondary">@color/kelp</item>
         <!-- Status bar color. -->
         <item name="android:statusBarColor" tools:targetApi="l">?attr/colorPrimaryVariant</item>
         <!-- Customize your theme here. -->
+
+        <!-- themed chat items -->
+        <item name="chatItemLeft">@color/purple_500</item>
+        <item name="chatItemRight">@color/atlanticSea</item>
+
+        <item name="greyBlockOne">@color/darkgrey</item>
+        <item name="greyBlockTwo">@color/lightgrey</item>
 
     </style>
 </resources>

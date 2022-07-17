@@ -40,5 +40,14 @@
     <color name="mediumGreyOne">#cccccc</color>
     <color name="softWarn">#ffb347</color>
 
+    //NEW OCEANIC COLOUR THEME
+    <color name="deepSea">#0A0E29</color>
+    <color name="atlanticSea">#2D3258</color>
+    <color name="medSea">#304B78</color>
+    <color name="shallows">#2494A2</color>
+    <color name="kelp">#56BDA2</color>
+    <color name="sands">#DBB13B</color>
+
+
 
 </resources>

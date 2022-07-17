@@ -19,7 +19,6 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@color/mediumGreyOne"
             android:orientation="vertical">
 
             <!-- The ActionBar displayed at the top -->
@@ -43,8 +42,8 @@
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_gravity="start"
-            app:itemTextColor="@color/Banana_IC"
-            android:background="@color/darkgrey"
+            app:itemTextColor="@color/offwhitetext"
+            android:background="@color/medSea"
             app:menu="@menu/drawer_view" />
     </androidx.drawerlayout.widget.DrawerLayout>
 

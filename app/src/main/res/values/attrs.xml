@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- Other values-->
+    <!-- chat items -->
+    <attr name="chatItemLeft" format="reference" />
+    <attr name="chatItemRight" format="reference" />
+
+    <attr name="greyBlockOne" format="reference" />
+    <attr name="greyBlockTwo" format="reference" />
+
+
+</resources>
