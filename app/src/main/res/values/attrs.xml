@@ -2,6 +2,8 @@
 <resources>
 
     <!-- Other values-->
+    <attr name="colorTertiary" format="reference" />
+
     <!-- chat items -->
     <attr name="chatItemLeft" format="reference" />
     <attr name="chatItemRight" format="reference" />

@@ -10,6 +10,6 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:padding="10dp"
-        android:textColor="@color/darkgrey" />
+        android:textColor="?attr/greyBlockOne" />
 
 </LinearLayout>

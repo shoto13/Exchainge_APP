@@ -157,71 +157,8 @@ public class MainActivity extends AppCompatActivity {
         mDrawer.setDrawerListener(drawerToggle);
         drawerToggle.syncState();
 
-
-//        reference.addValueEventListener(new ValueEventListener() {
-//            @Override
-//            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-//
-//                if (firebaseUser != null) {
-//                    User user = dataSnapshot.getValue(User.class);
-//
-//                    username.setText(user.getUsername());
-//
-//                    if (user.getImageURL().equals("default")) {
-//                        profilePic.setImageResource(R.mipmap.ic_launcher);
-//                    } else {
-//                        Glide.with(getApplicationContext()).load(user.getImageURL()).into(profilePic);
-//                    }
-//                }
-//
-//            }
-//
-//            @Override
-//            public void onCancelled(@NonNull DatabaseError error) {
-//
-//            }
-//        });
-
-//        final TabLayout tabLayout = findViewById(R.id.tab_layout);
-
-
-//        final ViewPager viewPager = findViewById(R.id.view_pager);
-//
-//        reference = FirebaseDatabase.getInstance("https://exchainge-db047-default-rtdb.europe-west1.firebasedatabase.app/").getReference("Chats");
-//        reference.addValueEventListener(new ValueEventListener() {
-//            @Override
-//            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-//                ViewPagerAdapter viewPagerAdapter = new ViewPagerAdapter(getSupportFragmentManager());
-//                int unread = 0;
-//                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-//                    Chat chat = snapshot.getValue(Chat.class);
-//                    if (chat.getReceiver().equals(firebaseUser.getUid()) && !chat.isSeen()) {
-//                        unread++;
-//                    }
-//                }
-//
-//                if (unread == 0) {
-//                    viewPagerAdapter.addFragment(new ChatsFragment(), "Chats");
-//                } else {
-//                    viewPagerAdapter.addFragment(new ChatsFragment(), "("+unread+") Chats");
-//
-//                }
-//
-//                viewPagerAdapter.addFragment(new UsersFragment(), "Users");
-//                viewPagerAdapter.addFragment(new ProfileFragment(), "Profile");
-//
-////                viewPager.setAdapter(viewPagerAdapter);
-//                tabLayout.setupWithViewPager(viewPager);
-
             }
-//
-//            @Override
-//            public void onCancelled(@NonNull DatabaseError error) {
-//
-//            }
-//        });
-//
-//    }
+
 
     //Get and sync state for hamburger icon in action bar
     @Override

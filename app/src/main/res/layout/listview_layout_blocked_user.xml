@@ -14,7 +14,7 @@
         android:gravity="left"
         android:padding="6dp"
         android:text="user1"
-        android:textColor="@color/darkgrey" />
+        android:textColor="?attr/greyBlockOne" />
 
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/unblockButton"

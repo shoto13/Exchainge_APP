@@ -78,7 +78,7 @@
         android:text="Help with your password"
         android:layout_marginTop="10dp"
         android:layout_gravity="center"
-        android:textColor="@color/Raspberry_IC" />
+        android:textColor="?attr/colorOnPrimary" />
 
 </LinearLayout>
 

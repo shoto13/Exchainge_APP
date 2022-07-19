@@ -40,7 +40,7 @@
         android:id="@+id/img_offline"
         android:layout_width="20dp"
         android:layout_height="20dp"
-        app:civ_border_width="5dp"
+        app:civ_border_width="3dp"
         app:civ_border_color="@color/Raspberry_IC"
         android:visibility="visible"
         android:src="@mipmap/ic_launcher"
@@ -72,6 +72,7 @@
         android:layout_marginRight="10dp"
         android:text="Add user"
         android:layout_centerVertical="true"
+        style="?android:attr/borderlessButtonStyle"
         />
 
 

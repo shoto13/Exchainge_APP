@@ -4,13 +4,17 @@
 
         <item name="android:actionMenuTextColor">@color/atlanticSea</item>
         <!-- Primary brand color. -->
-        <item name="colorPrimary">@color/medSea</item>
-        <item name="colorPrimaryVariant">@color/atlanticSea</item>
+        <item name="colorPrimary">@color/atlanticSea</item>
+        <item name="colorPrimaryVariant">@color/medSea</item>
         <item name="colorOnPrimary">@color/Banana_IC</item>
+
         <!-- Secondary brand color. -->
-        <item name="colorSecondary">@color/shallows</item>
-        <item name="colorSecondaryVariant">@color/kelp</item>
+        <item name="colorSecondary">@color/deepSea</item>
+        <item name="colorSecondaryVariant">@color/shallows</item>
         <item name="colorOnSecondary">@color/Papaya_IC</item>
+
+        <item name="colorTertiary">@color/Bubblegum_IC</item>
+
         <!-- Status bar color. -->
         <item name="android:statusBarColor" tools:targetApi="l">?attr/colorPrimaryVariant</item>
         <!-- Customize your theme here. -->
@@ -18,6 +22,9 @@
         <!-- themed chat items -->
         <item name="chatItemLeft">@color/purple_500</item>
         <item name="chatItemRight">@color/atlanticSea</item>
+
+        <item name="greyBlockOne">@color/darkgrey</item>
+        <item name="greyBlockTwo">@color/lightgrey</item>
 
     </style>
 </resources>

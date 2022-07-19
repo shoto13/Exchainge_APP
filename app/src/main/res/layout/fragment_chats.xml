@@ -26,7 +26,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Nothing to see here..."
-        android:textColor="@color/Papaya_IC"
+        android:textColor="?attr/colorOnSecondary"
         android:textSize="18sp"
         android:layout_below="@id/noMessagesImage"
         android:layout_centerHorizontal="true"

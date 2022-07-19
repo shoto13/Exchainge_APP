@@ -13,14 +13,14 @@
         android:layout_marginLeft="6dp"
         android:layout_marginTop="20dp"
         android:layout_marginRight="6dp"
-        app:cardBackgroundColor="@color/lightgrey">
+        app:cardBackgroundColor="?attr/greyBlockTwo">
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:padding="10dp"
             android:text="Security"
-            android:textColor="@color/greenthree"
+            android:textColor="?attr/colorSecondaryVariant"
             android:textSize="20sp" />
 
         <ListView
@@ -43,14 +43,14 @@
         android:layout_marginLeft="6dp"
         android:layout_marginTop="20dp"
         android:layout_marginRight="6dp"
-        app:cardBackgroundColor="@color/lightgrey">
+        app:cardBackgroundColor="?attr/greyBlockTwo">
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:padding="10dp"
             android:text="Privacy"
-            android:textColor="@color/greenthree"
+            android:textColor="?attr/colorSecondaryVariant"
             android:textSize="20sp" />
 
         <ListView
@@ -73,14 +73,14 @@
         android:layout_marginLeft="6dp"
         android:layout_marginTop="20dp"
         android:layout_marginRight="6dp"
-        app:cardBackgroundColor="@color/lightgrey">
+        app:cardBackgroundColor="?attr/greyBlockTwo">
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:padding="10dp"
             android:text="Contacts"
-            android:textColor="@color/greenthree"
+            android:textColor="?attr/colorSecondaryVariant"
             android:textSize="20sp" />
 
         <ListView
