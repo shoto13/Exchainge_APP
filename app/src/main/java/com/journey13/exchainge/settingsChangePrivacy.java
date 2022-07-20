@@ -20,7 +20,7 @@ public class settingsChangePrivacy extends AppCompatActivity {
     //SECURITY
     String[] securityItemHeads = {"Passcode Lock", "Two-Step Verification"};
     //PRIVACY
-    String[] privacyItemHeads = {"Search For Me", "Searchable by username", "Searchable by phone number"};
+    String[] privacyItemHeads = {"Search For Me", "Searchable by username", "Searchable by email"};
     //BLOCKED USERS
     String[] contactsHead = {"Blocked users"};
 
