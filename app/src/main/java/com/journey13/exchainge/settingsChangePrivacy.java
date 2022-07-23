@@ -10,12 +10,19 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+
 public class settingsChangePrivacy extends AppCompatActivity {
 
     ListView privacyList;
     ListView securityList;
     ListView contactsSettingsList;
 
+    //Connect to database
+    private FirebaseUser fuser;
+    private DatabaseReference reference;
+    
     //SETTINGS HEADERS
     //SECURITY
     String[] securityItemHeads = {"Passcode Lock", "Two-Step Verification"};
