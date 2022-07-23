@@ -70,7 +70,17 @@ public class signup extends AppCompatActivity {
                 } else if (txt_password.length() < 6) {
                     Toast.makeText(signup.this, "Password must be at least 6 characters", Toast.LENGTH_SHORT).show();
                 } else {
-                    register(txt_username, txt_email, txt_password, txt_firstName, txt_secondName, txt_tagline, walletBalance, wMonthlyEarnings, contactsList);
+                    register(txt_username,
+                            txt_email,
+                            txt_password,
+                            txt_firstName,
+                            txt_secondName,
+                            txt_tagline,
+                            walletBalance,
+                            wMonthlyEarnings,
+                            contactsList,
+                            searchableByName,
+                            searchableByEmail);
                 }
             }
         });
@@ -78,7 +88,17 @@ public class signup extends AppCompatActivity {
     }
 
     //REGISTER A NEW USER USING FIREBASE
-    private void register(String username, String email, String password, String firstName, String secondName, String tagline, Float walletBal, Float wMonthlyEarnings, List<String> contacts) {
+    private void register(String username,
+                          String email,
+                          String password,
+                          String firstName,
+                          String secondName,
+                          String tagline,
+                          Float walletBal,
+                          Float wMonthlyEarnings,
+                          List<String> contacts,
+                          Boolean searchableByName,
+                          Boolean searchbleByEmail) {
         auth.createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                     @Override
@@ -92,7 +112,8 @@ public class signup extends AppCompatActivity {
                             contactsReference = FirebaseDatabase.getInstance("https://exchainge-db047-default-rtdb.europe-west1.firebasedatabase.app/").getReference("Contacts").child(userid);
                             walletReference = FirebaseDatabase.getInstance("https://exchainge-db047-default-rtdb.europe-west1.firebasedatabase.app/").getReference("Wallets").child(userid);
 
-                            HashMap<String, String> hashMap = new HashMap<>();
+
+                            HashMap<String,Object> hashMap = new HashMap<String ,Object>();
                             hashMap.put("id", userid);
                             hashMap.put("username", username);
                             hashMap.put("tagline", tagline);
@@ -101,6 +122,8 @@ public class signup extends AppCompatActivity {
                             hashMap.put("secondName", secondName);
                             hashMap.put("status", "offline");
                             hashMap.put("search", username.toLowerCase());
+                            hashMap.put("searchableByName", searchableByName);
+                            hashMap.put("searchableByEmail", searchbleByEmail);
 
                             HashMap<String, Float> walHashMap = new HashMap<>();
                             walHashMap.put("wBalance", walletBal);
@@ -109,8 +132,6 @@ public class signup extends AppCompatActivity {
 
                             HashMap<String, List<String>> contactsHashMap = new HashMap<>();
                             contactsHashMap.put("contacts", contacts);
-
-                            //TODO:: add hashmap with search bools
 
 
                             reference.setValue(hashMap).addOnCompleteListener(new OnCompleteListener<Void>() {
