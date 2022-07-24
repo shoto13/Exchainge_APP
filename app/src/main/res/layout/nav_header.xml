@@ -15,7 +15,7 @@
             android:layout_height="match_parent"
             android:layout_marginBottom="25dp"
             android:scaleType="fitXY"
-            android:src="@drawable/colorfade02"
+            android:src="@drawable/colorfade03"
             />
 
         <de.hdodenhof.circleimageview.CircleImageView
@@ -23,8 +23,8 @@
             android:layout_width="60dp"
             android:layout_height="60dp"
             android:layout_marginTop="80dp"
-            android:src="@drawable/ic_launcher_background"
-            />
+            android:layout_marginLeft="6dp"
+            android:src="@drawable/ic_launcher_background" />
 
         <TextView
             android:id="@+id/usernameTextView"
@@ -32,19 +32,19 @@
             android:layout_height="wrap_content"
             android:text="username"
             android:textColor="@android:color/white"
-            android:textSize="16sp"
-            android:layout_marginTop="94dp"
-            android:layout_marginLeft="70dp"/>
+            android:textSize="18sp"
+            android:layout_marginTop="92dp"
+            android:layout_marginLeft="76dp"/>
 
         <TextView
             android:id="@+id/taglineTextView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="tagline"
-            android:textColor="?attr/colorSecondaryVariant"
+            android:textColor="?attr/colorOnPrimary"
             android:textSize="12sp"
             android:layout_marginTop="120dp"
-            android:layout_marginLeft="65dp"/>
+            android:layout_marginLeft="71dp"/>
 
 
 
