@@ -22,8 +22,9 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/changeTagline"
         android:layout_marginTop="20dp"
-        android:maxLength="28"
-        />
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:maxLength="28" />
 
     <Button
         android:id="@+id/confirmChangesButton"

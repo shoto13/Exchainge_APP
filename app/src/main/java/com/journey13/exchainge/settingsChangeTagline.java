@@ -65,6 +65,7 @@ public class settingsChangeTagline extends AppCompatActivity {
             public void onSuccess(Void aVoid) {
                 Toast.makeText(getApplicationContext(), "Tagline updated", Toast.LENGTH_SHORT).show();
                 changeTaglineEditText.setText("");
+                finish();
             }
         }).addOnFailureListener(new OnFailureListener() {
             @Override

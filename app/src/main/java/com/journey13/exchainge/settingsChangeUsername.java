@@ -64,6 +64,7 @@ public class settingsChangeUsername extends AppCompatActivity {
             public void onSuccess(Void unused) {
                 Toast.makeText(getApplicationContext(), "Username updated", Toast.LENGTH_SHORT).show();
                 changeUNameEditText.setText("");
+                finish();
             }
         }).addOnFailureListener(new OnFailureListener() {
             @Override
