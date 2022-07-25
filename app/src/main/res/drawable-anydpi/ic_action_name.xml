@@ -8,5 +8,11 @@
     android:autoMirrored="true">
   <path
       android:fillColor="@android:color/white"
-      android:pathData="M1.2,21L20,12 1.02,3 2,10l15,2 -15,2z"/>
+      android:pathData="M1.2,21L20,12 1.02,3 4,10l15,2 -15,2z"/>
+
+<!--  <path-->
+<!--      android:fillColor="@android:color/white"-->
+<!--      android:pathData="M1.2,21L2.0,12 1.02,3 2,10l15,2 -15,2z"/>-->
+
+
 </vector>

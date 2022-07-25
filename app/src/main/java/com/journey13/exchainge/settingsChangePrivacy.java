@@ -8,6 +8,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.Switch;
 import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseUser;
@@ -22,6 +23,8 @@ public class settingsChangePrivacy extends AppCompatActivity {
     //Connect to database
     private FirebaseUser fuser;
     private DatabaseReference reference;
+
+    Switch setSwitch;
     
     //SETTINGS HEADERS
     //SECURITY
@@ -47,6 +50,7 @@ public class settingsChangePrivacy extends AppCompatActivity {
         contactsSettingsList = (ListView)findViewById(R.id.listContacts);
         ArrayAdapter<String> contactsArrayAdapter = new ArrayAdapter<String>(this, R.layout.listview_layout, R.id.listItemText, contactsHead);
         contactsSettingsList.setAdapter(contactsArrayAdapter);
+        
 
         contactsSettingsList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
