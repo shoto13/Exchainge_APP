@@ -25,7 +25,9 @@ public class settingsChangePrivacy extends AppCompatActivity {
     private DatabaseReference reference;
 
     Switch setSwitch;
-    
+
+
+    //TODO change switches to programmed in so that they are not dynamically loaded
     //SETTINGS HEADERS
     //SECURITY
     String[] securityItemHeads = {"Passcode Lock", "Two-Step Verification"};
@@ -47,10 +49,11 @@ public class settingsChangePrivacy extends AppCompatActivity {
         ArrayAdapter<String> privacyArrayAdapter = new ArrayAdapter<String>(this, R.layout.listview_layout_toggle, R.id.listItemText, privacyItemHeads);
         privacyList.setAdapter(privacyArrayAdapter);
 
+
         contactsSettingsList = (ListView)findViewById(R.id.listContacts);
         ArrayAdapter<String> contactsArrayAdapter = new ArrayAdapter<String>(this, R.layout.listview_layout, R.id.listItemText, contactsHead);
         contactsSettingsList.setAdapter(contactsArrayAdapter);
-        
+
 
         contactsSettingsList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
