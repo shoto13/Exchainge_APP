@@ -36,13 +36,17 @@ import com.journey13.exchainge.Notifications.Response;
 import com.journey13.exchainge.Notifications.Sender;
 import com.journey13.exchainge.Notifications.Token;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 import retrofit2.Call;
 import retrofit2.Callback;
+import java.sql.Timestamp;
+
 
 public class MessageActivity extends AppCompatActivity {
 
@@ -55,6 +59,7 @@ public class MessageActivity extends AppCompatActivity {
     private MessageAdapter messageAdapter;
     private List<Chat> mChat;
     private RecyclerView recyclerView;
+
 
     Intent intent;
 
@@ -167,8 +172,9 @@ public class MessageActivity extends AppCompatActivity {
         DatabaseReference reference = FirebaseDatabase.getInstance("https://exchainge-db047-default-rtdb.europe-west1.firebasedatabase.app/").getReference();
         final String userid = intent.getStringExtra("userid");
 
-        Long timestampLong = System.currentTimeMillis();
-        String ts = timestampLong.toString();
+        Calendar calendar = Calendar.getInstance();
+        SimpleDateFormat sdf = new SimpleDateFormat("HH:mm dd/MM/yy");
+        String ts = sdf.format(calendar.getTime());
 
         HashMap<String, Object> hashMap = new HashMap<>();
         hashMap.put("sender", sender);

@@ -27,6 +27,8 @@ import com.journey13.exchainge.Model.Chat;
 import com.journey13.exchainge.Model.User;
 import com.journey13.exchainge.R;
 
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
@@ -64,9 +66,10 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
         }
 
         if (ischat) {
-            lastMessage(user.getId(), holder.last_message);
+            lastMessage(user.getId(), holder.last_message, holder.message_timestamp);
         } else {
             holder.last_message.setVisibility(View.GONE);
+            holder.message_timestamp.setVisibility(View.GONE);
         }
 
         if (ischat){
@@ -110,6 +113,7 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
         private ImageView img_off;
         private ImageView img_on;
         private TextView last_message;
+        private TextView message_timestamp;
         private Button add_contact_button;
 
 
@@ -121,12 +125,13 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
             img_on = itemView.findViewById(R.id.img_online);
             img_off = itemView.findViewById(R.id.img_offline);
             last_message = itemView.findViewById(R.id.last_message);
+            message_timestamp = itemView.findViewById(R.id.message_time);
             add_contact_button = itemView.findViewById(R.id.add_contact_button);
         }
     }
 
     //Get most recent message
-    private void lastMessage(String userid, TextView last_message) {
+    private void lastMessage(String userid, TextView last_message, TextView message_timestamp) {
         lastMessage = "default";
         lastMessageTime = "hh:mm dd/mm/yy";
         FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
@@ -137,10 +142,11 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                     Chat chat = snapshot.getValue(Chat.class);
-                    System.out.println(chat.getMessage());
                     if (chat.getReceiver().equals(firebaseUser.getUid()) && chat.getSender().equals(userid)
                             || chat.getReceiver().equals(userid) && chat.getSender().equals(firebaseUser.getUid())) {
                         lastMessage = chat.getMessage();
+                        lastMessageTime = chat.getMessageTimestamp();
+
                     }
                 }
 
@@ -154,6 +160,20 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
                         break;
                 }
                 lastMessage = "default";
+
+                switch (lastMessageTime) {
+                    case "default":
+                        message_timestamp.setText("~~~");
+                        break;
+
+                    default:
+
+                        message_timestamp.setText(lastMessageTime);
+                        break;
+                }
+//                lastMessage = "default";
+
+
             }
 
             @Override
