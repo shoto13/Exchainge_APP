@@ -88,7 +88,6 @@ public class UsersFragment extends Fragment {
         });
 
         return view;
-
     }
 
     private void searchUsers(String s) {
@@ -116,14 +115,12 @@ public class UsersFragment extends Fragment {
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-
             }
         });
     }
 
     //FIREBASE USER READ FROM DB
     private void readUsers() {
-
 
         FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
         DatabaseReference reference = FirebaseDatabase.getInstance("https://exchainge-db047-default-rtdb.europe-west1.firebasedatabase.app/").getReference("Users");

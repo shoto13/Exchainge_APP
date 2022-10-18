@@ -48,16 +48,13 @@ public class MessageActivity extends AppCompatActivity {
 
     private CircleImageView profile_image;
     private TextView username, tagline;
-
     private  FirebaseUser fuser;
     private DatabaseReference reference;
-
     private ImageButton btn_send;
     private EditText text_send;
-
     private MessageAdapter messageAdapter;
     private List<Chat> mChat;
-    RecyclerView recyclerView;
+    private RecyclerView recyclerView;
 
     Intent intent;
 
@@ -142,7 +139,6 @@ public class MessageActivity extends AppCompatActivity {
         });
 
         seenMessage(userid);
-
     }
 
     private void seenMessage(String userid) {
@@ -172,12 +168,15 @@ public class MessageActivity extends AppCompatActivity {
         DatabaseReference reference = FirebaseDatabase.getInstance("https://exchainge-db047-default-rtdb.europe-west1.firebasedatabase.app/").getReference();
         final String userid = intent.getStringExtra("userid");
 
+        Long timestampLong = System.currentTimeMillis();
+        String ts = timestampLong.toString();
 
         HashMap<String, Object> hashMap = new HashMap<>();
         hashMap.put("sender", sender);
         hashMap.put("receiver", receiver);
         hashMap.put("message", message);
         hashMap.put("isSeen", false);
+        hashMap.put("messageTimestamp", ts);
 
         reference.child("Chats").push().setValue(hashMap);
 

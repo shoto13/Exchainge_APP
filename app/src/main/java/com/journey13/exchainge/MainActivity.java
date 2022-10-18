@@ -123,13 +123,11 @@ public class MainActivity extends AppCompatActivity {
                                     .placeholder(R.drawable.andromeda_galaxy)
                                     .fitCenter())
                             .into(profilePic);
-
                 }
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-
             }
         });
 

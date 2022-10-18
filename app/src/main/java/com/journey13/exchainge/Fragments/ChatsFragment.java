@@ -74,15 +74,12 @@ public class ChatsFragment extends Fragment {
                     Chatlist chatlist = snapshot.getValue(Chatlist.class);
                     usersList.add(chatlist);
                 }
-
                 // set the default conversations background display to show there are no messages yet
                 if (usersList.isEmpty()) {
                     noMessagesText.setVisibility(View.VISIBLE);
                     noMessagesImage.setVisibility(View.VISIBLE);
                 }
-
                 chatList();
-
             }
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
@@ -114,6 +111,7 @@ public class ChatsFragment extends Fragment {
                         }
                     }
                 }
+
                 userAdapter = new UserAdapter(getContext(), mUsers, true, true);
                 recyclerView.setAdapter(userAdapter);
             }

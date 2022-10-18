@@ -55,7 +55,6 @@ public class contactsSearch extends AppCompatActivity {
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
                 //DO NOTHING BEFORE
             }
-
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
                 userLookup(charSequence.toString().toLowerCase());
