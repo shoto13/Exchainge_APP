@@ -36,6 +36,7 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
     private boolean ischat;
     private boolean isContact;
     private String lastMessage;
+    private String lastMessageTime;
 
     public UserAdapter(Context mContext, List<User> mUsers, boolean ischat, boolean isContact) {
         this.mUsers = mUsers;
@@ -44,7 +45,6 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
         this.isContact = isContact;
 
     }
-
 
     @NonNull
     @Override
@@ -128,6 +128,7 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
     //Get most recent message
     private void lastMessage(String userid, TextView last_message) {
         lastMessage = "default";
+        lastMessageTime = "hh:mm dd/mm/yy";
         FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
         DatabaseReference reference = FirebaseDatabase.getInstance("https://exchainge-db047-default-rtdb.europe-west1.firebasedatabase.app/").getReference("Chats");
 
@@ -136,7 +137,7 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                     Chat chat = snapshot.getValue(Chat.class);
-
+                    System.out.println(chat.getMessage());
                     if (chat.getReceiver().equals(firebaseUser.getUid()) && chat.getSender().equals(userid)
                             || chat.getReceiver().equals(userid) && chat.getSender().equals(firebaseUser.getUid())) {
                         lastMessage = chat.getMessage();
@@ -152,7 +153,6 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
                         last_message.setText(lastMessage);
                         break;
                 }
-
                 lastMessage = "default";
             }
 
@@ -163,7 +163,6 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
         });
 
     }
-
 
     // CREATE FUNCTION TO ADD USER WHEN BUTTON PRESSED
     private void addUser () {
