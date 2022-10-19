@@ -272,7 +272,6 @@ public class MessageActivity extends AppCompatActivity {
                                         }
                                     }
                                 }
-
                                 @Override
                                 public void onFailure(Call<Response> call, Throwable t) {
 

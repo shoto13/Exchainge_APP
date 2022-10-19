@@ -146,7 +146,6 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
                             || chat.getReceiver().equals(userid) && chat.getSender().equals(firebaseUser.getUid())) {
                         lastMessage = chat.getMessage();
                         lastMessageTime = chat.getMessageTimestamp();
-
                     }
                 }
 
@@ -167,7 +166,6 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
                         break;
 
                     default:
-
                         message_timestamp.setText(lastMessageTime);
                         break;
                 }
