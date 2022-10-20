@@ -126,44 +126,6 @@ public class UsersFragment extends Fragment {
         });
     }
 
-    //FIREBASE USER READ FROM DB
-    private void readUsers() {
-
-        FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
-        DatabaseReference reference = FirebaseDatabase.getInstance("https://exchainge-db047-default-rtdb.europe-west1.firebasedatabase.app/").getReference("Users");
-
-        reference.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-
-                if (search_users.getText().toString().equals("")) {
-
-                    mUsers.clear();
-                    for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                        User user = snapshot.getValue(User.class);
-
-                        String userinfo = user.getUsername();
-                        System.out.println("The users username is: " + userinfo);
-
-                        assert user != null;
-                        assert firebaseUser != null;
-                        if (!user.getId().equals(firebaseUser.getUid())) {
-                            mUsers.add(user);
-                        }
-                    }
-
-                    userAdapter = new UserAdapter(getContext(), mUsers, false, true);
-                    recyclerView.setAdapter(userAdapter);
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
-    }
-
     //FIREBASE CONTACT READ FROM DB
     private void readContacts(List<String> contactsList) {
 
@@ -189,16 +151,12 @@ public class UsersFragment extends Fragment {
                             }
                         }
                     }
-
                     userAdapter = new UserAdapter(getContext(), mContacts, false, true);
                     contactsRecyclerView.setAdapter(userAdapter);
                 }
             }
-
             @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
+            public void onCancelled(@NonNull DatabaseError databaseError) {}
         });
 
     }
