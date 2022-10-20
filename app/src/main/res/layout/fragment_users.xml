@@ -5,17 +5,6 @@
     android:layout_height="match_parent"
     tools:context=".Fragments.UsersFragment">
 
-    <Button
-        android:id="@+id/find_contacts_button"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="20dp"
-        android:layout_marginTop="20dp"
-        android:layout_marginEnd="20dp"
-        android:layout_marginBottom="20dp"
-        android:padding="10dp"
-        android:text="Find new contacts" />
-
     <EditText
         android:id="@+id/search_users"
         android:layout_width="match_parent"
@@ -24,15 +13,26 @@
         android:layout_marginTop="5dp"
         android:layout_marginEnd="5dp"
         android:layout_marginBottom="5dp"
-        android:layout_below="@id/find_contacts_button"
         android:hint="Search.." />
-
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recycler_view_contacts"
         android:layout_width="match_parent"
-        android:layout_height="250dp"
+        android:layout_height="match_parent"
+        android:layout_marginBottom="80dp"
         android:layout_below="@+id/search_users" />
+
+    <Button
+        android:id="@+id/find_contacts_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_marginStart="40dp"
+        android:layout_marginEnd="40dp"
+        android:layout_marginBottom="20dp"
+        android:padding="10dp"
+        android:text="Find new contacts" />
+
 
 
 </RelativeLayout>

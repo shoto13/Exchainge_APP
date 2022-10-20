@@ -7,9 +7,12 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.provider.ContactsContract;
+import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.PopupMenu;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -38,6 +41,7 @@ import com.journey13.exchainge.Notifications.Token;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
@@ -51,15 +55,15 @@ import java.sql.Timestamp;
 public class MessageActivity extends AppCompatActivity {
 
     private CircleImageView profile_image;
-    private TextView username, tagline;
-    private  FirebaseUser fuser;
+    private TextView username, tagline, addContactText;
+    private FirebaseUser fuser;
     private DatabaseReference reference;
-    private ImageButton btn_send;
+    private ImageButton btn_send, decline_contact_button;
     private EditText text_send;
     private MessageAdapter messageAdapter;
     private List<Chat> mChat;
     private RecyclerView recyclerView;
-
+    private Toolbar addContactToolbar;
 
     Intent intent;
 
@@ -100,6 +104,9 @@ public class MessageActivity extends AppCompatActivity {
         tagline = findViewById(R.id.taglineText);
         btn_send = findViewById(R.id.btn_send);
         text_send = findViewById(R.id.text_send);
+        addContactToolbar = findViewById(R.id.add_contact_toolbar);
+        addContactText = findViewById(R.id.add_contact_text);
+        decline_contact_button = findViewById(R.id.decline_contact_button);
 
         intent = getIntent();
         String userid = intent.getStringExtra("userid");
@@ -144,6 +151,8 @@ public class MessageActivity extends AppCompatActivity {
         });
 
         seenMessage(userid);
+        isContact(userid);
+
     }
 
     private void seenMessage(String userid) {
@@ -209,7 +218,6 @@ public class MessageActivity extends AppCompatActivity {
                 .child(userid)
                 .child(fuser.getUid());
 
-
         // SETUP new chat instance if one does not exist for this receiver
         chatRef2.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -218,11 +226,8 @@ public class MessageActivity extends AppCompatActivity {
                     chatRef2.child("id").setValue(fuser.getUid());
                 }
             }
-
             @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
-            }
+            public void onCancelled(@NonNull DatabaseError error) {}
         });
 
 
@@ -238,7 +243,6 @@ public class MessageActivity extends AppCompatActivity {
                 }
                 notify = false;
             }
-
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
 
@@ -273,17 +277,13 @@ public class MessageActivity extends AppCompatActivity {
                                     }
                                 }
                                 @Override
-                                public void onFailure(Call<Response> call, Throwable t) {
-
-                                }
+                                public void onFailure(Call<Response> call, Throwable t) {}
                             });
                 }
             }
 
             @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
-            }
+            public void onCancelled(@NonNull DatabaseError error) {}
         });
     }
 
@@ -330,6 +330,54 @@ public class MessageActivity extends AppCompatActivity {
         hashMap.put("status", status);
 
         reference.updateChildren(hashMap);
+    }
+
+    private void isContact(String userid) {
+        DatabaseReference contactsReference = FirebaseDatabase.getInstance("https://exchainge-db047-default-rtdb.europe-west1.firebasedatabase.app/").getReference("Contacts").child(fuser.getUid());
+        DatabaseReference userIdContactsReference = contactsReference.child("contacts").child(userid);
+
+        ValueEventListener eventListener = new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if(!dataSnapshot.exists()) {
+                    addContactToolbar.setVisibility(View.VISIBLE);
+
+                    addContactText.setOnClickListener((View view) -> {
+                        // Initializing the popup menu and giving the reference as current context
+                        PopupMenu popupMenu = new PopupMenu(MessageActivity.this, addContactToolbar);
+
+                        // Inflating popup menu from popup_menu.xml file
+                        popupMenu.getMenuInflater().inflate(R.menu.add_contact_menu, popupMenu.getMenu());
+                        popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                            @Override
+                            public boolean onMenuItemClick(MenuItem menuItem) {
+                                // Toast message on menu item clicked
+                                Toast.makeText(MessageActivity.this, "User added to contacts", Toast.LENGTH_LONG).show();
+                                contactsReference.child("contacts").child(userid).setValue(userid);
+                                addContactToolbar.setVisibility(View.GONE);
+                                return true;
+                            }
+                        });
+                        // Showing the popup menu
+                        popupMenu.show();
+                    });
+
+                } else {
+                    decline_contact_button.setOnClickListener((View view) -> {
+                        // Press the cross button in  the toolbar to hide the add contact banner
+                        addContactToolbar.setVisibility(View.GONE);
+                    });
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                Log.d("Database error", databaseError.getMessage());
+            }
+        };
+        userIdContactsReference.addListenerForSingleValueEvent(eventListener);
+
+
     }
 
     @Override
