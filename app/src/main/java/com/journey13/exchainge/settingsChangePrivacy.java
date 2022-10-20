@@ -16,8 +16,8 @@ import com.google.firebase.database.DatabaseReference;
 
 public class settingsChangePrivacy extends AppCompatActivity {
 
-    ListView privacyList;
-    ListView securityList;
+    ListView privacySettingsList;
+    ListView securitySettingsList;
     ListView contactsSettingsList;
 
     //Connect to database
@@ -31,22 +31,22 @@ public class settingsChangePrivacy extends AppCompatActivity {
     //SECURITY
     String[] securityItemHeads = {"Passcode Lock", "Two-Step Verification"};
     //PRIVACY
-    String[] privacyItemHeads = {"Search For Me", "Searchable by username", "Searchable by email"};
+    String[] privacyItemHeads = {"Search for Me", "Searchable by Username", "Searchable by Email"};
     //BLOCKED USERS
-    String[] contactsHead = {"Blocked users"};
+    String[] contactsHead = {"Blocked Users"};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings_change_privacy);
 
-        securityList = (ListView)findViewById(R.id.listSecurity);
+        securitySettingsList = (ListView)findViewById(R.id.listSecurity);
         ArrayAdapter<String> securityArrayAdapter = new ArrayAdapter<String>(this, R.layout.listview_layout_toggle, R.id.listItemText, securityItemHeads);
-        securityList.setAdapter(securityArrayAdapter);
+        securitySettingsList.setAdapter(securityArrayAdapter);
 
-        privacyList = (ListView)findViewById(R.id.listPrivacy);
+        privacySettingsList = (ListView)findViewById(R.id.listPrivacy);
         ArrayAdapter<String> privacyArrayAdapter = new ArrayAdapter<String>(this, R.layout.listview_layout_toggle, R.id.listItemText, privacyItemHeads);
-        privacyList.setAdapter(privacyArrayAdapter);
+        privacySettingsList.setAdapter(privacyArrayAdapter);
 
 
         contactsSettingsList = (ListView)findViewById(R.id.listContacts);
@@ -63,7 +63,6 @@ public class settingsChangePrivacy extends AppCompatActivity {
             }
         });
 
-
-
+        //TODO make onclicklisteners for both privacy settings and security settings as above.
     }
 }

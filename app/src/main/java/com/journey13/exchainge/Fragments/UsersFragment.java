@@ -61,10 +61,10 @@ public class UsersFragment extends Fragment {
             }
         });
 
-        //SET UP THE USERS DISPLAY RECYCLER
-        //recyclerView = view.findViewById(R.id.recycler_view);
-        //recyclerView.setHasFixedSize(true);
-        //recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+//        //SET UP THE USERS DISPLAY RECYCLER
+//        recyclerView = view.findViewById(R.id.recycler_view);
+//        recyclerView.setHasFixedSize(true);
+//        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
         //SET UP THE CONTACTS DISPLAY RECYCLER
         contactsRecyclerView = view.findViewById(R.id.recycler_view_contacts);
@@ -73,6 +73,7 @@ public class UsersFragment extends Fragment {
 
         //mUsers = new ArrayList<>();
         mContacts = new ArrayList<>();
+        mUsers = new ArrayList<>();
         //readUsers();
         getContactsTest();
 
