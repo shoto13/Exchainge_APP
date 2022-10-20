@@ -62,18 +62,18 @@ public class UsersFragment extends Fragment {
         });
 
         //SET UP THE USERS DISPLAY RECYCLER
-        recyclerView = view.findViewById(R.id.recycler_view);
-        recyclerView.setHasFixedSize(true);
-        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        //recyclerView = view.findViewById(R.id.recycler_view);
+        //recyclerView.setHasFixedSize(true);
+        //recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
         //SET UP THE CONTACTS DISPLAY RECYCLER
         contactsRecyclerView = view.findViewById(R.id.recycler_view_contacts);
         contactsRecyclerView.setHasFixedSize(true);
         contactsRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
-        mUsers = new ArrayList<>();
+        //mUsers = new ArrayList<>();
         mContacts = new ArrayList<>();
-        readUsers();
+        //readUsers();
         getContactsTest();
 
         search_users = view.findViewById(R.id.search_users);
@@ -184,8 +184,7 @@ public class UsersFragment extends Fragment {
                         assert firebaseUser != null;
                         if (!user.getId().equals(firebaseUser.getUid())) {
                             if (contactsList.contains(user.getId())) {
-                                System.out.println("Success we found a fucking contact! With id:");
-                                System.out.println(user.getId());
+                                System.out.println("Success we found a contact!");
                                 mContacts.add(user);
                             }
                         }

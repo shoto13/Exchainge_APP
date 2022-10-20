@@ -139,7 +139,6 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
             last_message = itemView.findViewById(R.id.last_message);
             message_timestamp = itemView.findViewById(R.id.message_time);
             add_contact_button = itemView.findViewById(R.id.add_contact_button);
-
         }
     }
 
@@ -183,8 +182,6 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
                         break;
                 }
 //                lastMessage = "default";
-
-
             }
 
             @Override
@@ -204,7 +201,6 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
         hashMap.put(userid, userid);
 
         reference.child("contacts").child(userid).setValue(userid);
-
 
 
     }
