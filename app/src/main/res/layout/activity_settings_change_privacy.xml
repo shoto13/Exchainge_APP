@@ -17,22 +17,64 @@
         app:cardElevation="5dp"
         app:cardBackgroundColor="?attr/greyBlockTwo">
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:padding="10dp"
-            android:text="Security"
-            android:textColor="?attr/greyBlockOne"
-            android:textSize="20sp" />
-
-        <ListView
-            android:id="@+id/listSecurity"
+        <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="50dp"
-            android:layout_marginBottom="20dp">
+            android:layout_height="match_parent">
 
-        </ListView>
+            <TextView
+                android:id="@+id/security_header"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="10dp"
+                android:text="Security"
+                android:textColor="?attr/greyBlockOne"
+                android:textSize="20sp" />
+
+            <TextView
+                android:id="@+id/passcode_lock_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/security_header"
+                android:layout_marginTop="4dp"
+                android:layout_marginStart="10dp"
+                android:textSize="14sp"
+                android:textColor="?attr/colorPrimary"
+                android:text="Passcode lock"
+                />
+
+            <androidx.appcompat.widget.SwitchCompat
+                android:id="@+id/passcode_lock_switch"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/security_header"
+                android:layout_alignParentEnd="true"
+                android:layout_marginRight="10dp"
+                />
+
+            <TextView
+                android:id="@+id/verification_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/passcode_lock_text"
+                android:layout_marginTop="8dp"
+                android:layout_marginStart="10dp"
+                android:layout_marginBottom="14dp"
+                android:textSize="14sp"
+                android:textColor="?attr/colorPrimary"
+                android:text="Two-step verification"
+                />
+
+            <androidx.appcompat.widget.SwitchCompat
+                android:id="@+id/twostep_verification_switch"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/passcode_lock_switch"
+                android:layout_alignParentEnd="true"
+                android:layout_marginRight="10dp"
+                />
+
+        </RelativeLayout>
+
 
     </androidx.cardview.widget.CardView>
 
@@ -49,22 +91,84 @@
         app:cardElevation="5dp"
         app:cardBackgroundColor="?attr/greyBlockTwo">
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:padding="10dp"
-            android:text="Privacy"
-            android:textColor="?attr/greyBlockOne"
-            android:textSize="20sp" />
-
-        <ListView
-            android:id="@+id/listPrivacy"
+        <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="50dp"
-            android:layout_marginBottom="20dp">
+            android:layout_height="match_parent">
 
-        </ListView>
+            <TextView
+                android:id="@+id/privacy_header"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="10dp"
+                android:text="Privacy"
+                android:textColor="?attr/greyBlockOne"
+                android:textSize="20sp" />
+
+            <TextView
+                android:id="@+id/search_for_me_header"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/privacy_header"
+                android:layout_marginTop="4dp"
+                android:layout_marginStart="10dp"
+                android:textSize="14sp"
+                android:textColor="?attr/colorPrimary"
+                android:text="Search for me"
+                />
+
+            <androidx.appcompat.widget.SwitchCompat
+                android:id="@+id/search_for_me_switch"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/privacy_header"
+                android:layout_alignParentEnd="true"
+                android:layout_marginRight="10dp"
+                />
+
+            <TextView
+                android:id="@+id/searchable_username"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/search_for_me_header"
+                android:layout_marginTop="8dp"
+                android:layout_marginStart="10dp"
+                android:textSize="14sp"
+                android:textColor="?attr/colorPrimary"
+                android:text="Searchable by username"
+                />
+
+            <androidx.appcompat.widget.SwitchCompat
+                android:id="@+id/searchable_username_switch"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/search_for_me_switch"
+                android:layout_alignParentEnd="true"
+                android:layout_marginRight="10dp"
+                />
+
+            <TextView
+                android:id="@+id/searchable_email"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/searchable_username"
+                android:layout_marginTop="8dp"
+                android:layout_marginStart="10dp"
+                android:layout_marginBottom="14dp"
+                android:textSize="14sp"
+                android:textColor="?attr/colorPrimary"
+                android:text="Searchable by email"
+                />
+
+            <androidx.appcompat.widget.SwitchCompat
+                android:id="@+id/searchable_email_switch"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/searchable_username_switch"
+                android:layout_alignParentEnd="true"
+                android:layout_marginRight="10dp"
+                />
+
+        </RelativeLayout>
 
     </androidx.cardview.widget.CardView>
 

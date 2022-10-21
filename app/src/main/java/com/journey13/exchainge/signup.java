@@ -97,7 +97,7 @@ public class signup extends AppCompatActivity {
                           Float walletBal,
                           Float wMonthlyEarnings,
                           List<String> contacts,
-                          Boolean searchableByName,
+                          Boolean searchableByUsername,
                           Boolean searchbleByEmail) {
         auth.createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
@@ -123,7 +123,7 @@ public class signup extends AppCompatActivity {
                             hashMap.put("secondName", secondName);
                             hashMap.put("status", "offline");
                             hashMap.put("search", username.toLowerCase());
-                            hashMap.put("searchableByName", searchableByName);
+                            hashMap.put("searchableByUsername", searchableByUsername);
                             hashMap.put("searchableByEmail", searchbleByEmail);
 
                             HashMap<String, Float> walHashMap = new HashMap<>();
