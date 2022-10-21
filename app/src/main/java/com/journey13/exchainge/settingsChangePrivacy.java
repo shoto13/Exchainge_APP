@@ -104,29 +104,35 @@ public class settingsChangePrivacy extends AppCompatActivity {
 
         searchForMeSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                Toast.makeText(settingsChangePrivacy.this, "Search for me switch", Toast.LENGTH_LONG).show();
+                if (isChecked) {
+                    reference.child("searchable").setValue(true);
+                } else {
+                    reference.child("searchableByUsername").setValue(false);
+                    reference.child("searchableByEmail").setValue(false);
+                    reference.child("searchable").setValue(false);
+                    searchableUsernameSwitch.setChecked(false);
+                    searchableEmailSwitch.setChecked(false);
+                }
             }
         });
 
         searchableUsernameSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                //Toast.makeText(settingsChangePrivacy.this, "Search by username toggled", Toast.LENGTH_LONG).show();
                 if (isChecked) {
-                    Toast.makeText(settingsChangePrivacy.this, "The search by username toogle is checked", Toast.LENGTH_SHORT).show();
                     reference.child("searchableByUsername").setValue(true);
                 } else {
-                    Toast.makeText(settingsChangePrivacy.this, "The search by username toggle is un-checked", Toast.LENGTH_SHORT).show();
                     reference.child("searchableByUsername").setValue(false);
-
                 }
-
-
             }
         });
 
         searchableEmailSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                Toast.makeText(settingsChangePrivacy.this, "Search by email toggled", Toast.LENGTH_LONG).show();
+                if (isChecked) {
+                    reference.child("searchableByEmail").setValue(true);
+                } else {
+                    reference.child("searchableByEmail").setValue(false);
+                }
             }
         });
     }

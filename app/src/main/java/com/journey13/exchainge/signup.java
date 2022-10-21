@@ -62,6 +62,7 @@ public class signup extends AppCompatActivity {
                 List<String> contactsList = Arrays.asList(contacts);
                 Boolean searchableByName = true;
                 Boolean searchableByEmail = false;
+                Boolean searchable = true;
 
 
                 //CHECK IF FIELDS ARE EMPTY (ADD ADDITIONAL FIELDS)
@@ -80,7 +81,8 @@ public class signup extends AppCompatActivity {
                             wMonthlyEarnings,
                             contactsList,
                             searchableByName,
-                            searchableByEmail);
+                            searchableByEmail,
+                            searchable);
                 }
             }
         });
@@ -98,7 +100,8 @@ public class signup extends AppCompatActivity {
                           Float wMonthlyEarnings,
                           List<String> contacts,
                           Boolean searchableByUsername,
-                          Boolean searchbleByEmail) {
+                          Boolean searchbleByEmail,
+                          Boolean searchable) {
         auth.createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                     @Override
@@ -125,6 +128,7 @@ public class signup extends AppCompatActivity {
                             hashMap.put("search", username.toLowerCase());
                             hashMap.put("searchableByUsername", searchableByUsername);
                             hashMap.put("searchableByEmail", searchbleByEmail);
+                            hashMap.put("searchable", true);
 
                             HashMap<String, Float> walHashMap = new HashMap<>();
                             walHashMap.put("wBalance", walletBal);
