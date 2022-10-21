@@ -108,7 +108,6 @@ public class contactsSearch extends AppCompatActivity {
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
                 if (search_users.getText().toString().equals("")) {
-
                     mUsers.clear();
                     for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                         User user = snapshot.getValue(User.class);

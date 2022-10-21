@@ -59,37 +59,6 @@ public class settingsChangePrivacy extends AppCompatActivity {
             }
         });
 
-        //Click listener for security settings list
-//        securitySettingsList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-//            @Override
-//            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-//
-//                if(position == 0) {
-//                    Toast.makeText(settingsChangePrivacy.this, "tapped the passcode lock checkbox", Toast.LENGTH_LONG).show();
-//                }
-//                else if(position == 1) {
-//                    Toast.makeText(settingsChangePrivacy.this, "tapped the two step verification checkbox", Toast.LENGTH_LONG).show();
-//                }
-//            }
-//        });
-
-
-        // Click listener for privacy settings list
-//        privacySettingsList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-//            @Override
-//            public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
-//
-//                if(position == 0) {
-//
-//                } else if (position == 1) {
-//
-//                } else if (position == 2) {
-//
-//                }
-//
-//            }
-//        });
-
         passcodeLockSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 Toast.makeText(settingsChangePrivacy.this, "Passcode lock toggled", Toast.LENGTH_LONG).show();
