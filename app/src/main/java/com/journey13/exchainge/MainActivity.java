@@ -245,7 +245,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // The action bar home/up action should open or close the drawer.
@@ -272,43 +271,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-
-//    class ViewPagerAdapter extends FragmentPagerAdapter {
-//
-//        private ArrayList<Fragment> fragments;
-//        private ArrayList<String> titles;
-//
-//        ViewPagerAdapter(FragmentManager fm){
-//            super(fm);
-//            this.fragments = new ArrayList<>();
-//            this.titles = new ArrayList<>();
-//        }
-//
-//        @Override
-//        public Fragment getItem(int position) {
-//            return fragments.get(position);
-//        }
-//
-//        @Override
-//        public int getCount() {
-//            return fragments.size();
-//        }
-//
-//        public void addFragment(Fragment fragment, String title) {
-//            fragments.add(fragment);
-//            titles.add(title);
-//        }
-//
-//        //
-//
-//
-//        @Nullable
-//        @Override
-//        public CharSequence getPageTitle(int position) {
-//            return titles.get(position);
-//        }
-//    }
-
     private void status(String status) {
         reference = FirebaseDatabase.getInstance().getReference("Users").child(firebaseUser.getUid());
 
@@ -331,11 +293,9 @@ public class MainActivity extends AppCompatActivity {
     }
 }
 
-
 //TODO:: CREATE A LIST VIEW IN SETTINGS IN ORDER TO LIST OUT OPTIONS (SEE TELEGRAM)
 //TODO:: SEE IF i CAN FIX THE GLIDE IMAGEVIEW
 //TODO:: UPDATE STYLE TO DARK STYLE
 //TODO:: UPDATE LOGIN AND SIGNUP PAGE TO BE THE SAME
 
-//TODO:: CREATE A TAB VIEWER AND SWITCH MENU STYLE OVER -- DONE, FIX (ADD BURGER ICON)
 //TODO:: CREATE FUNCTIONING SEARCH SYSTEM TO LOOK UP AND CONVERSE WITH USERS (SO ONLY THE RIGHT PEOPLE SHOW UP IN USERS)
