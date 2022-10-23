@@ -4,12 +4,15 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Message;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.PopupMenu;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -63,12 +66,15 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         final User user = mUsers.get(position);
         holder.username.setText(user.getUsername());
+
+        //  GET USER PROFILE PIC OR USE DEFAULT
         if (user.getImageURL().equals("deafault")) {
             holder.profile_image.setImageResource(R.mipmap.ic_launcher);
         } else {
             Glide.with(mContext).load(user.getImageURL()).into(holder.profile_image);
         }
 
+        // CHECK IF THE ADAPTER IS BEING IMPLEMENTED AS A CHAT OR NOT
         if (ischat) {
             lastMessage(user.getId(), holder.last_message, holder.message_timestamp);
         } else {
@@ -76,6 +82,7 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
             holder.message_timestamp.setVisibility(View.GONE);
         }
 
+        // GET ONLINE/OFFLINE STATUS OF USER
         if (ischat){
             if (user.getStatus().equals("online")) {
                 holder.img_on.setVisibility(View.VISIBLE);
@@ -89,6 +96,7 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
             holder.img_off.setVisibility(View.GONE);
         }
 
+        // CHECK IF USER IS A CONTACT OR NOT AND ACT ACCORDINGLY
         if (!isContact){
             holder.add_contact_button.setVisibility(View.VISIBLE);
             holder.itemView.setOnClickListener(new View.OnClickListener() {
@@ -98,7 +106,7 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
                 }
             });
 
-
+        // IF USER IS ALREADY A CONTACT, REMOVE FUNCTIONALITY TO ADD THEM, CREATE CHAT ACTIVITY IF USER IS CLICKED
         } else {
             holder.add_contact_button.setVisibility(View.GONE);
             holder.itemView.setOnClickListener(new View.OnClickListener() {
@@ -109,7 +117,40 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
                     mContext.startActivity(intent);
                 }
             });
+
+            // IF USER IS A CONTACT ALREADY ADD CONTACT MENU FUNCTIONALITY
+            holder.user_options_menu_button.setVisibility(View.VISIBLE);
+            System.out.println("IS ANTHING WORKING AT ALL?????");
+
+            holder.user_options_menu_button.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    PopupMenu popup = new PopupMenu(mContext, holder.user_options_menu_button);
+                    popup.inflate(R.menu.user_menu);
+                    System.out.println("WE ARE HERE INSIDE THE ONCLICK METHOD INIT");
+
+                    popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                        @Override
+                        public boolean onMenuItemClick(MenuItem menuItem) {
+                            System.out.println("WE ARE HERE INSIDE THE ONCLICK LISTENER");
+                            switch (menuItem.getItemId()) {
+                                case R.id.delete_conversation:
+                                    Toast.makeText(mContext, "You clicked to delete this conversation", Toast.LENGTH_SHORT).show();
+                                    break;
+                                case R.id.block_contact:
+                                    Toast.makeText(mContext, "You clicked to block this user", Toast.LENGTH_SHORT).show();
+                                    break;
+                            }
+                            return false;
+                        }
+                    });
+
+                    popup.show();
+                }
+            });
+
         }
+
     }
 
     @Override
@@ -126,6 +167,7 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
         private TextView last_message;
         private TextView message_timestamp;
         private Button add_contact_button;
+        private Button user_options_menu_button;
 
 
         public ViewHolder(View itemView) {
@@ -138,6 +180,7 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
             last_message = itemView.findViewById(R.id.last_message);
             message_timestamp = itemView.findViewById(R.id.message_time);
             add_contact_button = itemView.findViewById(R.id.add_contact_button);
+            user_options_menu_button = itemView.findViewById(R.id.user_menu_button);
         }
     }
 

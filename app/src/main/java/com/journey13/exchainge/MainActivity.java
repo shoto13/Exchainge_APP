@@ -223,8 +223,6 @@ public class MainActivity extends AppCompatActivity {
         mDrawer.closeDrawers();
     }
 
-
-
     // SETS UP INITIAL FRAGMENT TO CONVERSATIONS FRAGMENT TODO:: CHECK IF THIS IS ACTUALLY A GOOD WAY OF MANAGING INITIAL FRAGMENT LAUNCHING (IT PROBABLY ISNT)
     public void setInitialFragment () {
 
