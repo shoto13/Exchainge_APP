@@ -12,4 +12,9 @@
         android:title="Block contact"
         app:showAsAction="never" />
 
+    <item
+        android:id="@+id/delete_contact"
+        android:title="Delete contact"
+        app:showAsAction="never" />
+
 </menu>

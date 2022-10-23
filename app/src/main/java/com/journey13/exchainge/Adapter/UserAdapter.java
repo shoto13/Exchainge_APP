@@ -119,13 +119,12 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
             });
 
             // IF USER IS A CONTACT ALREADY ADD CONTACT MENU FUNCTIONALITY
-            holder.user_options_menu_button.setVisibility(View.VISIBLE);
-            System.out.println("IS ANTHING WORKING AT ALL?????");
+            holder.tripledot_user_menu.setVisibility(View.VISIBLE);
 
-            holder.user_options_menu_button.setOnClickListener(new View.OnClickListener() {
+            holder.tripledot_user_menu.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    PopupMenu popup = new PopupMenu(mContext, holder.user_options_menu_button);
+                    PopupMenu popup = new PopupMenu(mContext, holder.tripledot_user_menu);
                     popup.inflate(R.menu.user_menu);
                     System.out.println("WE ARE HERE INSIDE THE ONCLICK METHOD INIT");
 
@@ -166,6 +165,7 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
         private ImageView img_on;
         private TextView last_message;
         private TextView message_timestamp;
+        private TextView tripledot_user_menu;
         private Button add_contact_button;
         private Button user_options_menu_button;
 
@@ -181,6 +181,7 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
             message_timestamp = itemView.findViewById(R.id.message_time);
             add_contact_button = itemView.findViewById(R.id.add_contact_button);
             user_options_menu_button = itemView.findViewById(R.id.user_menu_button);
+            tripledot_user_menu = itemView.findViewById(R.id.tripledot_user_menu);
         }
     }
 
