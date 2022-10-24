@@ -143,7 +143,6 @@ public class MessageActivity extends AppCompatActivity {
                 }
                 readMessages(fuser.getUid(), userid, user.getImageURL());
             }
-
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
 

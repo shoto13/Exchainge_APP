@@ -41,6 +41,7 @@ import com.google.firebase.storage.UploadTask;
 import com.journey13.exchainge.Model.User;
 import com.journey13.exchainge.MyListAdapter;
 import com.journey13.exchainge.R;
+import com.journey13.exchainge.settingsChangeNotifications;
 import com.journey13.exchainge.settingsChangePrivacy;
 import com.journey13.exchainge.settingsChangeTagline;
 import com.journey13.exchainge.settingsChangeUsername;
@@ -84,7 +85,6 @@ public class ProfileFragment extends Fragment {
         optionsList = (ListView)rootView.findViewById(R.id.listSettings);
         optionsList.setAdapter(listAdapter);
 
-
         optionsList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view,int position, long id) {
@@ -102,10 +102,8 @@ public class ProfileFragment extends Fragment {
                     startActivity(intent);
                 }
                 else if(position == 3) {
-                    Toast.makeText(getActivity().getApplicationContext(),"Place Your Forth Option Code",Toast.LENGTH_SHORT).show();
-                }
-                else if(position == 4) {
-                    Toast.makeText(getActivity().getApplicationContext(),"Place Your Fifth Option Code",Toast.LENGTH_SHORT).show();
+                    Intent intent = new Intent(getActivity(), settingsChangeNotifications.class);
+                    startActivity(intent);
                 }
             }
         });

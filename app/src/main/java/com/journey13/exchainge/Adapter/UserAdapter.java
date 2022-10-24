@@ -144,33 +144,30 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
                                     //Remove this user's version of the chatlist
                                     requestingUserReference.removeValue();
 
-//                                    //Find out if the other version of the chat still exists on the other participant's device.
-//                                    DatabaseReference alternativeReference = reference.child(user.getId()).child(fUser.getUid());
-//
-//                                    ValueEventListener eventListener = new ValueEventListener() {
-//                                        @Override
-//                                        public void onDataChange(DataSnapshot dataSnapshot) {
-//                                            if(!dataSnapshot.exists()) {
-//
-//
-//                                            } else {
-//
-//                                            }
-//                                        }
-//
-//                                        @Override
-//                                        public void onCancelled(DatabaseError databaseError) {
-//                                            Log.d("Database error", databaseError.getMessage());
-//                                        }
-//                                    };
-//                                    alternativeReference.addListenerForSingleValueEvent(eventListener);
-//
+                                    //Find out if the other version of the chat still exists on the other participant's device.
+                                    DatabaseReference alternativeReference = reference.child(user.getId()).child(fUser.getUid());
 
+                                    ValueEventListener eventListener = new ValueEventListener() {
+                                        @Override
+                                        public void onDataChange(DataSnapshot dataSnapshot) {
+                                            if(dataSnapshot.exists()) {
+                                                Toast.makeText(mContext, "The conversation still exists with the other participant", Toast.LENGTH_SHORT).show();
+                                            } else {
+                                                Toast.makeText(mContext, "The conversation does not exist with the other participant", Toast.LENGTH_SHORT).show();
+
+                                            }
+                                        }
+
+                                        @Override
+                                        public void onCancelled(DatabaseError databaseError) {
+                                            Log.d("Database error", databaseError.getMessage());
+                                        }
+                                    };
+                                    alternativeReference.addListenerForSingleValueEvent(eventListener);
 
                                     //If the other version does exist then return and do nothing
 
-                                    //If the other version does not exist then delete all the messages which were related to this conversation
-
+                                    //Todo If the other version does not exist then delete all the messages which were related to this conversation
 
                                     break;
                                 case R.id.block_contact:
