@@ -3,6 +3,7 @@ package com.journey13.exchainge.Adapter;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Message;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -67,6 +68,8 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
         final User user = mUsers.get(position);
         holder.username.setText(user.getUsername());
 
+        FirebaseUser fUser = FirebaseAuth.getInstance().getCurrentUser();
+
         //  GET USER PROFILE PIC OR USE DEFAULT
         if (user.getImageURL().equals("deafault")) {
             holder.profile_image.setImageResource(R.mipmap.ic_launcher);
@@ -126,8 +129,6 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
                 public void onClick(View view) {
                     PopupMenu popup = new PopupMenu(mContext, holder.tripledot_user_menu);
                     popup.inflate(R.menu.user_menu);
-                    System.out.println("WE ARE HERE INSIDE THE ONCLICK METHOD INIT");
-
                     popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
                         @Override
                         public boolean onMenuItemClick(MenuItem menuItem) {
@@ -135,6 +136,42 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
                             switch (menuItem.getItemId()) {
                                 case R.id.delete_conversation:
                                     Toast.makeText(mContext, "You clicked to delete this conversation", Toast.LENGTH_SHORT).show();
+
+                                    // Get reference to our Chat lists
+                                    DatabaseReference reference = FirebaseDatabase.getInstance("https://exchainge-db047-default-rtdb.europe-west1.firebasedatabase.app/").getReference("Chatlist");
+                                    // Get reference to the specific conversation
+                                    DatabaseReference requestingUserReference = reference.child(fUser.getUid()).child(user.getId());
+                                    //Remove this user's version of the chatlist
+                                    requestingUserReference.removeValue();
+
+//                                    //Find out if the other version of the chat still exists on the other participant's device.
+//                                    DatabaseReference alternativeReference = reference.child(user.getId()).child(fUser.getUid());
+//
+//                                    ValueEventListener eventListener = new ValueEventListener() {
+//                                        @Override
+//                                        public void onDataChange(DataSnapshot dataSnapshot) {
+//                                            if(!dataSnapshot.exists()) {
+//
+//
+//                                            } else {
+//
+//                                            }
+//                                        }
+//
+//                                        @Override
+//                                        public void onCancelled(DatabaseError databaseError) {
+//                                            Log.d("Database error", databaseError.getMessage());
+//                                        }
+//                                    };
+//                                    alternativeReference.addListenerForSingleValueEvent(eventListener);
+//
+
+
+                                    //If the other version does exist then return and do nothing
+
+                                    //If the other version does not exist then delete all the messages which were related to this conversation
+
+
                                     break;
                                 case R.id.block_contact:
                                     Toast.makeText(mContext, "You clicked to block this user", Toast.LENGTH_SHORT).show();
@@ -143,7 +180,6 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
                             return false;
                         }
                     });
-
                     popup.show();
                 }
             });
