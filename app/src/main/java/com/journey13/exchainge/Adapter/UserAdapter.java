@@ -164,23 +164,43 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
                                     //Todo If the other version does not exist then delete all the messages which were related to this conversation
                                     break;
 
+
                                 case R.id.block_contact:
                                     Toast.makeText(mContext, "You clicked to block this user", Toast.LENGTH_SHORT).show();
 
-                                    //STEP 1 CHECK IF THE USER IS IN CONTACTS & REMOVE IF SO
+                                    DatabaseReference reference2 = FirebaseDatabase.getInstance("https://exchainge-db047-default-rtdb.europe-west1.firebasedatabase.app/")
+                                            .getReference("Contacts")
+                                            .child(fUser.getUid());
 
-                                    //STEP 2 PLACE THE USER IN THE BLOCKED SECTION
+                                    //STEP 1 CHECK IF THE USER IS IN CONTACTS & REMOVE IF SO
+                                    DatabaseReference userIdContactsReference = reference2.child("contacts").child(user.getId());
+                                    ValueEventListener blockedContactEventListener = new ValueEventListener() {
+                                        @Override
+                                        public void onDataChange(DataSnapshot dataSnapshot) {
+                                            if(dataSnapshot.exists()) {
+                                                userIdContactsReference.removeValue();
+                                            } else {
+                                                Toast.makeText(mContext, "The user was not a contact", Toast.LENGTH_SHORT).show();
+                                            }
+                                        }
+                                        @Override
+                                        public void onCancelled(DatabaseError databaseError) {
+                                            Log.d("Database error", databaseError.getMessage());
+                                        }
+                                    };
+                                    userIdContactsReference.addListenerForSingleValueEvent(blockedContactEventListener);
+
+                                    //STEP 2 PLACE THE USER IN THE BLOCKED SECTION IN SETTINGS
+                                    reference2.child("blocked").child(user.getId()).setValue(user.getId());
 
                                     //STEP 3 MAKE IT IMPOSSIBLE FOR USERS TO CONTACT EACHOTHER
 
                                     //STEP 4 ADD THE BLOCKED USER TO THE BLOCKED USER LIST
 
-                                    //STEP 5 MAKE IT POSSIBLE TO REMOVE BLOCKED USER AND RE-ENABLE CONTACT
-                                    DatabaseReference reference2 = FirebaseDatabase.getInstance("https://exchainge-db047-default-rtdb.europe-west1.firebasedatabase.app/")
-                                            .getReference("Contacts")
-                                            .child(fUser.getUid());
+                                    //STEP 5 MAKE IT POSSIBLE TO REMOVE BLOCKED USER AND RE-ENABLE CONTACT WHEN REMOVED
+                                    //
 
-                                    reference2.child("blocked").child(user.getId()).setValue(user.getId());
+
 
                                     break;
                             }

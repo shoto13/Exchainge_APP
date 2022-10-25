@@ -1,14 +1,35 @@
 package com.journey13.exchainge;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Bundle;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+import com.journey13.exchainge.Adapter.MessageAdapter;
+import com.journey13.exchainge.Adapter.UserAdapter;
+import com.journey13.exchainge.Model.User;
+
+import java.util.ArrayList;
+import java.util.List;
+
 public class blockedUsers extends AppCompatActivity {
 
-    ListView blockedUsersList;
+    private ListView blockedUsersList;
+    private FirebaseUser fuser;
+    private DatabaseReference reference, blockedContactsReference;
+    private List<User> mUsers, mblockedUsers;
+    private UserAdapter userAdapter;
+    private RecyclerView recyclerView;
 
     //BLOCKED USERS LIST TO BE POPULATED
     String[] blockedUsers = {"user1", "user2", "user3", "user4", "user5"};
@@ -18,8 +39,73 @@ public class blockedUsers extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_blocked_users);
 
-        blockedUsersList = (ListView)findViewById(R.id.listBlocked);
-        ArrayAdapter<String> blockedAdapter = new ArrayAdapter<String>(this, R.layout.listview_layout_blocked_user, R.id.listItemText, blockedUsers);
-        blockedUsersList.setAdapter(blockedAdapter);
+        mUsers = new ArrayList<>();
+        mblockedUsers = new ArrayList<>();
+        recyclerView = findViewById(R.id.recycler_view);
+
+        fuser = FirebaseAuth.getInstance().getCurrentUser();
+        reference = FirebaseDatabase.getInstance("https://exchainge-db047-default-rtdb.europe-west1.firebasedatabase.app/").getReference("Contacts").child(fuser.getUid());
+
+        blockedContactsReference = reference.child("blocked");
+        List<String> blocked_ids = new ArrayList<String>();
+
+        blockedContactsReference .addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                mUsers.clear();
+
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+
+                    String contact_id = snapshot.getValue().toString();
+
+                    blocked_ids.add(contact_id);
+
+                    System.out.println("HERE IS THE ID OF A BLOCKED USER AND THEIR USERNAME "+ contact_id);
+
+                }
+                readUsers(blocked_ids);
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+
     }
+
+    //TOO FIGURE OUT HOW TO GET THIS TO DISPLAY IN OUR BLOCKED CONTACTS LIST, MUCH IS COPIED FROM USERSFRAGMENT SO IT SHOULD WORK THE SAME BUT DOESNT
+    private void readUsers(List<String> contactsList) {
+
+        FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+        DatabaseReference reference = FirebaseDatabase.getInstance("https://exchainge-db047-default-rtdb.europe-west1.firebasedatabase.app/").getReference("Users");
+
+        reference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                    mblockedUsers.clear();
+                    for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                        User user = snapshot.getValue(User.class);
+
+                        assert user != null;
+                        assert firebaseUser != null;
+                        if (!user.getId().equals(firebaseUser.getUid())) {
+                            if (contactsList.contains(user.getId())) {
+                                mblockedUsers.add(user);
+                            }
+                        }
+                    }
+                    userAdapter = new UserAdapter(blockedUsers.this, mblockedUsers, false, false);
+                    recyclerView.setAdapter(userAdapter);
+
+            }
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {}
+        });
+
+    }
+
+
 }

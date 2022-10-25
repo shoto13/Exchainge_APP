@@ -165,7 +165,6 @@ public class UsersFragment extends Fragment {
     private void getContactsTest() {
 
         fuser = FirebaseAuth.getInstance().getCurrentUser();
-
         DatabaseReference reference = FirebaseDatabase.getInstance("https://exchainge-db047-default-rtdb.europe-west1.firebasedatabase.app/").getReference("Contacts").child(fuser.getUid());
 
         reference.addValueEventListener(new ValueEventListener() {
@@ -187,8 +186,6 @@ public class UsersFragment extends Fragment {
                     }
 
                     for (int i = 0; i < contact_ids_updated.size(); i++) {
-
-                        System.out.println("One of the contacts is: ");
                         System.out.println(contact_ids_updated.get(i));
                     }
 
