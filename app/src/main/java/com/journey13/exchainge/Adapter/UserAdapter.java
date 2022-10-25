@@ -136,12 +136,10 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
                             switch (menuItem.getItemId()) {
                                 case R.id.delete_conversation:
                                     Toast.makeText(mContext, "You clicked to delete this conversation", Toast.LENGTH_SHORT).show();
-
                                     // Get reference to our Chat lists
                                     DatabaseReference reference = FirebaseDatabase.getInstance("https://exchainge-db047-default-rtdb.europe-west1.firebasedatabase.app/").getReference("Chatlist");
-                                    // Get reference to the specific conversation
+                                    // Get reference to the specific conversation and remove
                                     DatabaseReference requestingUserReference = reference.child(fUser.getUid()).child(user.getId());
-                                    //Remove this user's version of the chatlist
                                     requestingUserReference.removeValue();
 
                                     //Find out if the other version of the chat still exists on the other participant's device.
@@ -154,24 +152,36 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
                                                 Toast.makeText(mContext, "The conversation still exists with the other participant", Toast.LENGTH_SHORT).show();
                                             } else {
                                                 Toast.makeText(mContext, "The conversation does not exist with the other participant", Toast.LENGTH_SHORT).show();
-
                                             }
                                         }
-
                                         @Override
                                         public void onCancelled(DatabaseError databaseError) {
                                             Log.d("Database error", databaseError.getMessage());
                                         }
                                     };
                                     alternativeReference.addListenerForSingleValueEvent(eventListener);
-
                                     //If the other version does exist then return and do nothing
-
                                     //Todo If the other version does not exist then delete all the messages which were related to this conversation
-
                                     break;
+
                                 case R.id.block_contact:
                                     Toast.makeText(mContext, "You clicked to block this user", Toast.LENGTH_SHORT).show();
+
+                                    //STEP 1 CHECK IF THE USER IS IN CONTACTS & REMOVE IF SO
+
+                                    //STEP 2 PLACE THE USER IN THE BLOCKED SECTION
+
+                                    //STEP 3 MAKE IT IMPOSSIBLE FOR USERS TO CONTACT EACHOTHER
+
+                                    //STEP 4 ADD THE BLOCKED USER TO THE BLOCKED USER LIST
+
+                                    //STEP 5 MAKE IT POSSIBLE TO REMOVE BLOCKED USER AND RE-ENABLE CONTACT
+                                    DatabaseReference reference2 = FirebaseDatabase.getInstance("https://exchainge-db047-default-rtdb.europe-west1.firebasedatabase.app/")
+                                            .getReference("Contacts")
+                                            .child(fUser.getUid());
+
+                                    reference2.child("blocked").child(user.getId()).setValue(user.getId());
+
                                     break;
                             }
                             return false;
