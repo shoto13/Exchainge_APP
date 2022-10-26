@@ -41,19 +41,19 @@ import java.util.List;
 public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
 
     private Context mContext;
-
     private List<User> mUsers;
     private boolean ischat;
     private boolean isContact;
+    private boolean isBlocked;
     private String lastMessage;
     private String lastMessageTime;
 
-    public UserAdapter(Context mContext, List<User> mUsers, boolean ischat, boolean isContact) {
+    public UserAdapter(Context mContext, List<User> mUsers, boolean ischat, boolean isContact, boolean isBlocked) {
         this.mUsers = mUsers;
         this.mContext = mContext;
         this.ischat = ischat;
         this.isContact = isContact;
-
+        this.isBlocked = isBlocked;
     }
 
     @NonNull
@@ -123,7 +123,6 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
 
             // IF USER IS A CONTACT ALREADY ADD CONTACT MENU FUNCTIONALITY
             holder.tripledot_user_menu.setVisibility(View.VISIBLE);
-
             holder.tripledot_user_menu.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -132,7 +131,6 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
                     popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
                         @Override
                         public boolean onMenuItemClick(MenuItem menuItem) {
-                            System.out.println("WE ARE HERE INSIDE THE ONCLICK LISTENER");
                             switch (menuItem.getItemId()) {
                                 case R.id.delete_conversation:
                                     Toast.makeText(mContext, "You clicked to delete this conversation", Toast.LENGTH_SHORT).show();
@@ -164,44 +162,10 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
                                     //Todo If the other version does not exist then delete all the messages which were related to this conversation
                                     break;
 
-
                                 case R.id.block_contact:
                                     Toast.makeText(mContext, "You clicked to block this user", Toast.LENGTH_SHORT).show();
-
-                                    DatabaseReference reference2 = FirebaseDatabase.getInstance("https://exchainge-db047-default-rtdb.europe-west1.firebasedatabase.app/")
-                                            .getReference("Contacts")
-                                            .child(fUser.getUid());
-
-                                    //STEP 1 CHECK IF THE USER IS IN CONTACTS & REMOVE IF SO
-                                    DatabaseReference userIdContactsReference = reference2.child("contacts").child(user.getId());
-                                    ValueEventListener blockedContactEventListener = new ValueEventListener() {
-                                        @Override
-                                        public void onDataChange(DataSnapshot dataSnapshot) {
-                                            if(dataSnapshot.exists()) {
-                                                userIdContactsReference.removeValue();
-                                            } else {
-                                                Toast.makeText(mContext, "The user was not a contact", Toast.LENGTH_SHORT).show();
-                                            }
-                                        }
-                                        @Override
-                                        public void onCancelled(DatabaseError databaseError) {
-                                            Log.d("Database error", databaseError.getMessage());
-                                        }
-                                    };
-                                    userIdContactsReference.addListenerForSingleValueEvent(blockedContactEventListener);
-
-                                    //STEP 2 PLACE THE USER IN THE BLOCKED SECTION IN SETTINGS
-                                    reference2.child("blocked").child(user.getId()).setValue(user.getId());
-
-                                    //STEP 3 MAKE IT IMPOSSIBLE FOR USERS TO CONTACT EACHOTHER
-
-                                    //STEP 4 ADD THE BLOCKED USER TO THE BLOCKED USER LIST
-
-                                    //STEP 5 MAKE IT POSSIBLE TO REMOVE BLOCKED USER AND RE-ENABLE CONTACT WHEN REMOVED
-                                    //
-
-
-
+                                    //RUN THE BLOCK/UNBLOCK FUNCTION
+                                    block_or_unblock_user(false, fUser, user);
                                     break;
                             }
                             return false;
@@ -211,6 +175,21 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
                 }
             });
 
+        }
+
+        if (isBlocked) {
+            holder.unblock_user_button.setVisibility(View.VISIBLE);
+            holder.add_contact_button.setVisibility(View.GONE);
+            holder.tripledot_user_menu.setVisibility(View.GONE);
+            holder.unblock_user_button.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Toast.makeText(mContext, "The unblock button was pressed", Toast.LENGTH_SHORT).show();
+                    block_or_unblock_user(true, fUser, user);
+                    //removeAt(holder.getAdapterPosition());
+                    //holder.itemView.setVisibility(View.GONE);
+                }
+            });
         }
 
     }
@@ -231,6 +210,7 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
         private TextView tripledot_user_menu;
         private Button add_contact_button;
         private Button user_options_menu_button;
+        private Button unblock_user_button;
 
 
         public ViewHolder(View itemView) {
@@ -245,6 +225,7 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
             add_contact_button = itemView.findViewById(R.id.add_contact_button);
             user_options_menu_button = itemView.findViewById(R.id.user_menu_button);
             tripledot_user_menu = itemView.findViewById(R.id.tripledot_user_menu);
+            unblock_user_button = itemView.findViewById(R.id.unblock_user_button);
         }
     }
 
@@ -311,8 +292,69 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
 
     }
 
-    // CREATE FUNCTION TO ADD USER WHEN BUTTON PRESSED
-    private void addUser () {
+    // FUNCTION TO EITHER BLOCK OR UNBLOCK A USER
+    private void block_or_unblock_user (Boolean isBlocked, FirebaseUser fUser, User user) {
 
+        DatabaseReference reference2 = FirebaseDatabase.getInstance("https://exchainge-db047-default-rtdb.europe-west1.firebasedatabase.app/")
+                .getReference("Contacts")
+                .child(fUser.getUid());
+
+        // IF ISBLOCKED IS FALSE THEN THE CURRENT USER IS TRYING TO BLOCK THIS USER
+        if (!isBlocked) {
+            //STEP 1 CHECK IF THE USER IS IN CONTACTS & REMOVE IF SO
+            DatabaseReference userIdContactsReference = reference2.child("contacts").child(user.getId());
+            ValueEventListener blockedContactEventListener = new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    if (dataSnapshot.exists()) {
+                        userIdContactsReference.removeValue();
+                    } else {
+                        Toast.makeText(mContext, "The user was not a contact", Toast.LENGTH_SHORT).show();
+                    }
+                }
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+                    Log.d("Database error", databaseError.getMessage());
+                }
+            };
+            userIdContactsReference.addListenerForSingleValueEvent(blockedContactEventListener);
+
+            //STEP 2 PLACE THE USER IN THE BLOCKED SECTION IN SETTINGS
+            reference2.child("blocked").child(user.getId()).setValue(user.getId());
+
+            //STEP 3 MAKE IT IMPOSSIBLE FOR USERS TO CONTACT EACHOTHER
+
+            //STEP 4 ADD THE BLOCKED USER TO THE BLOCKED USER LIST
+
+            //STEP 5 MAKE IT POSSIBLE TO REMOVE BLOCKED USER AND RE-ENABLE CONTACT WHEN REMOVED
+            //
+
+        } else {
+            DatabaseReference blockedUserReference = reference2.child("blocked").child(user.getId());
+            ValueEventListener unblockedContactEventListener = new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    if (dataSnapshot.exists()) {
+                        blockedUserReference.removeValue();
+                    }
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+                    Log.d("Database error", databaseError.getMessage());
+                }
+            };
+            blockedUserReference.addListenerForSingleValueEvent(unblockedContactEventListener);
+            //TODO : FIGURE OUT WHY ITEMS ARE NOT CORRECTLY BEING REMOVED FROM THE RECYCLER
+
+        }
+    }
+
+    public void removeAt(int position) {
+        System.out.println("We have reached the removal function now");
+        mUsers.remove(position);
+
+        notifyItemRemoved(position);
+        notifyItemRangeChanged(position, mUsers.size());
     }
 }

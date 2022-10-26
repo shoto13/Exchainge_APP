@@ -10,9 +10,12 @@ public class User {
     private String firstName;
     private String secondName;
     private String tagline;
+    private Boolean searchable;
+    private Boolean searchableByEmail;
+    private Boolean searchableByUsername;
 
 
-    public User(String id, String username, String tagline, String imageURL, String status, String search, String firstName, String secondName) {
+    public User(String id, String username, String tagline, String imageURL, String status, String search, String firstName, String secondName, Boolean searchable, Boolean searchableByEmail, Boolean searchableByUsername) {
         this.id = id;
         this.username = username;
         this.tagline = tagline;
@@ -21,6 +24,9 @@ public class User {
         this.search = search;
         this.firstName = firstName;
         this.secondName = secondName;
+        this.searchable = searchable;
+        this.searchableByEmail = searchableByEmail;
+        this.searchableByUsername = searchableByUsername;
 
     }
 
@@ -92,4 +98,27 @@ public class User {
         this.secondName = secondName;
     }
 
+    public Boolean getSearchable() {
+        return searchable;
+    }
+
+    public void setSearchable(Boolean searchable) {
+        this.searchable = searchable;
+    }
+
+    public Boolean getSearchableByEmail() {
+        return searchableByEmail;
+    }
+
+    public void setSearchableByEmail(Boolean searchableByEmail) {
+        this.searchableByEmail = searchableByEmail;
+    }
+
+    public Boolean getSearchableByUsername() {
+        return searchableByUsername;
+    }
+
+    public void setSearchableByUsername(Boolean searchableByUsername) {
+        this.searchableByUsername = searchableByUsername;
+    }
 }

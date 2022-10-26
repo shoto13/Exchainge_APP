@@ -117,7 +117,7 @@ public class UsersFragment extends Fragment {
                     }
                 }
 
-                userAdapter = new UserAdapter(getContext(), mUsers, false, true);
+                userAdapter = new UserAdapter(getContext(), mUsers, false, true, false);
                 recyclerView.setAdapter(userAdapter);
             }
 
@@ -125,6 +125,42 @@ public class UsersFragment extends Fragment {
             public void onCancelled(@NonNull DatabaseError error) {
             }
         });
+    }
+
+    private void getContactsTest() {
+
+        fuser = FirebaseAuth.getInstance().getCurrentUser();
+        DatabaseReference reference = FirebaseDatabase.getInstance("https://exchainge-db047-default-rtdb.europe-west1.firebasedatabase.app/").getReference("Contacts").child(fuser.getUid());
+
+        reference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+
+                    String contact_ids = snapshot.getValue().toString();
+                    contact_ids = contact_ids.substring(1, contact_ids.length() - 1);
+                    List<String> contact_ids_list = Arrays.asList(contact_ids.split(", "));
+                    List<String> contact_ids_updated = new ArrayList<String>();
+
+                    for (int i = 0; i < contact_ids_list.size(); i++) {
+                        String contact_item = contact_ids_list.get(i);
+                        contact_item = contact_item.split("=")[0];
+                        contact_ids_updated.add(contact_item);
+                    }
+
+                    for (int i = 0; i < contact_ids_updated.size(); i++) {
+                        System.out.println(contact_ids_updated.get(i));
+                    }
+                    readContacts(contact_ids_updated);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
     }
 
     //FIREBASE CONTACT READ FROM DB
@@ -152,7 +188,7 @@ public class UsersFragment extends Fragment {
                             }
                         }
                     }
-                    userAdapter = new UserAdapter(getContext(), mContacts, false, true);
+                    userAdapter = new UserAdapter(getContext(), mContacts, false, true, false);
                     contactsRecyclerView.setAdapter(userAdapter);
                 }
             }
@@ -162,42 +198,5 @@ public class UsersFragment extends Fragment {
 
     }
 
-    private void getContactsTest() {
 
-        fuser = FirebaseAuth.getInstance().getCurrentUser();
-        DatabaseReference reference = FirebaseDatabase.getInstance("https://exchainge-db047-default-rtdb.europe-west1.firebasedatabase.app/").getReference("Contacts").child(fuser.getUid());
-
-        reference.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-
-                    String contact_ids = snapshot.getValue().toString();
-                    contact_ids = contact_ids.substring(1, contact_ids.length() - 1);
-                    List<String> contact_ids_list = Arrays.asList(contact_ids.split(", "));
-                    List<String> contact_ids_updated = new ArrayList<String>();
-
-
-                    for (int i = 0; i < contact_ids_list.size(); i++) {
-
-                        String contact_item = contact_ids_list.get(i);
-                        contact_item = contact_item.split("=")[0];
-                        contact_ids_updated.add(contact_item);
-                    }
-
-                    for (int i = 0; i < contact_ids_updated.size(); i++) {
-                        System.out.println(contact_ids_updated.get(i));
-                    }
-
-                    readContacts(contact_ids_updated);
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
-
-    }
 }
