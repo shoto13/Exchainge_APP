@@ -245,9 +245,6 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
                 SimpleDateFormat sdf = new SimpleDateFormat("HH:mm dd/MM/yy");
                 String ts = sdf.format(calendar.getTime());
 
-                System.out.println("Last message time is: " + lastMessageTime);
-                System.out.println("Current time is: " + ts);
-
                 //SPLIT OUT THE DATE STRINGS SO WE CAN COMPARE THEM
                 //VAl 1 is month (MM)
                 //Val 2 is year (YY)
@@ -280,6 +277,7 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
                 // GET THE DIFFERENCE BETWEEN THE TWO TIMES IN MINUTES
                 int message_current_time_difference = current_mins_total - message_mins_total;
 
+                // IF STATEMENTS BELOW DETERMINE HOW LONG AGO MESSAGES WERE SEND AND THEN FORMATS THE OUTPUT TO THE USER
                 if (ts.equals(lastMessageTime)) {
                     message_timestamp.setText("Now");
                 } else if (message_current_time_difference < 60
@@ -294,11 +292,18 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
                 } else if (current_date_split[1].equals(message_date_split[1])
                         && current_date_split[2].equals(message_date_split[2])
                         && time_day_split_current[1].equals(time_day_split_message[1])) {
-//                    switch (message_current_time_difference):
-//                        case
-
-
-                    message_timestamp.setText("Fuck knows when this message came in");
+                    if (message_current_time_difference >=60 && message_current_time_difference < 120) {
+                        message_timestamp.setText("an hour ago");
+                    } else if (message_current_time_difference >= 120 && message_current_time_difference < 180) {
+                        message_timestamp.setText("2 hours ago");
+                    } else if (message_current_time_difference >= 180 && message_current_time_difference < 240) {
+                        message_timestamp.setText("3 hours ago");
+                    } else {
+                        message_timestamp.setText(message_time_only);
+                    }
+                } else if (current_date_split[2].equals(message_date_split[2])) {
+                    String day_month = time_day_split_current[1] + "/" + current_date_split[1];
+                    message_timestamp.setText(day_month);
                 }
 
                 switch (lastMessage) {
@@ -311,7 +316,6 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
                         break;
                 }
                 lastMessage = "default";
-
             }
 
             @Override
