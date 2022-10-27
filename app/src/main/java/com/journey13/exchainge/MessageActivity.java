@@ -64,12 +64,11 @@ public class MessageActivity extends AppCompatActivity {
     private List<Chat> mChat;
     private RecyclerView recyclerView;
     private Toolbar addContactToolbar;
+    private String userid;
 
     Intent intent;
 
     ValueEventListener seenListener;
-
-    String userid;
 
     APIService apiService;
     boolean notify = false;

@@ -33,6 +33,7 @@ import com.journey13.exchainge.Model.Chat;
 import com.journey13.exchainge.Model.User;
 import com.journey13.exchainge.R;
 
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -108,7 +109,6 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
                     addContact(user.getId());
                 }
             });
-
         // IF USER IS ALREADY A CONTACT, REMOVE FUNCTIONALITY TO ADD THEM, CREATE CHAT ACTIVITY IF USER IS CLICKED
         } else {
             holder.itemView.setOnClickListener(new View.OnClickListener() {
@@ -173,7 +173,6 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
                     popup.show();
                 }
             });
-
         }
 
         if (isBlocked) {
@@ -242,6 +241,66 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
                     }
                 }
 
+                Calendar calendar = Calendar.getInstance();
+                SimpleDateFormat sdf = new SimpleDateFormat("HH:mm dd/MM/yy");
+                String ts = sdf.format(calendar.getTime());
+
+                System.out.println("Last message time is: " + lastMessageTime);
+                System.out.println("Current time is: " + ts);
+
+                //SPLIT OUT THE DATE STRINGS SO WE CAN COMPARE THEM
+                //VAl 1 is month (MM)
+                //Val 2 is year (YY)
+                String[] current_date_split = ts.split("/");
+                String[] message_date_split = lastMessageTime.split("/");
+
+                //VAL 0 is hh:mm
+                //VAL 1 is Day (DD)
+                String[] time_day_split_current = current_date_split[0].split(" ");
+                String[] time_day_split_message = message_date_split[0].split(" ");
+
+                // TIME VALS ONLY hh:mm
+                String current_time_only = time_day_split_current[0];
+                String message_time_only = time_day_split_message[0];
+
+                //SPLIT time strings into minutes and hours
+                String[] minute_time_current = current_time_only.split(":");
+                String[] minute_time_message = message_time_only.split(":");
+
+                //CONVERT MINUTES AND HOURS INTO INTEGERS
+                int current_mins = Integer.parseInt(minute_time_current[1]);
+                int current_hours = Integer.parseInt(minute_time_current[0]);
+
+                int message_mins = Integer.parseInt(minute_time_message[1]);
+                int message_hours = Integer.parseInt(minute_time_message[0]);
+
+                int current_mins_total = current_hours * 60 + current_mins;
+                int message_mins_total = message_hours * 60 + message_mins;
+
+                // GET THE DIFFERENCE BETWEEN THE TWO TIMES IN MINUTES
+                int message_current_time_difference = current_mins_total - message_mins_total;
+
+                if (ts.equals(lastMessageTime)) {
+                    message_timestamp.setText("Now");
+                } else if (message_current_time_difference < 60
+                            && message_current_time_difference > 1
+                            && current_date_split[1].equals(message_date_split[1])
+                            && current_date_split[2].equals(message_date_split[2])
+                            && time_day_split_current[1].equals(time_day_split_message[1])) {
+
+                    String displayString = message_current_time_difference + " minutes ago";
+                    message_timestamp.setText(displayString);
+
+                } else if (current_date_split[1].equals(message_date_split[1])
+                        && current_date_split[2].equals(message_date_split[2])
+                        && time_day_split_current[1].equals(time_day_split_message[1])) {
+//                    switch (message_current_time_difference):
+//                        case
+
+
+                    message_timestamp.setText("Fuck knows when this message came in");
+                }
+
                 switch (lastMessage) {
                     case "default":
                         last_message.setText("~~~");
@@ -253,16 +312,6 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
                 }
                 lastMessage = "default";
 
-                switch (lastMessageTime) {
-                    case "default":
-                        message_timestamp.setText("~~~");
-                        break;
-
-                    default:
-                        message_timestamp.setText(lastMessageTime);
-                        break;
-                }
-//                lastMessage = "default";
             }
 
             @Override
