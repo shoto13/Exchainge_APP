@@ -302,7 +302,7 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
                         message_timestamp.setText(message_time_only);
                     }
                 } else if (current_date_split[2].equals(message_date_split[2])) {
-                    String day_month = time_day_split_current[1] + "/" + current_date_split[1];
+                    String day_month = time_day_split_message[1] + "/" + message_date_split[1];
                     message_timestamp.setText(day_month);
                 }
 
