@@ -100,7 +100,7 @@
         android:layout_marginTop="2dp"
         android:paddingLeft="10dp"
         android:paddingRight="10dp"
-        android:visibility="visible"
+        android:visibility="gone"
         android:textSize="40sp"
         android:text="&#8942;"
         android:textAppearance="?android:textAppearanceLarge" />
