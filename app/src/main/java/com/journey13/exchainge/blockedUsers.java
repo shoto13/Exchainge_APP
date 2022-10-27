@@ -49,6 +49,7 @@ public class blockedUsers extends AppCompatActivity {
     }
 
     // GET the ids of the users on the blocked list
+    //TODO FIGURE OUT WHY THIS CODE WILL NOT UPDATE THE RECYCLER VIEW IN THE BLOCKED SECTION
     private void getBlockedIds() {
         reference = FirebaseDatabase.getInstance("https://exchainge-db047-default-rtdb.europe-west1.firebasedatabase.app/").getReference("Contacts").child(fuser.getUid());
 

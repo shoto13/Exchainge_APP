@@ -78,17 +78,6 @@
         android:layout_marginLeft="30dp"
         android:maxLines="1"/>
 
-    <Button
-        android:id="@+id/add_contact_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentRight="true"
-        android:visibility="gone"
-        android:layout_marginRight="10dp"
-        android:text="Add user"
-        android:layout_centerVertical="true"
-        style="?android:attr/borderlessButtonStyle"
-        />
 
     <Button
         android:id="@+id/unblock_user_button"
@@ -98,18 +87,6 @@
         android:visibility="gone"
         android:layout_marginRight="10dp"
         android:text="Unblock user"
-        android:layout_centerVertical="true"
-        style="?android:attr/borderlessButtonStyle"
-        />
-
-    <Button
-        android:id="@+id/user_menu_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentRight="true"
-        android:visibility="gone"
-        android:layout_marginRight="10dp"
-        android:text="Options"
         android:layout_centerVertical="true"
         style="?android:attr/borderlessButtonStyle"
         />

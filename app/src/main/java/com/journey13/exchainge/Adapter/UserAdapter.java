@@ -77,6 +77,7 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
             Glide.with(mContext).load(user.getImageURL()).into(holder.profile_image);
         }
 
+
         // CHECK IF THE ADAPTER IS BEING IMPLEMENTED AS A CHAT OR NOT
         if (ischat) {
             lastMessage(user.getId(), holder.last_message, holder.message_timestamp);
@@ -101,7 +102,6 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
 
         // CHECK IF USER IS A CONTACT OR NOT AND ACT ACCORDINGLY
         if (!isContact){
-            holder.add_contact_button.setVisibility(View.VISIBLE);
             holder.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -111,7 +111,6 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
 
         // IF USER IS ALREADY A CONTACT, REMOVE FUNCTIONALITY TO ADD THEM, CREATE CHAT ACTIVITY IF USER IS CLICKED
         } else {
-            holder.add_contact_button.setVisibility(View.GONE);
             holder.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -179,7 +178,6 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
 
         if (isBlocked) {
             holder.unblock_user_button.setVisibility(View.VISIBLE);
-            holder.add_contact_button.setVisibility(View.GONE);
             holder.tripledot_user_menu.setVisibility(View.GONE);
             holder.unblock_user_button.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -208,8 +206,6 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
         private TextView last_message;
         private TextView message_timestamp;
         private TextView tripledot_user_menu;
-        private Button add_contact_button;
-        private Button user_options_menu_button;
         private Button unblock_user_button;
 
 
@@ -222,8 +218,6 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
             img_off = itemView.findViewById(R.id.img_offline);
             last_message = itemView.findViewById(R.id.last_message);
             message_timestamp = itemView.findViewById(R.id.message_time);
-            add_contact_button = itemView.findViewById(R.id.add_contact_button);
-            user_options_menu_button = itemView.findViewById(R.id.user_menu_button);
             tripledot_user_menu = itemView.findViewById(R.id.tripledot_user_menu);
             unblock_user_button = itemView.findViewById(R.id.unblock_user_button);
         }
