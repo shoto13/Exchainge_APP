@@ -222,7 +222,8 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
         }
     }
 
-    //Get most recent message
+    //FUNCTION TO GET THE MOST RECENT MESSAGE IN A CONVERSATION AND ALSO GRAB THE TIMESTAMP AND FORMAT
+    // THE TIMESTAMP SO THAT IT CAN EFFECTIVELY DISPLAY WHEN THE CHAT TOOK PLACE
     private void lastMessage(String userid, TextView last_message, TextView message_timestamp) {
         lastMessage = "default";
         lastMessageTime = "hh:mm dd/mm/yy";
@@ -326,6 +327,7 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
 
     }
 
+    //FUNCTION TO ADD A NEW USER
     private void addContact(String userid) {
 
         FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
@@ -397,6 +399,7 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
         }
     }
 
+    // FUNCTION ATTEMPTING TO REMOVE DATA FROM THE RECYCLER LIST
     public void removeAt(int position) {
         System.out.println("We have reached the removal function now");
         mUsers.remove(position);

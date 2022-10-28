@@ -61,28 +61,20 @@ public class UsersFragment extends Fragment {
             }
         });
 
-//        //SET UP THE USERS DISPLAY RECYCLER
-//        recyclerView = view.findViewById(R.id.recycler_view);
-//        recyclerView.setHasFixedSize(true);
-//        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
         //SET UP THE CONTACTS DISPLAY RECYCLER
         contactsRecyclerView = view.findViewById(R.id.recycler_view_contacts);
         contactsRecyclerView.setHasFixedSize(true);
         contactsRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
-        //mUsers = new ArrayList<>();
         mContacts = new ArrayList<>();
         mUsers = new ArrayList<>();
-        //readUsers();
-        getContactsTest();
+        getContacts();
 
         search_users = view.findViewById(R.id.search_users);
         search_users.addTextChangedListener(new TextWatcher() {
             @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
 
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
@@ -90,9 +82,7 @@ public class UsersFragment extends Fragment {
             }
 
             @Override
-            public void afterTextChanged(Editable editable) {
-
-            }
+            public void afterTextChanged(Editable editable) {}
         });
 
         return view;
@@ -127,7 +117,9 @@ public class UsersFragment extends Fragment {
         });
     }
 
-    private void getContactsTest() {
+
+    // RETRIEVE AND FORMAT A LIST OF CONTACTS RELATED TO THE CURRENT USER
+    private void getContacts() {
 
         fuser = FirebaseAuth.getInstance().getCurrentUser();
         DatabaseReference reference = FirebaseDatabase.getInstance("https://exchainge-db047-default-rtdb.europe-west1.firebasedatabase.app/").getReference("Contacts").child(fuser.getUid());
@@ -163,7 +155,7 @@ public class UsersFragment extends Fragment {
 
     }
 
-    //FIREBASE CONTACT READ FROM DB
+    // TAKE CONTACTS LIST AND RETRIEVE RELEVANT USERS FOR DISPLAY
     private void readContacts(List<String> contactsList) {
 
         FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
