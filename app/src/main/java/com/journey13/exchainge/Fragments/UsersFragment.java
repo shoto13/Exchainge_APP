@@ -61,7 +61,6 @@ public class UsersFragment extends Fragment {
             }
         });
 
-
         //SET UP THE CONTACTS DISPLAY RECYCLER
         contactsRecyclerView = view.findViewById(R.id.recycler_view_contacts);
         contactsRecyclerView.setHasFixedSize(true);
@@ -108,7 +107,7 @@ public class UsersFragment extends Fragment {
                 }
 
                 userAdapter = new UserAdapter(getContext(), mUsers, false, true, false);
-                recyclerView.setAdapter(userAdapter);
+                contactsRecyclerView.setAdapter(userAdapter);
             }
 
             @Override
