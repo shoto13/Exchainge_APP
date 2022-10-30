@@ -81,8 +81,14 @@ public class contactsSearch extends AppCompatActivity {
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                     User user = snapshot.getValue(User.class);
 
-                    if(!user.getId().equals(fuser.getUid()) && mUsers.size() < 20) {
-                        mUsers.add(user);
+                    assert user != null;
+                    assert fuser != null;
+                    if(!user.getId().equals(fuser.getUid()) && mUsers.size() < 20 && !s.equals("")) {
+                        if (user.getSearchable()) {
+                            mUsers.add(user);
+                        } else {
+                            System.out.println("The user was not searchable");
+                        }
                     }
                 }
 
