@@ -88,7 +88,7 @@ public class UsersFragment extends Fragment {
         return view;
     }
 
-    // TODO: FIX THIS SO WE EFFICENTLY SEARCH FOR THE USERS IN OUR CONTACTS LIST
+    // TODO: FIX THIS SO WE EFFICIENTLY SEARCH FOR THE USERS IN OUR CONTACTS LIST
     private void searchUsers(String s) {
 
 //        fuser = FirebaseAuth.getInstance().getCurrentUser();
@@ -154,6 +154,7 @@ public class UsersFragment extends Fragment {
                         contact_item = contact_item.split("=")[0];
                         contact_ids_updated.add(contact_item);
                     }
+                    System.out.println("Just CHECKING TO SEE IF THIS SHIT WORKS BECAUSE THIS IS FUCKING ANNOYING " + contact_ids_updated);
                     readContacts(contact_ids_updated);
                 }
             }

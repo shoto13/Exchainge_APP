@@ -338,20 +338,20 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
 
         reference.child("contacts").child(userid).setValue(userid);
 
-
     }
 
     // FUNCTION TO EITHER BLOCK OR UNBLOCK A USER
     private void block_or_unblock_user (Boolean isBlocked, FirebaseUser fUser, User user) {
 
+        DatabaseReference reference = FirebaseDatabase.getInstance("https://exchainge-db047-default-rtdb.europe-west1.firebasedatabase.app/").getReference("Contacts").child(fUser.getUid());
         DatabaseReference reference2 = FirebaseDatabase.getInstance("https://exchainge-db047-default-rtdb.europe-west1.firebasedatabase.app/")
-                .getReference("Contacts")
+                .getReference("Blocked")
                 .child(fUser.getUid());
 
         // IF ISBLOCKED IS FALSE THEN THE CURRENT USER IS TRYING TO BLOCK THIS USER
         if (!isBlocked) {
             //STEP 1 CHECK IF THE USER IS IN CONTACTS & REMOVE IF SO
-            DatabaseReference userIdContactsReference = reference2.child("contacts").child(user.getId());
+            DatabaseReference userIdContactsReference = reference.child("contacts").child(user.getId());
             ValueEventListener blockedContactEventListener = new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
@@ -369,7 +369,7 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
             userIdContactsReference.addListenerForSingleValueEvent(blockedContactEventListener);
 
             //STEP 2 PLACE THE USER IN THE BLOCKED SECTION IN SETTINGS
-            reference2.child("blocked").child(user.getId()).setValue(user.getId());
+            reference2.child("contacts").child(user.getId()).setValue(user.getId());
 
             //STEP 3 MAKE IT IMPOSSIBLE FOR USERS TO CONTACT EACHOTHER
 
@@ -379,7 +379,7 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
             //
 
         } else {
-            DatabaseReference blockedUserReference = reference2.child("blocked").child(user.getId());
+            DatabaseReference blockedUserReference = reference2.child("contacts").child(user.getId());
             ValueEventListener unblockedContactEventListener = new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {

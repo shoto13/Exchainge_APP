@@ -51,9 +51,9 @@ public class blockedUsers extends AppCompatActivity {
     // GET the ids of the users on the blocked list
     //TODO FIGURE OUT WHY THIS CODE WILL NOT UPDATE THE RECYCLER VIEW IN THE BLOCKED SECTION
     private void getBlockedIds() {
-        reference = FirebaseDatabase.getInstance("https://exchainge-db047-default-rtdb.europe-west1.firebasedatabase.app/").getReference("Contacts").child(fuser.getUid());
+        reference = FirebaseDatabase.getInstance("https://exchainge-db047-default-rtdb.europe-west1.firebasedatabase.app/").getReference("Blocked").child(fuser.getUid());
 
-        blockedContactsReference = reference.child("blocked");
+        blockedContactsReference = reference.child("contacts");
         List<String> blocked_ids = new ArrayList<String>();
 
         blockedContactsReference.addValueEventListener(new ValueEventListener() {
@@ -64,7 +64,6 @@ public class blockedUsers extends AppCompatActivity {
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                     String contact_id = snapshot.getValue().toString();
                     blocked_ids.add(contact_id);
-
                     System.out.println("HERE IS THE ID OF A BLOCKED USER "+ contact_id);
                 }
                 System.out.println("WE are here, having completed the for loop before the readusers");
