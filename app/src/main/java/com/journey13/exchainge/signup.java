@@ -58,8 +58,7 @@ public class signup extends AppCompatActivity {
                 String txt_tagline = "I'm now on Exchainge!";
                 Float walletBalance = 0.001f;
                 Float wMonthlyEarnings = 0.000f;
-                String[] contacts = {"user1TEST", "user2TEST", "user3TEST"};
-                List<String> contactsList = Arrays.asList(contacts);
+               // List<String> contactsList = Arrays.asList(contacts);
                 Boolean searchableByName = true;
                 Boolean searchableByEmail = false;
                 Boolean searchable = true;
@@ -79,7 +78,6 @@ public class signup extends AppCompatActivity {
                             txt_tagline,
                             walletBalance,
                             wMonthlyEarnings,
-                            contactsList,
                             searchableByName,
                             searchableByEmail,
                             searchable);
@@ -98,7 +96,6 @@ public class signup extends AppCompatActivity {
                           String tagline,
                           Float walletBal,
                           Float wMonthlyEarnings,
-                          List<String> contacts,
                           Boolean searchableByUsername,
                           Boolean searchbleByEmail,
                           Boolean searchable) {
@@ -135,8 +132,8 @@ public class signup extends AppCompatActivity {
                             walHashMap.put("wMonthlyEarnings", wMonthlyEarnings);
 
 
-                            HashMap<String, List<String>> contactsHashMap = new HashMap<>();
-                            contactsHashMap.put("contacts", contacts);
+//                            HashMap<String, List<String>> contactsHashMap = new HashMap<>();
+//                            contactsHashMap.put("contacts", contacts);
 
 
                             reference.setValue(hashMap).addOnCompleteListener(new OnCompleteListener<Void>() {
@@ -148,14 +145,14 @@ public class signup extends AppCompatActivity {
                                 }
                             });
 
-                            contactsReference.setValue(contactsHashMap).addOnCompleteListener(new OnCompleteListener<Void>() {
-                                @Override
-                                public void onComplete(@NonNull Task<Void> task) {
-                                    if (task.isSuccessful()) {
-                                        //successful user contacts storage
-                                    }
-                                }
-                            });
+//                            contactsReference.setValue(contactsHashMap).addOnCompleteListener(new OnCompleteListener<Void>() {
+//                                @Override
+//                                public void onComplete(@NonNull Task<Void> task) {
+//                                    if (task.isSuccessful()) {
+//                                        //successful user contacts storage
+//                                    }
+//                                }
+//                            });
 
                             walletReference.setValue(walHashMap).addOnCompleteListener(new OnCompleteListener<Void>() {
                                 @Override

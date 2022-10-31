@@ -41,6 +41,7 @@ public class UsersFragment extends Fragment {
     private RecyclerView recyclerView, contactsRecyclerView;
     private UserAdapter userAdapter;
     private List<User> mUsers, mContacts;
+    private List<String> userLookup;
     private Button newContactsButton;
     private EditText search_users;
     private FirebaseUser fuser;
@@ -68,7 +69,9 @@ public class UsersFragment extends Fragment {
 
         mContacts = new ArrayList<>();
         mUsers = new ArrayList<>();
+        userLookup = new ArrayList<String>();
         getContacts();
+        //readUserContacts();
 
         search_users = view.findViewById(R.id.search_users);
         search_users.addTextChangedListener(new TextWatcher() {
@@ -79,41 +82,48 @@ public class UsersFragment extends Fragment {
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
                 searchUsers(charSequence.toString().toLowerCase());
             }
-
             @Override
             public void afterTextChanged(Editable editable) {}
         });
-
         return view;
     }
 
+    // TODO: FIX THIS SO WE EFFICENTLY SEARCH FOR THE USERS IN OUR CONTACTS LIST
     private void searchUsers(String s) {
 
-        fuser = FirebaseAuth.getInstance().getCurrentUser();
-        Query query =  FirebaseDatabase.getInstance("https://exchainge-db047-default-rtdb.europe-west1.firebasedatabase.app/").getReference("Users").orderByChild("search")
-                .startAt(s)
-                .endAt(s+"\uf8ff");
-
-        query.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                mUsers.clear();
-                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                    User user = snapshot.getValue(User.class);
-
-                    if (!user.getId().equals(fuser.getUid())) {
-                        mUsers.add(user);
-                    }
-                }
-
-                userAdapter = new UserAdapter(getContext(), mUsers, false, true, false);
-                contactsRecyclerView.setAdapter(userAdapter);
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-            }
-        });
+//        fuser = FirebaseAuth.getInstance().getCurrentUser();
+////        Query query =  FirebaseDatabase.getInstance("https://exchainge-db047-default-rtdb.europe-west1.firebasedatabase.app/").getReference("Users").orderByChild("search")
+////                .startAt(s)
+////                .endAt(s+"\uf8ff");
+//
+//        DatabaseReference reference = FirebaseDatabase.getInstance("https://exchainge-db047-default-rtdb.europe-west1.firebasedatabase.app/").getReference("Users");
+//
+//        DatabaseReference searchRef = FirebaseDatabase.getInstance("https://exchainge-db047-default-rtdb.europe-west1.firebasedatabase.app/").getReference("Contacts").child(fuser.getUid());
+//        Query query = searchRef.child("contacts").startAt(s).endAt(s+"\uf8ff");
+//
+//        query.addValueEventListener(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+//                mUsers.clear();
+//                userLookup.clear();
+//                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+//                    String snapshotString = snapshot.getValue().toString();
+//                    userLookup.add(snapshotString);
+//
+//                    System.out.println("Here is an id from the lookup" + snapshotString);
+////                    User user = snapshot.getValue(User.class);
+////
+////                    if (!user.getId().equals(fuser.getUid())) {
+////                        mUsers.add(user);
+////                    }
+//                }
+//                userAdapter = new UserAdapter(getContext(), mUsers, false, true, false);
+//                contactsRecyclerView.setAdapter(userAdapter);
+//            }
+//            @Override
+//            public void onCancelled(@NonNull DatabaseError error) {
+//            }
+//        });
     }
 
 
@@ -122,6 +132,8 @@ public class UsersFragment extends Fragment {
 
         fuser = FirebaseAuth.getInstance().getCurrentUser();
         DatabaseReference reference = FirebaseDatabase.getInstance("https://exchainge-db047-default-rtdb.europe-west1.firebasedatabase.app/").getReference("Contacts").child(fuser.getUid());
+
+        List<String> new_contacts = new ArrayList<String>();
 
         reference.addValueEventListener(new ValueEventListener() {
             @Override
@@ -132,26 +144,22 @@ public class UsersFragment extends Fragment {
                     contact_ids = contact_ids.substring(1, contact_ids.length() - 1);
                     List<String> contact_ids_list = Arrays.asList(contact_ids.split(", "));
                     List<String> contact_ids_updated = new ArrayList<String>();
+                    List<String> new_contacts = new ArrayList<String>();
+
+                    String item = snapshot.getValue().toString();
+                    new_contacts.add(item);
 
                     for (int i = 0; i < contact_ids_list.size(); i++) {
                         String contact_item = contact_ids_list.get(i);
                         contact_item = contact_item.split("=")[0];
                         contact_ids_updated.add(contact_item);
                     }
-
-                    for (int i = 0; i < contact_ids_updated.size(); i++) {
-                        System.out.println(contact_ids_updated.get(i));
-                    }
                     readContacts(contact_ids_updated);
                 }
             }
-
             @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
+            public void onCancelled(@NonNull DatabaseError databaseError) {}
         });
-
     }
 
     // TAKE CONTACTS LIST AND RETRIEVE RELEVANT USERS FOR DISPLAY
@@ -188,6 +196,5 @@ public class UsersFragment extends Fragment {
         });
 
     }
-
 
 }
