@@ -20,6 +20,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.journey13.exchainge.Adapter.UserAdapter;
+import com.journey13.exchainge.Fragments.UsersFragment;
 import com.journey13.exchainge.Model.User;
 
 import java.util.ArrayList;
@@ -46,27 +47,34 @@ public class newContactsSearch extends AppCompatActivity {
 
         mUsers = new ArrayList<>();
 
+        //USE THE CLALLBACK LISTENER TO GET THE USERS CONTACTS SO THAT WE CAN REMOVE
+        // THEM FROM THE NEW CONTACT SEARCH
+        getUserContacts(new UsersFragment.MyCallback<ArrayList<String>>() {
+            @Override
+            public void callback(ArrayList<String> data) {
+                System.out.println("got some contacts if that okay with you uwu ");
+                //SEARCH BAR CONFIG
+                search_users = findViewById(R.id.contacts_seachbar);
+                search_users.addTextChangedListener(new TextWatcher() {
+                    @Override
+                    public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                        //DO NOTHING BEFORE
+                    }
+                    @Override
+                    public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                        userLookup(charSequence.toString().toLowerCase(), data);
+                    }
 
-        //SEARCH BAR CONFIG
-        search_users = findViewById(R.id.contacts_seachbar);
-        search_users.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                //DO NOTHING BEFORE
-            }
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                userLookup(charSequence.toString().toLowerCase());
-            }
-
-            @Override
-            public void afterTextChanged(Editable editable) {
-                //DO NOTHING AFTER
+                    @Override
+                    public void afterTextChanged(Editable editable) {
+                        //DO NOTHING AFTER
+                    }
+                });
             }
         });
     }
 
-    private void userLookup(String s) {
+    private void userLookup(String s, ArrayList<String> data) {
         FirebaseUser fuser = FirebaseAuth.getInstance().getCurrentUser();
         Query query = FirebaseDatabase.getInstance("https://exchainge-db047-default-rtdb.europe-west1.firebasedatabase.app/").getReference("Users").orderByChild("search")
                 .startAt(s)
@@ -81,7 +89,9 @@ public class newContactsSearch extends AppCompatActivity {
 
                     assert user != null;
                     assert fuser != null;
-                    if(!user.getId().equals(fuser.getUid()) && mUsers.size() < 20 && !s.equals("")) {
+                    // ONLY ADD USER TO LIST IF IT IS NOT THE CURRENT USER, THE USERS LIST IS NOT ALREADY
+                    // 20 USERS LONG, THE SEARCH BAR IS NOT EMPTY AND THE USER IS NOT ALREADY IN THE CONTACTS LIST
+                    if(!user.getId().equals(fuser.getUid()) && mUsers.size() < 20 && !s.equals("") && !data.contains(user.getId())) {
                         if (user.getSearchable()) {
                             mUsers.add(user);
                         } else {
@@ -101,44 +111,35 @@ public class newContactsSearch extends AppCompatActivity {
         });
     }
 
-    private void readUsers() {
+    public interface MyCallback<T> {
+        void callback(T data);
+    }
 
-        FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
-        DatabaseReference reference = FirebaseDatabase.getInstance("https://exchainge-db047-default-rtdb.europe-west1.firebasedatabase.app/").getReference("Users");
+    // FUNCTION WHICH USES THE CALLBACK INTERFACE TO GET A LIST OF EXISTING CONTACTS
+    // SO THAT THEY ARE REMOVED FROM SEARCH RESULTS
+    private void getUserContacts(@NonNull UsersFragment.MyCallback<ArrayList<String>> ids) {
+        FirebaseUser fuser = FirebaseAuth.getInstance().getCurrentUser();
+        DatabaseReference reference = FirebaseDatabase.getInstance("https://exchainge-db047-default-rtdb.europe-west1.firebasedatabase.app/").getReference("Contacts").child(fuser.getUid());
+        DatabaseReference userRef = reference.child("contacts");
 
-        DatabaseReference contactsReference = FirebaseDatabase.getInstance("https://exchainge-db047-default-rtdb.europe-west1.firebasedatabase.app/")
-                .getReference("Contacts")
-                .child(firebaseUser.getUid());
+        List<String> new_contacts = new ArrayList<String>();
 
-        reference.addValueEventListener(new ValueEventListener() {
+        userRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-
-                if (search_users.getText().toString().equals("")) {
-                    mUsers.clear();
-                    for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                        User user = snapshot.getValue(User.class);
-
-                        String userinfo = user.getUsername();
-
-                        assert user != null;
-                        assert firebaseUser != null;
-                        if (!user.getId().equals(firebaseUser.getUid())) {
-                            mUsers.add(user);
-                        }
-                    }
-                    userAdapter = new UserAdapter(getApplicationContext(), mUsers, false, false, false);
-                    recyclerView.setAdapter(userAdapter);
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                    new_contacts.add(snapshot.getValue().toString());
                 }
+                ids.callback((ArrayList<String>) new_contacts);
             }
 
             @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
+            public void onCancelled(@NonNull DatabaseError error) {
 
             }
         });
-    }
 
+    }
 
 
 }
