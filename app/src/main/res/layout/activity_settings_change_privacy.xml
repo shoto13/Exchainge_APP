@@ -123,6 +123,7 @@
                 android:layout_below="@+id/privacy_header"
                 android:layout_alignParentEnd="true"
                 android:layout_marginRight="10dp"
+                android:checked="true"
                 />
 
             <TextView
@@ -144,6 +145,7 @@
                 android:layout_below="@+id/search_for_me_switch"
                 android:layout_alignParentEnd="true"
                 android:layout_marginRight="10dp"
+                android:checked="true"
                 />
 
             <TextView
