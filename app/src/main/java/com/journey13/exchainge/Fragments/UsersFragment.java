@@ -135,6 +135,7 @@ public class UsersFragment extends Fragment {
 //        });
     }
 
+
     // Function which uses callback to retrieve a list of ids for the users contacts
     private void getUserContacts(@NonNull MyCallback<ArrayList<String>> ids) {
         fuser = FirebaseAuth.getInstance().getCurrentUser();

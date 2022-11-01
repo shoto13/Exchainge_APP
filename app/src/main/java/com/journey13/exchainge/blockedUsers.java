@@ -45,29 +45,33 @@ public class blockedUsers extends AppCompatActivity {
 
         fuser = FirebaseAuth.getInstance().getCurrentUser();
 
-        getBlockedIds();
+        getBlockedIds(new MyCallback<ArrayList<String>>() {
+            @Override
+            public void callback(ArrayList<String> data) {
+                readUsers(data);
+            }
+        });
+    }
+
+    public interface MyCallback<T> {
+        void callback(T data);
     }
 
     // GET the ids of the users on the blocked list
-    //TODO FIGURE OUT WHY THIS CODE WILL NOT UPDATE THE RECYCLER VIEW IN THE BLOCKED SECTION
-    private void getBlockedIds() {
-        reference = FirebaseDatabase.getInstance("https://exchainge-db047-default-rtdb.europe-west1.firebasedatabase.app/").getReference("Blocked").child(fuser.getUid());
+    private void getBlockedIds(@NonNull MyCallback<ArrayList<String>> ids) {
 
+        reference = FirebaseDatabase.getInstance("https://exchainge-db047-default-rtdb.europe-west1.firebasedatabase.app/").getReference("Blocked").child(fuser.getUid());
         blockedContactsReference = reference.child("contacts");
+
         List<String> blocked_ids = new ArrayList<String>();
 
         blockedContactsReference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                mUsers.clear();
-
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                    String contact_id = snapshot.getValue().toString();
-                    blocked_ids.add(contact_id);
-                    System.out.println("HERE IS THE ID OF A BLOCKED USER "+ contact_id);
+                    blocked_ids.add(snapshot.getValue().toString());
                 }
-                System.out.println("WE are here, having completed the for loop before the readusers");
-                readUsers(blocked_ids);
+                ids.callback((ArrayList<String>) blocked_ids);
             }
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
@@ -76,7 +80,7 @@ public class blockedUsers extends AppCompatActivity {
         });
     }
 
-    //TOO FIGURE OUT HOW TO GET THIS TO DISPLAY IN OUR BLOCKED CONTACTS LIST, MUCH IS COPIED FROM USERSFRAGMENT SO IT SHOULD WORK THE SAME BUT DOESNT
+    // READ USERS FROM DATABASE FROM THE BLOCKED IDS PROVIDED
     private void readUsers(List<String> blockedList) {
 
         System.out.println("We are now inside the readusers method./..");

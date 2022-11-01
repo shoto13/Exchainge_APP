@@ -47,9 +47,9 @@ public class newContactsSearch extends AppCompatActivity {
 
         mUsers = new ArrayList<>();
 
-        //USE THE CLALLBACK LISTENER TO GET THE USERS CONTACTS SO THAT WE CAN REMOVE
-        // THEM FROM THE NEW CONTACT SEARCH
-        getUserContacts(new UsersFragment.MyCallback<ArrayList<String>>() {
+        // USE THE CLALLBACK LISTENER AND THE USERID LOOKUP FUNCTION FROM GLOBAL METHODS
+        // TO GET THE USERS CONTACTS SO THAT WE CAN REMOVE THEM FROM THE NEW CONTACT SEARCH
+        GlobalMethods.getUserContacts(new GlobalMethods.MyCallback<ArrayList<String>>() {
             @Override
             public void callback(ArrayList<String> data) {
                 System.out.println("got some contacts if that okay with you uwu ");
@@ -109,36 +109,6 @@ public class newContactsSearch extends AppCompatActivity {
 
             }
         });
-    }
-
-    public interface MyCallback<T> {
-        void callback(T data);
-    }
-
-    // FUNCTION WHICH USES THE CALLBACK INTERFACE TO GET A LIST OF EXISTING CONTACTS
-    // SO THAT THEY ARE REMOVED FROM SEARCH RESULTS
-    private void getUserContacts(@NonNull UsersFragment.MyCallback<ArrayList<String>> ids) {
-        FirebaseUser fuser = FirebaseAuth.getInstance().getCurrentUser();
-        DatabaseReference reference = FirebaseDatabase.getInstance("https://exchainge-db047-default-rtdb.europe-west1.firebasedatabase.app/").getReference("Contacts").child(fuser.getUid());
-        DatabaseReference userRef = reference.child("contacts");
-
-        List<String> new_contacts = new ArrayList<String>();
-
-        userRef.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                    new_contacts.add(snapshot.getValue().toString());
-                }
-                ids.callback((ArrayList<String>) new_contacts);
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
-            }
-        });
-
     }
 
 
