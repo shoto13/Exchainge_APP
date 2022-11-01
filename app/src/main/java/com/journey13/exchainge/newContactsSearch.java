@@ -8,7 +8,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.widget.Button;
 import android.widget.EditText;
 
@@ -26,7 +25,7 @@ import com.journey13.exchainge.Model.User;
 import java.util.ArrayList;
 import java.util.List;
 
-public class contactsSearch extends AppCompatActivity {
+public class newContactsSearch extends AppCompatActivity {
 
     private RecyclerView recyclerView;
     private UserAdapter userAdapter;
@@ -34,7 +33,6 @@ public class contactsSearch extends AppCompatActivity {
     private EditText search_users;
     private static final String TAG = "MyActivity";
     private Button addUserButton;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,6 +45,7 @@ public class contactsSearch extends AppCompatActivity {
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
         mUsers = new ArrayList<>();
+
 
         //SEARCH BAR CONFIG
         search_users = findViewById(R.id.contacts_seachbar);
@@ -65,7 +64,6 @@ public class contactsSearch extends AppCompatActivity {
                 //DO NOTHING AFTER
             }
         });
-
     }
 
     private void userLookup(String s) {
@@ -107,6 +105,10 @@ public class contactsSearch extends AppCompatActivity {
 
         FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
         DatabaseReference reference = FirebaseDatabase.getInstance("https://exchainge-db047-default-rtdb.europe-west1.firebasedatabase.app/").getReference("Users");
+
+        DatabaseReference contactsReference = FirebaseDatabase.getInstance("https://exchainge-db047-default-rtdb.europe-west1.firebasedatabase.app/")
+                .getReference("Contacts")
+                .child(firebaseUser.getUid());
 
         reference.addValueEventListener(new ValueEventListener() {
             @Override

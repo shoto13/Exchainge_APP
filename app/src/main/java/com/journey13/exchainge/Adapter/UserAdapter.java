@@ -78,7 +78,6 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
             Glide.with(mContext).load(user.getImageURL()).into(holder.profile_image);
         }
 
-
         // CHECK IF THE ADAPTER IS BEING IMPLEMENTED AS A CHAT OR NOT
         if (ischat) {
             lastMessage(user.getId(), holder.last_message, holder.message_timestamp);
@@ -106,7 +105,7 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
             holder.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    addContact(user.getId());
+                    addContact(user);
                 }
             });
         // IF USER IS ALREADY A CONTACT, REMOVE FUNCTIONALITY TO ADD THEM, CREATE CHAT ACTIVITY IF USER IS CLICKED
@@ -183,8 +182,6 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
                 public void onClick(View view) {
                     Toast.makeText(mContext, "The unblock button was pressed", Toast.LENGTH_SHORT).show();
                     block_or_unblock_user(true, fUser, user);
-                    //removeAt(holder.getAdapterPosition());
-                    //holder.itemView.setVisibility(View.GONE);
                 }
             });
         }
@@ -320,24 +317,20 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
             }
 
             @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
-            }
+            public void onCancelled(@NonNull DatabaseError error) {}
         });
 
     }
 
     //FUNCTION TO ADD A NEW USER
-    private void addContact(String userid) {
+    private void addContact(User user) {
 
+        String userId = user.getId();
         FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
         DatabaseReference reference = FirebaseDatabase.getInstance("https://exchainge-db047-default-rtdb.europe-west1.firebasedatabase.app/").getReference("Contacts").child(firebaseUser.getUid());
 
-        HashMap<String,Object> hashMap = new HashMap<String ,Object>();
-        hashMap.put(userid, userid);
-
-        reference.child("contacts").child(userid).setValue(userid);
-
+        reference.child("contacts").child(userId).setValue(userId);
+        Toast.makeText(mContext, "The user has been added to your contacts list", Toast.LENGTH_SHORT).show();
     }
 
     // FUNCTION TO EITHER BLOCK OR UNBLOCK A USER
