@@ -26,6 +26,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.journey13.exchainge.Adapter.UserAdapter;
+import com.journey13.exchainge.GlobalMethods;
 import com.journey13.exchainge.Model.User;
 import com.journey13.exchainge.R;
 import com.journey13.exchainge.newContactsSearch;
@@ -86,8 +87,9 @@ public class UsersFragment extends Fragment {
             public void afterTextChanged(Editable editable) {}
         });
 
-        // USE THE CLALLBACK LISTENER TO GET THE USERS CONTACTS
-        getUserContacts(new MyCallback<ArrayList<String>>() {
+        // USE THE CLALLBACK LISTENER AND ID LOOKUP FUNCTION FROM GLOBAL METHODS
+        // TO GET THE USERS CONTACTS SO THAT THEY CAN BE FOUND IN THE USERS DB
+        GlobalMethods.getUserContacts(new GlobalMethods.MyCallback<ArrayList<String>>() {
             @Override
             public void callback(ArrayList<String> data) {
                 readContacts(data);
@@ -135,36 +137,6 @@ public class UsersFragment extends Fragment {
 //        });
     }
 
-
-    // Function which uses callback to retrieve a list of ids for the users contacts
-    private void getUserContacts(@NonNull MyCallback<ArrayList<String>> ids) {
-        fuser = FirebaseAuth.getInstance().getCurrentUser();
-        DatabaseReference reference = FirebaseDatabase.getInstance("https://exchainge-db047-default-rtdb.europe-west1.firebasedatabase.app/").getReference("Contacts").child(fuser.getUid());
-        DatabaseReference userRef = reference.child("contacts");
-
-        List<String> new_contacts = new ArrayList<String>();
-
-        userRef.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                    new_contacts.add(snapshot.getValue().toString());
-                }
-                ids.callback((ArrayList<String>) new_contacts);
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
-            }
-        });
-
-    }
-
-    public interface MyCallback<T> {
-        void callback(T data);
-    }
-
     // TAKE CONTACTS LIST AND RETRIEVE RELEVANT USERS FOR DISPLAY
     private void readContacts(List<String> contactsList) {
 
@@ -200,41 +172,5 @@ public class UsersFragment extends Fragment {
 
     }
 
-    //OLD CONTACT READ FUNC IS HERE
-    // RETRIEVE AND FORMAT A LIST OF CONTACTS RELATED TO THE CURRENT USER
-//    private void getContacts() {
-//
-//        fuser = FirebaseAuth.getInstance().getCurrentUser();
-//        DatabaseReference reference = FirebaseDatabase.getInstance("https://exchainge-db047-default-rtdb.europe-west1.firebasedatabase.app/").getReference("Contacts").child(fuser.getUid());
-//
-//        List<String> new_contacts = new ArrayList<String>();
-//
-//        reference.addValueEventListener(new ValueEventListener() {
-//            @Override
-//            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-//                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-//
-//                    String contact_ids = snapshot.getValue().toString();
-//                    contact_ids = contact_ids.substring(1, contact_ids.length() - 1);
-//                    List<String> contact_ids_list = Arrays.asList(contact_ids.split(", "));
-//                    List<String> contact_ids_updated = new ArrayList<String>();
-//                    List<String> new_contacts = new ArrayList<String>();
-//
-//                    String item = snapshot.getValue().toString();
-//                    new_contacts.add(item);
-//
-//                    for (int i = 0; i < contact_ids_list.size(); i++) {
-//                        String contact_item = contact_ids_list.get(i);
-//                        contact_item = contact_item.split("=")[0];
-//                        contact_ids_updated.add(contact_item);
-//                    }
-//                    System.out.println("Just CHECKING TO SEE IF THIS SHIT WORKS BECAUSE THIS IS FUCKING ANNOYING " + contact_ids_updated);
-//                    readContacts(contact_ids_updated);
-//                }
-//            }
-//            @Override
-//            public void onCancelled(@NonNull DatabaseError databaseError) {}
-//        });
-//    }
 
 }
