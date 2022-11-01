@@ -62,6 +62,7 @@ public class UsersFragment extends Fragment {
                 //TODO figure out how to pass a list of contacts to this intent so that we can not show already added users in the search
                 Intent intent = new Intent(getActivity(), newContactsSearch.class);
                 startActivity(intent);
+
             }
         });
 

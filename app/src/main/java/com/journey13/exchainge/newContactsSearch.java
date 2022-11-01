@@ -52,7 +52,7 @@ public class newContactsSearch extends AppCompatActivity {
         GlobalMethods.getUserContacts(new GlobalMethods.MyCallback<ArrayList<String>>() {
             @Override
             public void callback(ArrayList<String> data) {
-                System.out.println("got some contacts if that okay with you uwu ");
+                System.out.println("got some contacts if that okay with you");
                 //SEARCH BAR CONFIG
                 search_users = findViewById(R.id.contacts_seachbar);
                 search_users.addTextChangedListener(new TextWatcher() {
