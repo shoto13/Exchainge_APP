@@ -95,7 +95,6 @@ public class UsersFragment extends Fragment {
                 readContacts(data);
             }
         });
-
         return view;
     }
 

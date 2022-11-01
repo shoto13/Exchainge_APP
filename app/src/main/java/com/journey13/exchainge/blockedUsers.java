@@ -45,7 +45,7 @@ public class blockedUsers extends AppCompatActivity {
 
         fuser = FirebaseAuth.getInstance().getCurrentUser();
 
-        getBlockedIds(new MyCallback<ArrayList<String>>() {
+        GlobalMethods.getBlockedIds(new GlobalMethods.MyCallback<ArrayList<String>>() {
             @Override
             public void callback(ArrayList<String> data) {
                 readUsers(data);
@@ -81,7 +81,7 @@ public class blockedUsers extends AppCompatActivity {
     }
 
     // READ USERS FROM DATABASE FROM THE BLOCKED IDS PROVIDED
-    private void readUsers(List<String> blockedList) {
+    private void readUsers(ArrayList<String> blockedList) {
 
         System.out.println("We are now inside the readusers method./..");
 

@@ -35,7 +35,6 @@ public class GlobalMethods {
                 }
                 ids.callback((ArrayList<String>) new_contacts);
             }
-
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
 
@@ -43,4 +42,29 @@ public class GlobalMethods {
         });
 
     }
+
+    public static void getBlockedIds(@NonNull MyCallback<ArrayList<String>> ids) {
+        FirebaseUser fuser = FirebaseAuth.getInstance().getCurrentUser();
+        DatabaseReference reference = FirebaseDatabase.getInstance("https://exchainge-db047-default-rtdb.europe-west1.firebasedatabase.app/").getReference("Blocked").child(fuser.getUid());
+        DatabaseReference blockedRef = reference.child("contacts");
+
+        List<String> blocked_users = new ArrayList<String>();
+
+        blockedRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                    blocked_users.add(snapshot.getValue().toString());
+                }
+
+                ids.callback((ArrayList<String>) blocked_users);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+    }
+
 }
