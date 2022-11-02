@@ -51,7 +51,6 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import java.sql.Timestamp;
 
-
 public class MessageActivity extends AppCompatActivity {
 
     private CircleImageView profile_image;
@@ -154,7 +153,10 @@ public class MessageActivity extends AppCompatActivity {
     }
 
     private void seenMessage(String userid) {
-        reference = FirebaseDatabase.getInstance("https://exchainge-db047-default-rtdb.europe-west1.firebasedatabase.app/").getReference("Chats");
+
+        String idRef = GlobalMethods.compareIdsToCreateReference(fuser.getUid(), userid);
+
+        reference = FirebaseDatabase.getInstance("https://exchainge-db047-default-rtdb.europe-west1.firebasedatabase.app/").getReference("Chats").child(idRef);
         seenListener = reference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -176,7 +178,13 @@ public class MessageActivity extends AppCompatActivity {
 
     private void sendMessage(String sender, String receiver, String message){
 
-        DatabaseReference reference = FirebaseDatabase.getInstance("https://exchainge-db047-default-rtdb.europe-west1.firebasedatabase.app/").getReference();
+        ////
+        //CHANGE THIS SO THAT IT CREATES THE REFERENCE BASED ON WHICH OF THE TWO USER IDS HAS A LOWER VALUE AT THE START OR SOMETHING SIMILAR
+        //THEN CREATE A REF WITH THIS VALUE SO THAT IT CAN EASILY BE RE-CALCULATED AS NECESSARY
+        ////
+        String chat_db_ref = GlobalMethods.compareIdsToCreateReference(sender, receiver);
+
+        DatabaseReference reference = FirebaseDatabase.getInstance("https://exchainge-db047-default-rtdb.europe-west1.firebasedatabase.app/").getReference("Chats");
         final String userid = intent.getStringExtra("userid");
 
         Calendar calendar = Calendar.getInstance();
@@ -190,7 +198,7 @@ public class MessageActivity extends AppCompatActivity {
         hashMap.put("isSeen", false);
         hashMap.put("messageTimestamp", ts);
 
-        reference.child("Chats").push().setValue(hashMap);
+        reference.child(chat_db_ref).push().setValue(hashMap);
 
         // ADD message to sender (current user) chat list
         DatabaseReference chatRef = FirebaseDatabase.getInstance("https://exchainge-db047-default-rtdb.europe-west1.firebasedatabase.app/").getReference("Chatlist")
@@ -286,15 +294,18 @@ public class MessageActivity extends AppCompatActivity {
     }
 
     private void readMessages(final String myid, final String userid, final String imageurl) {
+
+        String idRef = GlobalMethods.compareIdsToCreateReference(myid, userid);
         mChat = new ArrayList<>();
 
-        reference = FirebaseDatabase.getInstance("https://exchainge-db047-default-rtdb.europe-west1.firebasedatabase.app/").getReference("Chats");
+        reference = FirebaseDatabase.getInstance("https://exchainge-db047-default-rtdb.europe-west1.firebasedatabase.app/").getReference("Chats").child(idRef);
         reference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 mChat.clear();
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                     Chat chat = snapshot.getValue(Chat.class);
+                    System.out.println("Here is the chat item from the snapshot " + chat);
 //                    if (chat.getReceiver() != null  || chat.getSender() != null) {
                     assert chat != null;
                     if (chat.getReceiver() != null && chat.getSender() != null && chat.getReceiver().equals(myid) && chat.getSender().equals(userid) ||

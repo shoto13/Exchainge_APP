@@ -28,6 +28,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.journey13.exchainge.GlobalMethods;
 import com.journey13.exchainge.MessageActivity;
 import com.journey13.exchainge.Model.Chat;
 import com.journey13.exchainge.Model.User;
@@ -222,10 +223,16 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
     //FUNCTION TO GET THE MOST RECENT MESSAGE IN A CONVERSATION AND ALSO GRAB THE TIMESTAMP AND FORMAT
     // THE TIMESTAMP SO THAT IT CAN EFFECTIVELY DISPLAY WHEN THE CHAT TOOK PLACE
     private void lastMessage(String userid, TextView last_message, TextView message_timestamp) {
+
         lastMessage = "default";
-        lastMessageTime = "hh:mm dd/mm/yy";
+        lastMessageTime = "";
         FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
-        DatabaseReference reference = FirebaseDatabase.getInstance("https://exchainge-db047-default-rtdb.europe-west1.firebasedatabase.app/").getReference("Chats");
+
+        String idRef = GlobalMethods.compareIdsToCreateReference(firebaseUser.getUid(), userid);
+
+        System.out.println("the idref in this case is " + idRef);
+
+        DatabaseReference reference = FirebaseDatabase.getInstance("https://exchainge-db047-default-rtdb.europe-west1.firebasedatabase.app/").getReference("Chats").child(idRef);
 
         reference.addValueEventListener(new ValueEventListener() {
             @Override
@@ -235,8 +242,7 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
                     if (chat.getReceiver().equals(firebaseUser.getUid()) && chat.getSender().equals(userid)
                             || chat.getReceiver().equals(userid) && chat.getSender().equals(firebaseUser.getUid())) {
                         lastMessage = chat.getMessage();
-                        lastMessageTime = chat.getMessageTimestamp();
-                    }
+                        lastMessageTime = chat.getMessageTimestamp();}
                 }
 
                 Calendar calendar = Calendar.getInstance();
@@ -258,13 +264,22 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
                 String current_time_only = time_day_split_current[0];
                 String message_time_only = time_day_split_message[0];
 
+                System.out.println("The current time in line 262 is: " + current_time_only);
+                System.out.println("The message time in line 263 is : " + message_time_only);
+
                 //SPLIT time strings into minutes and hours
                 String[] minute_time_current = current_time_only.split(":");
                 String[] minute_time_message = message_time_only.split(":");
 
+                System.out.println("The minute time of the message is as follows: " + minute_time_message);
+                System.out.println("The minute time currently is as follows: " + minute_time_message);
+
                 //CONVERT MINUTES AND HOURS INTO INTEGERS
                 int current_mins = Integer.parseInt(minute_time_current[1]);
                 int current_hours = Integer.parseInt(minute_time_current[0]);
+
+                System.out.println("Current Minutes from the current mins int " + current_mins);
+                System.out.println("Current hours from the current hours int " + current_hours);
 
                 int message_mins = Integer.parseInt(minute_time_message[1]);
                 int message_hours = Integer.parseInt(minute_time_message[0]);
@@ -319,7 +334,6 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
             @Override
             public void onCancelled(@NonNull DatabaseError error) {}
         });
-
     }
 
     //FUNCTION TO ADD A NEW USER
@@ -328,7 +342,6 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
         String userId = user.getId();
         FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
         DatabaseReference reference = FirebaseDatabase.getInstance("https://exchainge-db047-default-rtdb.europe-west1.firebasedatabase.app/").getReference("Contacts").child(firebaseUser.getUid());
-
         reference.child("contacts").child(userId).setValue(userId);
         Toast.makeText(mContext, "The user has been added to your contacts list", Toast.LENGTH_SHORT).show();
     }

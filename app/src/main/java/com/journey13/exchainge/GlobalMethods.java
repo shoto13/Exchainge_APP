@@ -36,11 +36,8 @@ public class GlobalMethods {
                 ids.callback((ArrayList<String>) new_contacts);
             }
             @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
-            }
+            public void onCancelled(@NonNull DatabaseError error) {}
         });
-
     }
 
     public static void getBlockedIds(@NonNull MyCallback<ArrayList<String>> ids) {
@@ -65,6 +62,23 @@ public class GlobalMethods {
 
             }
         });
+    }
+
+    //METHOD WHICH TAKES TWO IDS (THE CURRENT USER AND THE SECONDARY PARTICIPANT IN THE CONVERSATION)
+    // IT COMPARES THESE VALUES TO DETERMINE WHICH VALUE IS GREATER IT THEN CREATES THE REFERENCE
+    // STRING TO THE DATABASE BY CONCATENATING THE TWO VALUES WITH THE HIGHEST ONE FIRST
+    // THIS CREATES A SIMPLE REPRODUCABLE REFERENCING SHCEME SO THAT WE DO NOT NEED TO SEARCH EVERY
+    // MESSAGE IN THE DB FOR THE CURRENT CONVERSATION
+    public static String compareIdsToCreateReference(String currentUser, String secondaryUser) {
+        Integer x = currentUser.compareTo(secondaryUser);
+        String chat_db_ref;
+
+        if (x > 0) {
+            chat_db_ref = currentUser + secondaryUser;
+        } else {
+            chat_db_ref = secondaryUser + currentUser;
+        }
+        return chat_db_ref;
     }
 
 }
