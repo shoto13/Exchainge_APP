@@ -139,7 +139,7 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
                                     DatabaseReference requestingUserReference = reference.child(fUser.getUid()).child(user.getId());
                                     requestingUserReference.removeValue();
 
-                                    //Find out if the other version of the chat still exists on the other participant's device.
+                                    // Find out if the other version of the chat still exists on the other participant's device.
                                     DatabaseReference alternativeReference = reference.child(user.getId()).child(fUser.getUid());
 
                                     ValueEventListener eventListener = new ValueEventListener() {
@@ -166,6 +166,31 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
                                     //RUN THE BLOCK/UNBLOCK FUNCTION
                                     block_or_unblock_user(false, fUser, user);
                                     break;
+
+                                case R.id.delete_contact:
+                                    Toast.makeText(mContext, "You clicked to delete this contact", Toast.LENGTH_SHORT).show();
+                                    //STEP 1 CHECK IF THE USER IS IN CONTACTS & REMOVE IF SO
+                                    DatabaseReference delReference = FirebaseDatabase.getInstance("https://exchainge-db047-default-rtdb.europe-west1.firebasedatabase.app/").getReference("Contacts").child(fUser.getUid());
+
+                                    DatabaseReference userIdContactsReference = delReference.child("contacts").child(user.getId());
+                                    ValueEventListener blockedContactEventListener = new ValueEventListener() {
+                                        @Override
+                                        public void onDataChange(DataSnapshot dataSnapshot) {
+                                            if (dataSnapshot.exists()) {
+                                                userIdContactsReference.removeValue();
+                                            } else {
+                                                Toast.makeText(mContext, "The user was not a contact", Toast.LENGTH_SHORT).show();
+                                            }
+                                        }
+                                        @Override
+                                        public void onCancelled(DatabaseError databaseError) {
+                                            Log.d("Database error", databaseError.getMessage());
+                                        }
+                                    };
+                                    userIdContactsReference.addListenerForSingleValueEvent(blockedContactEventListener);
+
+                                    break;
+
                             }
                             return false;
                         }
@@ -204,7 +229,6 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
         private TextView message_timestamp;
         private TextView tripledot_user_menu;
         private Button unblock_user_button;
-
 
         public ViewHolder(View itemView) {
             super(itemView);
