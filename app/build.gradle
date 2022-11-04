@@ -62,5 +62,8 @@ dependencies {
     implementation 'com.google.firebase:firebase-messaging'
     implementation 'com.google.firebase:firebase-analytics'
 
+    // Signal protocol dependencies
+    implementation 'org.whispersystems:signal-protocol-android:2.8.1'
+
 
 }

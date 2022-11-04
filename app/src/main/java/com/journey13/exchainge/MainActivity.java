@@ -27,6 +27,7 @@ import androidx.viewpager.widget.ViewPager;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.media.Image;
+import android.media.tv.TvInputService;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -54,9 +55,22 @@ import com.journey13.exchainge.Model.Chat;
 import com.journey13.exchainge.Model.User;
 
 import org.w3c.dom.Text;
+import org.whispersystems.libsignal.IdentityKeyPair;
+import org.whispersystems.libsignal.InvalidKeyIdException;
+import org.whispersystems.libsignal.SessionBuilder;
+import org.whispersystems.libsignal.SessionCipher;
+import org.whispersystems.libsignal.protocol.CiphertextMessage;
+import org.whispersystems.libsignal.state.IdentityKeyStore;
+import org.whispersystems.libsignal.state.PreKeyRecord;
+import org.whispersystems.libsignal.state.PreKeyStore;
+import org.whispersystems.libsignal.state.SessionStore;
+import org.whispersystems.libsignal.state.SignedPreKeyRecord;
+import org.whispersystems.libsignal.state.SignedPreKeyStore;
+import org.whispersystems.libsignal.util.KeyHelper;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Objects;
 
 import de.hdodenhof.circleimageview.CircleImageView;
@@ -131,6 +145,9 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+
+
+
         if (navigationView.getHeaderCount() > 0) {
             // avoid NPE by first checking if there is at least one Header View available
             //View headerLayout = navigationView.getHeaderView(0);
@@ -155,7 +172,7 @@ public class MainActivity extends AppCompatActivity {
         mDrawer.setDrawerListener(drawerToggle);
         drawerToggle.syncState();
 
-            }
+    }
 
 
     //Get and sync state for hamburger icon in action bar
@@ -289,6 +306,7 @@ public class MainActivity extends AppCompatActivity {
         super.onPause();
         status("Offline");
     }
+
 }
 
 //TODO:: CREATE A LIST VIEW IN SETTINGS IN ORDER TO LIST OUT OPTIONS (SEE TELEGRAM)
