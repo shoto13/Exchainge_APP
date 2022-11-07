@@ -56,6 +56,7 @@ import com.journey13.exchainge.Model.User;
 
 import org.w3c.dom.Text;
 import org.whispersystems.libsignal.IdentityKeyPair;
+import org.whispersystems.libsignal.InvalidKeyException;
 import org.whispersystems.libsignal.InvalidKeyIdException;
 import org.whispersystems.libsignal.SessionBuilder;
 import org.whispersystems.libsignal.SessionCipher;
@@ -67,11 +68,14 @@ import org.whispersystems.libsignal.state.SessionStore;
 import org.whispersystems.libsignal.state.SignedPreKeyRecord;
 import org.whispersystems.libsignal.state.SignedPreKeyStore;
 import org.whispersystems.libsignal.util.KeyHelper;
+import org.whispersystems.libsignal.util.Medium;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
+import java.util.Random;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -172,8 +176,13 @@ public class MainActivity extends AppCompatActivity {
         mDrawer.setDrawerListener(drawerToggle);
         drawerToggle.syncState();
 
+        try {
+            generateKeys();
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.out.println("There was an exception in the generate keys method, resulting in this system output!!!!!!!!!!!!!!!!!!!!!");
+        }
     }
-
 
     //Get and sync state for hamburger icon in action bar
     @Override
@@ -238,6 +247,8 @@ public class MainActivity extends AppCompatActivity {
         setTitle(menuItem.getTitle());
         // Close the navigation drawer
         mDrawer.closeDrawers();
+
+
     }
 
     // SETS UP INITIAL FRAGMENT TO CONVERSATIONS FRAGMENT TODO:: CHECK IF THIS IS ACTUALLY A GOOD WAY OF MANAGING INITIAL FRAGMENT LAUNCHING (IT PROBABLY ISNT)
@@ -293,6 +304,21 @@ public class MainActivity extends AppCompatActivity {
         hashMap.put("status", status);
 
         reference.updateChildren(hashMap);
+    }
+
+    public static RegistrationKeyModel generateKeys() throws InvalidKeyException, IOException {
+        IdentityKeyPair identityKeyPair = KeyHelper.generateIdentityKeyPair();
+        System.out.println("HERE is the max value variable as stored in medium " + Medium.MAX_VALUE);
+        int registrationId = KeyHelper.generateRegistrationId(false);
+        System.out.println("AND HERE is the registration id we just generateD!!! " + registrationId);
+        SignedPreKeyRecord signedPreKey = KeyHelper.generateSignedPreKey(identityKeyPair, new Random().nextInt(Medium.MAX_VALUE - 1));
+        List<PreKeyRecord> preKeys = KeyHelper.generatePreKeys(new Random().nextInt(Medium.MAX_VALUE - 101), 100);
+        return new RegistrationKeyModel(
+                identityKeyPair,
+                registrationId,
+                preKeys,
+                signedPreKey
+        );
     }
 
     @Override

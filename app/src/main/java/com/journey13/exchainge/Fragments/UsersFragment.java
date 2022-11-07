@@ -32,11 +32,14 @@ import com.journey13.exchainge.R;
 import com.journey13.exchainge.newContactsSearch;
 import com.journey13.exchainge.settingsChangePrivacy;
 
+import org.whispersystems.libsignal.util.Medium;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Random;
 
 public class UsersFragment extends Fragment {
 
@@ -96,6 +99,12 @@ public class UsersFragment extends Fragment {
                 readContacts(data);
             }
         });
+
+
+        int inty = new Random().nextInt(Medium.MAX_VALUE - 1);
+
+        System.out.println("~##~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~The length -1 of the medium max value is " + inty);
+
         return view;
     }
 
