@@ -158,16 +158,13 @@ public class signup extends AppCompatActivity {
                                 @Override
                                 public void onComplete(@NonNull Task<Void> task) {
                                     if (task.isSuccessful()) {
-                                        Intent intent = new Intent(signup.this, MainActivity.class);
+                                        Intent intent = new Intent(signup.this, PreKeyRegisterAndTransmit.class);
                                         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
                                         startActivity(intent);
                                         finish();
                                     }
                                 }
                             });
-
-
-
 
                         } else {
                             Toast.makeText(signup.this, "You cannot register with this email", Toast.LENGTH_SHORT);
@@ -178,7 +175,7 @@ public class signup extends AppCompatActivity {
 
 
     public void go2Home(View view) {
-        Intent intent = new Intent(this, MainActivity.class);
+        Intent intent = new Intent(this, PreKeyRegisterAndTransmit.class);
         startActivity(intent);
     }
 

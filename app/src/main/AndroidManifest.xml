@@ -15,6 +15,13 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Exchainge">
         <activity
+            android:name=".PreKeyRegisterAndTransmit"
+            android:exported="false">
+            <meta-data
+                android:name="android.app.lib_name"
+                android:value="" />
+        </activity>
+        <activity
             android:name=".settingsChangeNotifications"
             android:exported="false">
             <meta-data
@@ -83,8 +90,6 @@
             android:name="android.support.VERSION"
             android:value="26.0.2"
             tools:replace="android:value" />
-
-
     </application>
 
 </manifest>

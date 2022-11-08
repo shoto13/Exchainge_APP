@@ -66,3 +66,5 @@ dependencies {
     implementation 'org.whispersystems:signal-protocol-android:2.8.1'
 
 }
+
+configurations { all { resolutionStrategy { force group: 'com.google.protobuf', name: 'protobuf-javalite', version: '3.10.0' } } }

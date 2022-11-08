@@ -11,8 +11,17 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.journey13.exchainge.Fragments.UsersFragment;
 
+import org.whispersystems.libsignal.IdentityKeyPair;
+import org.whispersystems.libsignal.InvalidKeyException;
+import org.whispersystems.libsignal.state.PreKeyRecord;
+import org.whispersystems.libsignal.state.SignedPreKeyRecord;
+import org.whispersystems.libsignal.util.KeyHelper;
+import org.whispersystems.libsignal.util.Medium;
+
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 public class GlobalMethods {
 
@@ -67,7 +76,7 @@ public class GlobalMethods {
     //METHOD WHICH TAKES TWO IDS (THE CURRENT USER AND THE SECONDARY PARTICIPANT IN THE CONVERSATION)
     // IT COMPARES THESE VALUES TO DETERMINE WHICH VALUE IS GREATER IT THEN CREATES THE REFERENCE
     // STRING TO THE DATABASE BY CONCATENATING THE TWO VALUES WITH THE HIGHEST ONE FIRST
-    // THIS CREATES A SIMPLE REPRODUCABLE REFERENCING SHCEME SO THAT WE DO NOT NEED TO SEARCH EVERY
+    // THIS CREATES A SIMPLE REPRODUCIBLE REFERENCING SCHEME SO THAT WE DO NOT NEED TO SEARCH EVERY
     // MESSAGE IN THE DB FOR THE CURRENT CONVERSATION
     public static String compareIdsToCreateReference(String currentUser, String secondaryUser) {
         Integer x = currentUser.compareTo(secondaryUser);
@@ -80,6 +89,20 @@ public class GlobalMethods {
         }
         return chat_db_ref;
     }
+
+    public static RegistrationKeyModel generateKeys() throws InvalidKeyException, IOException {
+        IdentityKeyPair identityKeyPair = KeyHelper.generateIdentityKeyPair();
+        int registrationId = KeyHelper.generateRegistrationId(false);
+        SignedPreKeyRecord signedPreKey = KeyHelper.generateSignedPreKey(identityKeyPair, new Random().nextInt(Medium.MAX_VALUE - 1));
+        List<PreKeyRecord> preKeys = KeyHelper.generatePreKeys(new Random().nextInt(Medium.MAX_VALUE - 101), 100);
+        return new RegistrationKeyModel(
+                identityKeyPair,
+                registrationId,
+                preKeys,
+                signedPreKey
+        );
+    }
+
 
 
 }

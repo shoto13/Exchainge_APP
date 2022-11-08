@@ -176,12 +176,7 @@ public class MainActivity extends AppCompatActivity {
         mDrawer.setDrawerListener(drawerToggle);
         drawerToggle.syncState();
 
-        try {
-            generateKeys();
-        } catch (Exception e) {
-            e.printStackTrace();
-            System.out.println("There was an exception in the generate keys method, resulting in this system output!!!!!!!!!!!!!!!!!!!!!");
-        }
+
     }
 
     //Get and sync state for hamburger icon in action bar
@@ -306,20 +301,6 @@ public class MainActivity extends AppCompatActivity {
         reference.updateChildren(hashMap);
     }
 
-    public static RegistrationKeyModel generateKeys() throws InvalidKeyException, IOException {
-        IdentityKeyPair identityKeyPair = KeyHelper.generateIdentityKeyPair();
-        System.out.println("HERE is the max value variable as stored in medium " + Medium.MAX_VALUE);
-        int registrationId = KeyHelper.generateRegistrationId(false);
-        System.out.println("AND HERE is the registration id we just generateD!!! " + registrationId);
-        SignedPreKeyRecord signedPreKey = KeyHelper.generateSignedPreKey(identityKeyPair, new Random().nextInt(Medium.MAX_VALUE - 1));
-        List<PreKeyRecord> preKeys = KeyHelper.generatePreKeys(new Random().nextInt(Medium.MAX_VALUE - 101), 100);
-        return new RegistrationKeyModel(
-                identityKeyPair,
-                registrationId,
-                preKeys,
-                signedPreKey
-        );
-    }
 
     @Override
     protected void onResume() {

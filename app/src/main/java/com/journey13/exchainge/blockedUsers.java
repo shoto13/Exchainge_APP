@@ -53,12 +53,8 @@ public class blockedUsers extends AppCompatActivity {
         });
     }
 
-    public interface MyCallback<T> {
-        void callback(T data);
-    }
-
     // GET the ids of the users on the blocked list
-    private void getBlockedIds(@NonNull MyCallback<ArrayList<String>> ids) {
+    private void getBlockedIds(@NonNull GlobalMethods.MyCallback<ArrayList<String>> ids) {
 
         reference = FirebaseDatabase.getInstance("https://exchainge-db047-default-rtdb.europe-west1.firebasedatabase.app/").getReference("Blocked").child(fuser.getUid());
         blockedContactsReference = reference.child("contacts");
@@ -95,9 +91,7 @@ public class blockedUsers extends AppCompatActivity {
                     mblockedUsers.clear();
                     for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                         User user = snapshot.getValue(User.class);
-
                         System.out.println("We are here man " + user.getUsername());
-
                         assert user != null;
                         assert firebaseUser != null;
                         if (blockedList.contains(user.getId())) {
