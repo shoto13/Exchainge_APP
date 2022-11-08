@@ -3,7 +3,9 @@ package com.journey13.exchainge;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -22,6 +24,7 @@ public class PreKeyRegisterAndTransmit extends AppCompatActivity {
     DatabaseReference reference;
     FirebaseUser fuser;
     private RegistrationKeyModel keyGen;
+    SharedPreferences sharedPreferences;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,15 +37,23 @@ public class PreKeyRegisterAndTransmit extends AppCompatActivity {
         try {
             keyGen = GlobalMethods.generateKeys();
             postKeys(fuser.getUid(), keyGen.getIdentityKeyPairString(), keyGen.getPreKeyIds(), keyGen.getRegistrationId(), keyGen.getSignedPreKeyRecordString());
-
         } catch (Exception e) {
             e.printStackTrace();
             System.out.println("There was an exception while attempting to generate keys");
         }
-
     }
 
     private void postKeys(String userid, String identityKeyPairString, String PreKeyIds, int RegistrationId, String SignedPreKeyRecordString) {
+
+        //TODO figure out how to get this working
+        sharedPreferences = getSharedPreferences("STORED_KEY_PREFS", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor= sharedPreferences.edit();
+
+        editor.putString("IdentityKeyPairString", identityKeyPairString);
+        editor.putString("PreKeyIds", PreKeyIds);
+        editor.putInt("RegistrationId", RegistrationId);
+        editor.putString("SignedPreKeyRecordString", SignedPreKeyRecordString);
+        editor.apply();
 
         reference = FirebaseDatabase.getInstance("https://exchainge-db047-default-rtdb.europe-west1.firebasedatabase.app/").getReference("Keys").child(fuser.getUid());
 
