@@ -1,5 +1,7 @@
 package com.journey13.exchainge;
 
+import com.journey13.exchainge.BaseEncryptedEntity;
+
 import org.whispersystems.libsignal.IdentityKeyPair;
 import org.whispersystems.libsignal.InvalidKeyException;
 import org.whispersystems.libsignal.SignalProtocolAddress;
@@ -31,6 +33,7 @@ public class EncryptedLocalUser extends BaseEncryptedEntity {
         this.signedPreKey = new SignedPreKeyRecord(signedPreKey);
     }
 
+
     public static PreKeyRecord toPreKeyRecord(byte[] bytes) throws IOException {
         return new PreKeyRecord(bytes);
     }
@@ -46,5 +49,4 @@ public class EncryptedLocalUser extends BaseEncryptedEntity {
     public SignedPreKeyRecord getSignedPreKey() {
         return signedPreKey;
     }
-
 }

@@ -39,6 +39,11 @@ import com.journey13.exchainge.Notifications.Response;
 import com.journey13.exchainge.Notifications.Sender;
 import com.journey13.exchainge.Notifications.Token;
 
+import org.whispersystems.libsignal.SessionCipher;
+import org.whispersystems.libsignal.SignalProtocolAddress;
+import org.whispersystems.libsignal.state.PreKeyRecord;
+import org.whispersystems.libsignal.state.impl.InMemorySignalProtocolStore;
+
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -90,7 +95,6 @@ public class MessageActivity extends AppCompatActivity {
         });
 
         apiService = Client.getClient("https://fcm.googleapis.com/").create(APIService.class);
-
         recyclerView = findViewById(R.id.recycler_view);
         recyclerView.setHasFixedSize(true);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getApplicationContext());
@@ -324,13 +328,11 @@ public class MessageActivity extends AppCompatActivity {
         });
     }
 
-
     private void currentUser(String userid) {
         SharedPreferences.Editor editor = getSharedPreferences("PREFS", MODE_PRIVATE).edit();
         editor.putString("currentuser", userid);
         editor.apply();
     }
-
 
     private void status(String status) {
         reference = FirebaseDatabase.getInstance().getReference("Users").child(fuser.getUid());
@@ -385,9 +387,21 @@ public class MessageActivity extends AppCompatActivity {
             }
         };
         userIdContactsReference.addListenerForSingleValueEvent(eventListener);
-
-
     }
+
+//    // FIX THIS SESSION INITIALISATION
+//    private void initSession() {
+//        InMemorySignalProtocolStore protocolStore = new InMemorySignalProtocolStore(localUser.getIdentityKeyPair(), localUser.getRegistrationId());
+//
+//        for (PreKeyRecord record : localUser.getPreKeys()) {
+//            protocolStore.storePreKey(record.getId(), record);
+//        }
+//
+//        protocolStore.storeSignedPreKey(localUser.getSignedPreKey().getId(), localUser.getSignedPreKey());
+//        mSessionCipher = new SessionCipher(protocolStore, protocolAddress);
+//    }
+
+
 
     @Override
     protected void onResume() {
