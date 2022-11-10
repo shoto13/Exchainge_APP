@@ -39,9 +39,14 @@ import com.journey13.exchainge.Notifications.Response;
 import com.journey13.exchainge.Notifications.Sender;
 import com.journey13.exchainge.Notifications.Token;
 
+import org.whispersystems.libsignal.SessionBuilder;
 import org.whispersystems.libsignal.SessionCipher;
 import org.whispersystems.libsignal.SignalProtocolAddress;
+import org.whispersystems.libsignal.state.IdentityKeyStore;
 import org.whispersystems.libsignal.state.PreKeyRecord;
+import org.whispersystems.libsignal.state.PreKeyStore;
+import org.whispersystems.libsignal.state.SessionStore;
+import org.whispersystems.libsignal.state.SignedPreKeyStore;
 import org.whispersystems.libsignal.state.impl.InMemorySignalProtocolStore;
 
 import java.text.SimpleDateFormat;
@@ -388,6 +393,7 @@ public class MessageActivity extends AppCompatActivity {
         };
         userIdContactsReference.addListenerForSingleValueEvent(eventListener);
     }
+
 
 //    // FIX THIS SESSION INITIALISATION
 //    private void initSession() {

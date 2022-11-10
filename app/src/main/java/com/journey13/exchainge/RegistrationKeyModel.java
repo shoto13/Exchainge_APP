@@ -50,7 +50,6 @@ public class RegistrationKeyModel {
     }
 
     public String getIdentityKeyPairString() {
-        System.out.println("Oh shit oh fuck here we bloody go again! ");
         return Base64.getEncoder().encodeToString(identityKeyPair.serialize());
     }
 
