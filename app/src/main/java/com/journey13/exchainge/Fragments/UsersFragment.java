@@ -100,11 +100,6 @@ public class UsersFragment extends Fragment {
             }
         });
 
-
-        int inty = new Random().nextInt(Medium.MAX_VALUE - 1);
-
-        System.out.println("~##~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~The length -1 of the medium max value is " + inty);
-
         return view;
     }
 

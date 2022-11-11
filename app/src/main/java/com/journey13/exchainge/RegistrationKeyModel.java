@@ -50,6 +50,9 @@ public class RegistrationKeyModel {
     }
 
     public String getIdentityKeyPairString() {
+        System.out.println("The identity key pair when converted to base64 is " + Base64.getEncoder().encodeToString(identityKeyPair.serialize()));
+        String str = new String(identityKeyPair.serialize(), StandardCharsets.UTF_8);
+        System.out.println("The identity key pair when not converted to base 64 but serialised is " + str );
         return Base64.getEncoder().encodeToString(identityKeyPair.serialize());
     }
 
@@ -62,6 +65,7 @@ public class RegistrationKeyModel {
     }
 
     public int getRegistrationId() {
+        System.out.println("The Registration id is: " + registrationId);
         return registrationId;
     }
 
@@ -77,6 +81,7 @@ public class RegistrationKeyModel {
         List<String> preKeyList = new ArrayList<>();
         for (PreKeyRecord preKey : preKeys) {
             preKeyList.add(Base64.getEncoder().encodeToString(preKey.serialize()));
+            System.out.println("HERE IS A PREKEY!!!" + preKey);
         }
         return new Gson().toJson(preKeyList);
     }
@@ -94,14 +99,17 @@ public class RegistrationKeyModel {
     }
 
     public String getPublicIdentityKey() {
+        System.out.println("Here is the identity public key " + identityKeyPair.getPublicKey());
         return Base64.getEncoder().encodeToString(identityKeyPair.getPublicKey().serialize());
     }
 
     public String getSignedPreKeyPublicKey() {
+        System.out.println("Here is the signed prekey public key " + signedPreKeyRecord.getKeyPair().getPublicKey());
         return Base64.getEncoder().encodeToString(signedPreKeyRecord.getKeyPair().getPublicKey().serialize());
     }
 
     public int getSignedPreKeyId() {
+        System.out.println("Here is the signed prekeyid " + signedPreKeyRecord.getId());
         return signedPreKeyRecord.getId();
     }
 

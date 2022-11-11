@@ -30,6 +30,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.journey13.exchainge.Adapter.MessageAdapter;
+import com.journey13.exchainge.Adapter.UserAdapter;
 import com.journey13.exchainge.Fragments.APIService;
 import com.journey13.exchainge.Model.Chat;
 import com.journey13.exchainge.Model.User;
@@ -66,6 +67,7 @@ public class MessageActivity extends AppCompatActivity {
     private CircleImageView profile_image;
     private TextView username, tagline, addContactText;
     private FirebaseUser fuser;
+    private List<RegistrationKeyModel> mUsers;
     private DatabaseReference reference;
     private ImageButton btn_send, decline_contact_button;
     private EditText text_send;
@@ -75,8 +77,13 @@ public class MessageActivity extends AppCompatActivity {
     private Toolbar addContactToolbar;
     private String userid;
 
-    Intent intent;
+    //REMOTE USER ENCRYPTED VARIABLES
+    String identityKeyPair;
+    int registrationId;
+    String[] preKeys;
+    String signedPreKeyRecord;
 
+    Intent intent;
     ValueEventListener seenListener;
 
     APIService apiService;
@@ -114,6 +121,7 @@ public class MessageActivity extends AppCompatActivity {
         addContactToolbar = findViewById(R.id.add_contact_toolbar);
         addContactText = findViewById(R.id.add_contact_text);
         decline_contact_button = findViewById(R.id.decline_contact_button);
+        mUsers = new ArrayList<>();
 
         intent = getIntent();
         String userid = intent.getStringExtra("userid");
@@ -155,6 +163,9 @@ public class MessageActivity extends AppCompatActivity {
 
             }
         });
+
+        //CALL METHOD TO GET THE USERS KEYS FROM THE DATABASE
+        getRegKeyModelFromDB(userid);
 
         seenMessage(userid);
         isContact(userid);
@@ -393,6 +404,64 @@ public class MessageActivity extends AppCompatActivity {
         };
         userIdContactsReference.addListenerForSingleValueEvent(eventListener);
     }
+
+    //RETURN THE KEY MODEL FOR THE REMOTE USER
+    private void getRegKeyModelFromDB(String remoteUserId) {
+        reference = FirebaseDatabase.getInstance("https://exchainge-db047-default-rtdb.europe-west1.firebasedatabase.app/").getReference("Keys").child(remoteUserId);
+
+
+
+        reference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                mUsers.clear();
+                String identityKeyPair = "";
+                int registrationId = 0;
+                String[] preKeysArray = {"", ""};
+                String signedPreKeyRecord = "";
+                    for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+
+                        if (snapshot.getKey().equals("IdentityKeyPairString")) {
+                            identityKeyPair = snapshot.getValue().toString();
+                            System.out.println("The identity key pair is " + identityKeyPair);
+                        } else if (snapshot.getKey().equals("PreKeyIds")) {
+                            System.out.println("We got the prekeyids " + snapshot.getValue());
+                            String bracketsRemoved = snapshot.getValue().toString().substring(2, snapshot.getValue().toString().length() - 2);
+                            preKeysArray = bracketsRemoved.split("\",\"");
+                            System.out.println("this should now be the pre keys array correclty split " + Arrays.toString(preKeysArray));
+
+                        } else if (snapshot.getKey().equals("RegistrationId")) {
+                            registrationId = Integer.parseInt(snapshot.getValue().toString());
+                            System.out.println("The registration id is  " + registrationId);
+                        } else if (snapshot.getKey().equals("SignedPreKeyRecordString")) {
+                            signedPreKeyRecord = snapshot.getValue().toString();
+
+                            System.out.println("We got the signedprekeyrecordstring " + signedPreKeyRecord);
+                        }
+                    }
+
+                    //TODO decode the identity key pair from base64 before attempting to create a registrationkeymodel to try to get it to work
+                    try {
+                        System.out.println("why is the identity key pair not working? " + identityKeyPair);
+                        RegistrationKeyModel remoteUserKeyModel = new RegistrationKeyModel(identityKeyPair, registrationId, preKeysArray, signedPreKeyRecord);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+
+
+            }
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {}
+        });
+
+    }
+
+//    private EncryptedRemoteUser eRemoteUser() {
+//
+//        //EncryptedRemoteUser eRemoteUser = new EncryptedRemoteUser()
+//        //return eRemoteUser;
+//
+//    }
 
 
 //    // FIX THIS SESSION INITIALISATION
