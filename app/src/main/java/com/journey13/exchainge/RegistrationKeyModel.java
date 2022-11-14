@@ -43,7 +43,7 @@ public class RegistrationKeyModel {
         }
         this.preKeys = preKeyRecords;
         this.signedPreKeyRecord = new SignedPreKeyRecord(signedPreKeyRecord);
-        System.out.println("WE DID IT WE PARSED ALL OF THE DEEEEETS!!!!!!");
+
     }
 
     public IdentityKeyPair getIdentityKeyPair() {
@@ -86,6 +86,11 @@ public class RegistrationKeyModel {
         return preKeyList.toString();
     }
 
+    public PreKeyRecord getPreKey() {
+        PreKeyRecord preKeyRec = preKeys.get(0);
+        return  preKeyRec;
+    }
+
     public SignedPreKeyRecord getSignedPreKeyRecord() {
         return signedPreKeyRecord;
     }
@@ -100,15 +105,18 @@ public class RegistrationKeyModel {
         this.signedPreKeyRecord = signedPreKeyRecord;
     }
 
-    public String getPublicIdentityKey() {
-
-        System.out.println("Here is the identity public key " + identityKeyPair.getPublicKey());
-        return Base64.getEncoder().encodeToString(identityKeyPair.getPublicKey().serialize());
+    public byte[] getPublicIdentityKey() {
+        return identityKeyPair.getPublicKey().serialize();
     }
+
 
     public String getSignedPreKeyPublicKey() {
         System.out.println("Here is the signed prekey public key " + signedPreKeyRecord.getKeyPair().getPublicKey());
         return Base64.getEncoder().encodeToString(signedPreKeyRecord.getKeyPair().getPublicKey().serialize());
+    }
+
+    public byte[] getSignedPreKeyPublicKeyByteArray() {
+        return signedPreKeyRecord.getKeyPair().getPublicKey().serialize();
     }
 
     public int getSignedPreKeyId() {
@@ -118,6 +126,10 @@ public class RegistrationKeyModel {
 
     public String getSignedPreKeyRecordSignature() {
         return Base64.getEncoder().encodeToString(signedPreKeyRecord.getSignature());
+    }
+
+    public byte[] getSignedPreKeySignatureByteArray() {
+        return signedPreKeyRecord.getSignature();
     }
 
 

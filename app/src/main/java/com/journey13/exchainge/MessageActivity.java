@@ -44,6 +44,8 @@ import org.whispersystems.libsignal.IdentityKeyPair;
 import org.whispersystems.libsignal.SessionBuilder;
 import org.whispersystems.libsignal.SessionCipher;
 import org.whispersystems.libsignal.SignalProtocolAddress;
+import org.whispersystems.libsignal.ecc.ECKeyPair;
+import org.whispersystems.libsignal.ecc.ECPublicKey;
 import org.whispersystems.libsignal.state.IdentityKeyStore;
 import org.whispersystems.libsignal.state.PreKeyRecord;
 import org.whispersystems.libsignal.state.PreKeyStore;
@@ -84,6 +86,7 @@ public class MessageActivity extends AppCompatActivity {
     int registrationId;
     String[] preKeys;
     String signedPreKeyRecord;
+    EncryptedRemoteUser encryptedRemoteUser;
 
     Intent intent;
     ValueEventListener seenListener;
@@ -437,8 +440,23 @@ public class MessageActivity extends AppCompatActivity {
                     }
                     try {
                         RegistrationKeyModel remoteUserKeyModel = new RegistrationKeyModel(decodedIdentityKeyPair, registrationId, preKeysArray, decodedSignedPreKeyRecord);
+                        PreKeyRecord rec = remoteUserKeyModel.getPreKey();
+                        int prekeyid = rec.getId();
+                        ECKeyPair preKeyPub = rec.getKeyPair();
+                        ECPublicKey prekeypublickey = preKeyPub.getPublicKey();
+                        byte[] prekeyPublicKeyArray = prekeypublickey.serialize();
                         try {
-
+                            EncryptedRemoteUser encryptedRemoteUser = new EncryptedRemoteUser(
+                                    remoteUserKeyModel.getRegistrationId(),
+                                    remoteUserId,
+                                    2,
+                                    prekeyid,
+                                    prekeyPublicKeyArray,
+                                    remoteUserKeyModel.getSignedPreKeyId(),
+                                    remoteUserKeyModel.getSignedPreKeyPublicKeyByteArray(),
+                                    remoteUserKeyModel.getSignedPreKeySignatureByteArray(),
+                                    remoteUserKeyModel.getPublicIdentityKey()
+                            );
                         } catch (Exception e) {
 
                         }
