@@ -36,9 +36,6 @@ public class PreKeyRegisterAndTransmit extends AppCompatActivity {
         //GENERATE KEYS
         try {
             keyGen = GlobalMethods.generateKeys();
-
-            System.out.println("the unaltered identity key pair is : " + keyGen.getIdentityKeyPair());
-
             postKeys(fuser.getUid(), keyGen.getIdentityKeyPairString(), keyGen.getPreKeyIds(), keyGen.getRegistrationId(), keyGen.getSignedPreKeyRecordString());
         } catch (Exception e) {
             e.printStackTrace();

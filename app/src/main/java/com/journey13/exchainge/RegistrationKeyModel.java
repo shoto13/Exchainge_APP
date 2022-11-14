@@ -9,8 +9,6 @@ import org.whispersystems.libsignal.state.PreKeyRecord;
 import org.whispersystems.libsignal.state.SignedPreKeyRecord;
 import org.whispersystems.libsignal.protocol.PreKeySignalMessage;
 
-
-
 import java.io.IOException;
 import java.lang.reflect.Array;
 import java.nio.charset.StandardCharsets;
@@ -34,15 +32,18 @@ public class RegistrationKeyModel {
         this.signedPreKeyRecord = signedPreKeyRecord;
     }
 
-    public RegistrationKeyModel(String identityKeyPair, int registrationId, String[] preKeys, String signedPreKeyRecord) throws InvalidKeyException, IOException {
-        this.identityKeyPair = new IdentityKeyPair(identityKeyPair.getBytes(StandardCharsets.UTF_8));
+    public RegistrationKeyModel(byte[] identityKeyPair, int registrationId, String[] preKeys, byte[] signedPreKeyRecord) throws InvalidKeyException, IOException {
+        System.out.println("BEFORE the identity key pair call, we should ALWAYS see this part");
+        this.identityKeyPair = new IdentityKeyPair(identityKeyPair);
         this.registrationId = registrationId;
         List<PreKeyRecord> preKeyRecords = new ArrayList<>();
         for(String item : preKeys) {
-            preKeyRecords.add(new PreKeyRecord(item.getBytes(StandardCharsets.UTF_8)));
+            byte[] decoded = Base64.getDecoder().decode(item);
+            preKeyRecords.add(new PreKeyRecord(decoded));
         }
         this.preKeys = preKeyRecords;
-        this.signedPreKeyRecord = new SignedPreKeyRecord(signedPreKeyRecord.getBytes(StandardCharsets.UTF_8));
+        this.signedPreKeyRecord = new SignedPreKeyRecord(signedPreKeyRecord);
+        System.out.println("WE DID IT WE PARSED ALL OF THE DEEEEETS!!!!!!");
     }
 
     public IdentityKeyPair getIdentityKeyPair() {
@@ -50,10 +51,9 @@ public class RegistrationKeyModel {
     }
 
     public String getIdentityKeyPairString() {
-        System.out.println("The identity key pair when converted to base64 is " + Base64.getEncoder().encodeToString(identityKeyPair.serialize()));
-        String str = new String(identityKeyPair.serialize(), StandardCharsets.UTF_8);
-        System.out.println("The identity key pair when not converted to base 64 but serialised is " + str );
-        return Base64.getEncoder().encodeToString(identityKeyPair.serialize());
+        byte[] serialized = identityKeyPair.serialize();
+        String identityKeyPairString = Base64.getEncoder().encodeToString(serialized);
+        return identityKeyPairString;
     }
 
     public String getIdentityKeyPublicString() {
@@ -80,10 +80,10 @@ public class RegistrationKeyModel {
     public String getPreKeyIds() {
         List<String> preKeyList = new ArrayList<>();
         for (PreKeyRecord preKey : preKeys) {
-            preKeyList.add(Base64.getEncoder().encodeToString(preKey.serialize()));
-            System.out.println("HERE IS A PREKEY!!!" + preKey);
+            byte[] serialized = preKey.serialize();
+            preKeyList.add(Base64.getEncoder().encodeToString(serialized));
         }
-        return new Gson().toJson(preKeyList);
+        return preKeyList.toString();
     }
 
     public SignedPreKeyRecord getSignedPreKeyRecord() {
@@ -91,7 +91,9 @@ public class RegistrationKeyModel {
     }
 
     public String getSignedPreKeyRecordString() {
-        return Base64.getEncoder().encodeToString(signedPreKeyRecord.serialize());
+        byte[] serialized = signedPreKeyRecord.serialize();
+        String signedPreKeyRecordString = Base64.getEncoder().encodeToString(serialized);
+        return signedPreKeyRecordString;
     }
 
     public void setSignedPreKeyRecord(SignedPreKeyRecord signedPreKeyRecord) {
@@ -99,6 +101,7 @@ public class RegistrationKeyModel {
     }
 
     public String getPublicIdentityKey() {
+
         System.out.println("Here is the identity public key " + identityKeyPair.getPublicKey());
         return Base64.getEncoder().encodeToString(identityKeyPair.getPublicKey().serialize());
     }

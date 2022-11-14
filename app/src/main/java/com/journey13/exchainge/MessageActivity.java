@@ -40,6 +40,7 @@ import com.journey13.exchainge.Notifications.Response;
 import com.journey13.exchainge.Notifications.Sender;
 import com.journey13.exchainge.Notifications.Token;
 
+import org.whispersystems.libsignal.IdentityKeyPair;
 import org.whispersystems.libsignal.SessionBuilder;
 import org.whispersystems.libsignal.SessionCipher;
 import org.whispersystems.libsignal.SignalProtocolAddress;
@@ -53,6 +54,7 @@ import org.whispersystems.libsignal.state.impl.InMemorySignalProtocolStore;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Base64;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
@@ -307,7 +309,6 @@ public class MessageActivity extends AppCompatActivity {
                             });
                 }
             }
-
             @Override
             public void onCancelled(@NonNull DatabaseError error) {}
         });
@@ -405,12 +406,9 @@ public class MessageActivity extends AppCompatActivity {
         userIdContactsReference.addListenerForSingleValueEvent(eventListener);
     }
 
-    //RETURN THE KEY MODEL FOR THE REMOTE USER
+    //RETURN THE KEY MODEL FOR THE REMOTE USER AND FORMAT THEM FOR ENTRY TO OUR MODEL
     private void getRegKeyModelFromDB(String remoteUserId) {
         reference = FirebaseDatabase.getInstance("https://exchainge-db047-default-rtdb.europe-west1.firebasedatabase.app/").getReference("Keys").child(remoteUserId);
-
-
-
         reference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -419,31 +417,31 @@ public class MessageActivity extends AppCompatActivity {
                 int registrationId = 0;
                 String[] preKeysArray = {"", ""};
                 String signedPreKeyRecord = "";
+                byte[] decodedIdentityKeyPair = {};
+                byte[] decodedSignedPreKeyRecord = {};
                     for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-
                         if (snapshot.getKey().equals("IdentityKeyPairString")) {
                             identityKeyPair = snapshot.getValue().toString();
-                            System.out.println("The identity key pair is " + identityKeyPair);
+                            decodedIdentityKeyPair = Base64.getDecoder().decode(identityKeyPair);
                         } else if (snapshot.getKey().equals("PreKeyIds")) {
                             System.out.println("We got the prekeyids " + snapshot.getValue());
-                            String bracketsRemoved = snapshot.getValue().toString().substring(2, snapshot.getValue().toString().length() - 2);
-                            preKeysArray = bracketsRemoved.split("\",\"");
-                            System.out.println("this should now be the pre keys array correclty split " + Arrays.toString(preKeysArray));
-
+                            String bracketsRemoved = snapshot.getValue().toString().substring(1, snapshot.getValue().toString().length() - 1);
+                            preKeysArray = bracketsRemoved.split(", ");
                         } else if (snapshot.getKey().equals("RegistrationId")) {
                             registrationId = Integer.parseInt(snapshot.getValue().toString());
                             System.out.println("The registration id is  " + registrationId);
                         } else if (snapshot.getKey().equals("SignedPreKeyRecordString")) {
                             signedPreKeyRecord = snapshot.getValue().toString();
-
-                            System.out.println("We got the signedprekeyrecordstring " + signedPreKeyRecord);
+                            decodedSignedPreKeyRecord = Base64.getDecoder().decode(signedPreKeyRecord);
                         }
                     }
-
-                    //TODO decode the identity key pair from base64 before attempting to create a registrationkeymodel to try to get it to work
                     try {
-                        System.out.println("why is the identity key pair not working? " + identityKeyPair);
-                        RegistrationKeyModel remoteUserKeyModel = new RegistrationKeyModel(identityKeyPair, registrationId, preKeysArray, signedPreKeyRecord);
+                        RegistrationKeyModel remoteUserKeyModel = new RegistrationKeyModel(decodedIdentityKeyPair, registrationId, preKeysArray, decodedSignedPreKeyRecord);
+                        try {
+
+                        } catch (Exception e) {
+
+                        }
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
