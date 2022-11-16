@@ -37,6 +37,10 @@ public class EncryptedRemoteUser extends BaseEncryptedEntity {
         this.identityKeyPairPublicKey = new IdentityKey(identityKeyPairPublicKey, 0);
     }
 
+    public int getRegistrationId() {
+        return registrationId;
+    }
+
     public int getPreKeyId() {
         return preKeyId;
     }

@@ -45,8 +45,11 @@ public class PreKeyRegisterAndTransmit extends AppCompatActivity {
 
     private void postKeys(String userid, String identityKeyPairString, String PreKeyIds, int RegistrationId, String SignedPreKeyRecordString) {
 
-        //TODO figure out how to get this working
-        sharedPreferences = getSharedPreferences("STORED_KEY_PREFS", Context.MODE_PRIVATE);
+        //STORE THE USER PREFERENCES IN SHARED PREFS
+
+        //CREATE A UNIQUE STRING TO SAVE THE USER DETAILS
+        String storageString = fuser.getUid() + "_STORED_KEY_PREFS";
+        sharedPreferences = getSharedPreferences(storageString, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor= sharedPreferences.edit();
 
         editor.putString("IdentityKeyPairString", identityKeyPairString);

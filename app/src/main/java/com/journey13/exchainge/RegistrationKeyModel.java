@@ -86,6 +86,15 @@ public class RegistrationKeyModel {
         return preKeyList.toString();
     }
 
+    public List<byte[]> getPreKeysAsByteArrays() {
+        List<byte[]> preKeyList = new ArrayList<>();
+        for (PreKeyRecord preKey : preKeys) {
+            byte[] serialized = preKey.serialize();
+            preKeyList.add(serialized);
+        }
+        return preKeyList;
+    }
+
     public PreKeyRecord getPreKey() {
         PreKeyRecord preKeyRec = preKeys.get(0);
         return  preKeyRec;

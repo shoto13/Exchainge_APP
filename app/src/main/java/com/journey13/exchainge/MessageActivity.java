@@ -3,6 +3,7 @@ package com.journey13.exchainge;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -87,6 +88,7 @@ public class MessageActivity extends AppCompatActivity {
     String[] preKeys;
     String signedPreKeyRecord;
     EncryptedRemoteUser encryptedRemoteUser;
+    EncryptedLocalUser encryptedLocalUser;
 
     Intent intent;
     ValueEventListener seenListener;
@@ -169,8 +171,10 @@ public class MessageActivity extends AppCompatActivity {
             }
         });
 
-        //CALL METHOD TO GET THE USERS KEYS FROM THE DATABASE
-        getRegKeyModelFromDB(userid);
+        //BUILD THE ENCRYPTED LOCAL USER WITH THE KEYREG MODEL AND THE ELU CLASS
+        encryptedLocalUser = buildEncryptedLocalUser(fuser);
+        //BUILD THE ENCRYPTED REMOTE USER WITHE THE KEYREG MODEL AND THE ERU CLASS
+        encryptedRemoteUser = buildEncryptedRemoteUser(userid);
 
         seenMessage(userid);
         isContact(userid);
@@ -409,8 +413,39 @@ public class MessageActivity extends AppCompatActivity {
         userIdContactsReference.addListenerForSingleValueEvent(eventListener);
     }
 
+    private EncryptedLocalUser buildEncryptedLocalUser(FirebaseUser fuser) {
+        String storageString = fuser.getUid() + "_STORED_KEY_PREFS";
+        SharedPreferences sharedPreferences = getSharedPreferences(storageString, Context.MODE_PRIVATE);
+        byte[] decodedIdentityKeyPair = {};
+        byte[] decodedSignedPreKeyRecord = {};
+        String[] preKeysArray = {};
+
+        Integer registrationId = sharedPreferences.getInt("RegistrationId", 0);
+        String identityKeyPairString = sharedPreferences.getString("IdentityKeyPairString", "");
+        String preKeyIdsString = sharedPreferences.getString("PreKeyIds", "");
+        String signedPreKeyRecordString = sharedPreferences.getString("SignedPreKeyRecordString", "");
+
+        decodedIdentityKeyPair = Base64.getDecoder().decode(identityKeyPairString);
+        decodedSignedPreKeyRecord = Base64.getDecoder().decode(signedPreKeyRecordString);
+        String bracketsRemoved = preKeyIdsString.substring(1, preKeyIdsString.length() - 1);
+        preKeysArray = bracketsRemoved.split(", ");
+
+        try {
+            RegistrationKeyModel localRegistrationKeyModel = new RegistrationKeyModel(decodedIdentityKeyPair, registrationId, preKeysArray, decodedSignedPreKeyRecord);
+            try {
+                EncryptedLocalUser encryptedLocalUser = new EncryptedLocalUser(decodedIdentityKeyPair, registrationId, fuser.getUid(), 2, localRegistrationKeyModel.getPreKeysAsByteArrays(), decodedSignedPreKeyRecord);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return encryptedLocalUser;
+    }
+
     //RETURN THE KEY MODEL FOR THE REMOTE USER AND FORMAT THEM FOR ENTRY TO OUR MODEL
-    private void getRegKeyModelFromDB(String remoteUserId) {
+    private EncryptedRemoteUser buildEncryptedRemoteUser (String remoteUserId) {
         reference = FirebaseDatabase.getInstance("https://exchainge-db047-default-rtdb.europe-west1.firebasedatabase.app/").getReference("Keys").child(remoteUserId);
         reference.addValueEventListener(new ValueEventListener() {
             @Override
@@ -469,30 +504,8 @@ public class MessageActivity extends AppCompatActivity {
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {}
         });
-
+        return encryptedRemoteUser;
     }
-
-//    private EncryptedRemoteUser eRemoteUser() {
-//
-//        //EncryptedRemoteUser eRemoteUser = new EncryptedRemoteUser()
-//        //return eRemoteUser;
-//
-//    }
-
-
-//    // FIX THIS SESSION INITIALISATION
-//    private void initSession() {
-//        InMemorySignalProtocolStore protocolStore = new InMemorySignalProtocolStore(localUser.getIdentityKeyPair(), localUser.getRegistrationId());
-//
-//        for (PreKeyRecord record : localUser.getPreKeys()) {
-//            protocolStore.storePreKey(record.getId(), record);
-//        }
-//
-//        protocolStore.storeSignedPreKey(localUser.getSignedPreKey().getId(), localUser.getSignedPreKey());
-//        mSessionCipher = new SessionCipher(protocolStore, protocolAddress);
-//    }
-
-
 
     @Override
     protected void onResume() {
