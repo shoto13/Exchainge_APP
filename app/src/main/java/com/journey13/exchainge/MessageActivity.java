@@ -171,11 +171,20 @@ public class MessageActivity extends AppCompatActivity {
             }
         });
 
-        //BUILD THE ENCRYPTED LOCAL USER WITH THE KEYREG MODEL AND THE ELU CLASS
-        encryptedLocalUser = buildEncryptedLocalUser(fuser);
-        //BUILD THE ENCRYPTED REMOTE USER WITHE THE KEYREG MODEL AND THE ERU CLASS
-        encryptedRemoteUser = buildEncryptedRemoteUser(userid);
+        String storageString = fuser.getUid() + "_STORED_KEY_PREFS";
+        SharedPreferences sharedPreferences = getSharedPreferences(storageString, Context.MODE_PRIVATE);
 
+
+        GlobalMethods.getRemoteAndLocalEncryptedUser(new GlobalMethods.MyCallback<CreateLocalAndRemoteUser>()  {
+            @Override
+            public void callback(CreateLocalAndRemoteUser data) {
+                System.out.println("Here we are babiiiioooo");
+                System.out.println(data);
+
+            }
+        }, fuser, userid, sharedPreferences);
+
+        //EncryptedSession session = buildEncryptedSession(fuser, userid, sharedPreferences);
         seenMessage(userid);
         isContact(userid);
 
@@ -413,50 +422,53 @@ public class MessageActivity extends AppCompatActivity {
         userIdContactsReference.addListenerForSingleValueEvent(eventListener);
     }
 
-    private EncryptedLocalUser buildEncryptedLocalUser(FirebaseUser fuser) {
-        String storageString = fuser.getUid() + "_STORED_KEY_PREFS";
-        SharedPreferences sharedPreferences = getSharedPreferences(storageString, Context.MODE_PRIVATE);
-        byte[] decodedIdentityKeyPair = {};
-        byte[] decodedSignedPreKeyRecord = {};
-        String[] preKeysArray = {};
+    private EncryptedSession buildEncryptedSession (FirebaseUser fuser, String remoteUserId, SharedPreferences sharedPreferences) {
 
-        Integer registrationId = sharedPreferences.getInt("RegistrationId", 0);
-        String identityKeyPairString = sharedPreferences.getString("IdentityKeyPairString", "");
-        String preKeyIdsString = sharedPreferences.getString("PreKeyIds", "");
-        String signedPreKeyRecordString = sharedPreferences.getString("SignedPreKeyRecordString", "");
-
-        decodedIdentityKeyPair = Base64.getDecoder().decode(identityKeyPairString);
-        decodedSignedPreKeyRecord = Base64.getDecoder().decode(signedPreKeyRecordString);
-        String bracketsRemoved = preKeyIdsString.substring(1, preKeyIdsString.length() - 1);
-        preKeysArray = bracketsRemoved.split(", ");
-
+        // ATTEMPT TO BUILD THE ENCRYPTED LOCAL USER
         try {
-            RegistrationKeyModel localRegistrationKeyModel = new RegistrationKeyModel(decodedIdentityKeyPair, registrationId, preKeysArray, decodedSignedPreKeyRecord);
+//            String storageString = fuser.getUid() + "_STORED_KEY_PREFS";
+//            SharedPreferences sharedPreferences = getSharedPreferences(storageString, Context.MODE_PRIVATE);
+            byte[] decodedIdentityKeyPair = {};
+            byte[] decodedSignedPreKeyRecord = {};
+            String[] preKeysArray = {};
+
+            Integer registrationId = sharedPreferences.getInt("RegistrationId", 0);
+            String identityKeyPairString = sharedPreferences.getString("IdentityKeyPairString", "");
+            String preKeyIdsString = sharedPreferences.getString("PreKeyIds", "");
+            String signedPreKeyRecordString = sharedPreferences.getString("SignedPreKeyRecordString", "");
+
+            decodedIdentityKeyPair = Base64.getDecoder().decode(identityKeyPairString);
+            decodedSignedPreKeyRecord = Base64.getDecoder().decode(signedPreKeyRecordString);
+            String bracketsRemoved = preKeyIdsString.substring(1, preKeyIdsString.length() - 1);
+            preKeysArray = bracketsRemoved.split(", ");
+
             try {
-                EncryptedLocalUser encryptedLocalUser = new EncryptedLocalUser(decodedIdentityKeyPair, registrationId, fuser.getUid(), 2, localRegistrationKeyModel.getPreKeysAsByteArrays(), decodedSignedPreKeyRecord);
+                RegistrationKeyModel localRegistrationKeyModel = new RegistrationKeyModel(decodedIdentityKeyPair, registrationId, preKeysArray, decodedSignedPreKeyRecord);
+                try {
+                    EncryptedLocalUser encryptedLocalUser = new EncryptedLocalUser(decodedIdentityKeyPair, registrationId, fuser.getUid(), 2, localRegistrationKeyModel.getPreKeysAsByteArrays(), decodedSignedPreKeyRecord);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             } catch (Exception e) {
                 e.printStackTrace();
             }
         } catch (Exception e) {
+            System.out.println("THERE WAS AN ERROR WHILE BUILDING THE ENCRYPTED LOCAL USER");
             e.printStackTrace();
         }
-
-        return encryptedLocalUser;
-    }
-
-    //RETURN THE KEY MODEL FOR THE REMOTE USER AND FORMAT THEM FOR ENTRY TO OUR MODEL
-    private EncryptedRemoteUser buildEncryptedRemoteUser (String remoteUserId) {
-        reference = FirebaseDatabase.getInstance("https://exchainge-db047-default-rtdb.europe-west1.firebasedatabase.app/").getReference("Keys").child(remoteUserId);
-        reference.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                mUsers.clear();
-                String identityKeyPair = "";
-                int registrationId = 0;
-                String[] preKeysArray = {"", ""};
-                String signedPreKeyRecord = "";
-                byte[] decodedIdentityKeyPair = {};
-                byte[] decodedSignedPreKeyRecord = {};
+        // ATTEMPT TO BUILD THE ENCRYPTED REMOTE USER
+        try {
+            reference = FirebaseDatabase.getInstance("https://exchainge-db047-default-rtdb.europe-west1.firebasedatabase.app/").getReference("Keys").child(remoteUserId);
+            reference.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    mUsers.clear();
+                    String identityKeyPair = "";
+                    int registrationId = 0;
+                    String[] preKeysArray = {"", ""};
+                    String signedPreKeyRecord = "";
+                    byte[] decodedIdentityKeyPair = {};
+                    byte[] decodedSignedPreKeyRecord = {};
                     for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                         if (snapshot.getKey().equals("IdentityKeyPairString")) {
                             identityKeyPair = snapshot.getValue().toString();
@@ -500,11 +512,28 @@ public class MessageActivity extends AppCompatActivity {
                     }
 
 
+                }
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {}
+            });
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.out.println("THERE WAS AN ERROR WHILE BUILDING THE ENCRYPTED REMOTE USER");
+        }
+
+        if (encryptedRemoteUser != null && encryptedLocalUser != null) {
+            try {
+                EncryptedSession encryptedSession = new EncryptedSession(encryptedLocalUser, encryptedRemoteUser);
+                System.out.println("the encrypted session was built! :):):):):)");
+                return encryptedSession;
+            } catch (Exception e) {
+                System.out.println("Neither the encrypted remote user or the encrypted local user was NULL, however the encrypted session did not build.");
             }
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {}
-        });
-        return encryptedRemoteUser;
+        } else {
+            System.out.println("Either the encrypted remote user or the encrypted local user was NULL, therefore the encrypted session could not be built");
+        }
+        return null;
     }
 
     @Override

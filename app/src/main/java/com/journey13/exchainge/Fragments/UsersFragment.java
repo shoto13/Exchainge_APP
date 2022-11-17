@@ -106,39 +106,6 @@ public class UsersFragment extends Fragment {
     // TODO: FIX THIS SO WE EFFICIENTLY SEARCH FOR THE USERS IN OUR CONTACTS LIST
     private void searchUsers(String s) {
 
-//        fuser = FirebaseAuth.getInstance().getCurrentUser();
-////        Query query =  FirebaseDatabase.getInstance("https://exchainge-db047-default-rtdb.europe-west1.firebasedatabase.app/").getReference("Users").orderByChild("search")
-////                .startAt(s)
-////                .endAt(s+"\uf8ff");
-//
-//        DatabaseReference reference = FirebaseDatabase.getInstance("https://exchainge-db047-default-rtdb.europe-west1.firebasedatabase.app/").getReference("Users");
-//
-//        DatabaseReference searchRef = FirebaseDatabase.getInstance("https://exchainge-db047-default-rtdb.europe-west1.firebasedatabase.app/").getReference("Contacts").child(fuser.getUid());
-//        Query query = searchRef.child("contacts").startAt(s).endAt(s+"\uf8ff");
-//
-//        query.addValueEventListener(new ValueEventListener() {
-//            @Override
-//            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-//                mUsers.clear();
-//                userLookup.clear();
-//                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-//                    String snapshotString = snapshot.getValue().toString();
-//                    userLookup.add(snapshotString);
-//
-//                    System.out.println("Here is an id from the lookup" + snapshotString);
-////                    User user = snapshot.getValue(User.class);
-////
-////                    if (!user.getId().equals(fuser.getUid())) {
-////                        mUsers.add(user);
-////                    }
-//                }
-//                userAdapter = new UserAdapter(getContext(), mUsers, false, true, false);
-//                contactsRecyclerView.setAdapter(userAdapter);
-//            }
-//            @Override
-//            public void onCancelled(@NonNull DatabaseError error) {
-//            }
-//        });
     }
 
     // TAKE CONTACTS LIST AND RETRIEVE RELEVANT USERS FOR DISPLAY
