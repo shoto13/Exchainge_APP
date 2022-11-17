@@ -176,6 +176,7 @@ public class MessageActivity extends AppCompatActivity {
         String storageString = fuser.getUid() + "_STORED_KEY_PREFS";
         SharedPreferences sharedPreferences = getSharedPreferences(storageString, Context.MODE_PRIVATE);
 
+        //CALLBACK FOR THE REMOTE/LOCAL ENCRYPTED USER
         GlobalMethods.getRemoteAndLocalEncryptedUser(new GlobalMethods.MyCallback<CreateLocalAndRemoteUser>()  {
             @Override
             public void callback(CreateLocalAndRemoteUser data) {
@@ -424,7 +425,6 @@ public class MessageActivity extends AppCompatActivity {
         };
         userIdContactsReference.addListenerForSingleValueEvent(eventListener);
     }
-
 
     @Override
     protected void onResume() {

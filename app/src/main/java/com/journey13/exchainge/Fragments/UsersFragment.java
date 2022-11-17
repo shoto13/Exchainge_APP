@@ -99,7 +99,6 @@ public class UsersFragment extends Fragment {
                 readContacts(data);
             }
         });
-
         return view;
     }
 
@@ -119,16 +118,13 @@ public class UsersFragment extends Fragment {
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
                 if (search_users.getText().toString().equals("")) {
-
                     mContacts.clear();
                     for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                         User user = snapshot.getValue(User.class);
-
                         assert user != null;
                         assert firebaseUser != null;
                         if (!user.getId().equals(firebaseUser.getUid())) {
                             if (contactsList.contains(user.getId())) {
-                                System.out.println("Success we found a contact!");
                                 mContacts.add(user);
                             }
                         }

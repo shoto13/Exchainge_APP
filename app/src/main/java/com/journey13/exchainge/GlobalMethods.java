@@ -31,7 +31,6 @@ import java.util.Random;
 
 public class GlobalMethods {
 
-
     public static interface MyCallback<T> {
         void callback(T data);
     }
@@ -109,7 +108,6 @@ public class GlobalMethods {
                 signedPreKey
         );
     }
-
 
     // FUNCTION WHICH TAKES THE SHARED PREFS, REMOTEUSERID AND LOCAL USER ID AND ATTEMPTS TO BUILD
     //AN ENCRYPTED LOCAL USER AND AN ENCRYPTED REMOTE USER. THE LOCAL USER IS CREATED FIRST,
