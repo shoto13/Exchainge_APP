@@ -296,8 +296,13 @@ public class MessageActivity extends AppCompatActivity {
             }
         });
 
+        String ts_spacesRemoved = ts.replaceAll("\\s+", "_");
+        ts_spacesRemoved = ts_spacesRemoved.replaceAll("/", "-");
+
         // SAVE THE MESSAGES LOCALLY
-        String storageString = fuser.getUid() + userid + "_" + ts;
+
+        //TODO set up a local database to store local messages, so that they do not need to be stored on the db.
+        String storageString = fuser.getUid() + userid + "_" + ts_spacesRemoved;
         SharedPreferences sharedPreferences = getSharedPreferences(storageString, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putString("sender", sender);
@@ -366,9 +371,14 @@ public class MessageActivity extends AppCompatActivity {
                             mChat.add(chat);
                         }
 
-                    messageAdapter = new MessageAdapter(MessageActivity.this, mChat, imageurl);
-                    recyclerView.setAdapter(messageAdapter);
                 }
+
+                //TODO retrieve the local messages from the database
+
+                //TODO SORT THE MESSAGES BY TIMESTAMP SO THAT THEY CAN BE LOADED IN THE CORRECT ORDER
+
+                messageAdapter = new MessageAdapter(MessageActivity.this, mChat, imageurl);
+                recyclerView.setAdapter(messageAdapter);
             }
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
