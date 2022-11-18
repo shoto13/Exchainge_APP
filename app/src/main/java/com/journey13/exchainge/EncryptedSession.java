@@ -85,7 +85,8 @@ public class EncryptedSession {
     public String decrypt(String message) {
         try {
             createSession(Operation.DECRYPT);
-            byte[] bytes = message.getBytes(StandardCharsets.UTF_8);
+            //byte[] bytes = message.getBytes(StandardCharsets.UTF_8);
+            byte[] bytes = Base64.getDecoder().decode(message);
             byte[] decryptedMessage = mSessionCipher.decrypt(new PreKeySignalMessage(bytes));
             return new String(decryptedMessage, StandardCharsets.UTF_8);
         } catch (UntrustedIdentityException | InvalidKeyException | DuplicateMessageException | InvalidMessageException | InvalidKeyIdException | InvalidVersionException | LegacyMessageException e) {

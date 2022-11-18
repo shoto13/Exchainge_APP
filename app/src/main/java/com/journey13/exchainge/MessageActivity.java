@@ -89,6 +89,7 @@ public class MessageActivity extends AppCompatActivity {
     String signedPreKeyRecord;
     EncryptedRemoteUser encryptedRemoteUser;
     EncryptedLocalUser encryptedLocalUser;
+    EncryptedSession encryptedSession;
 
     Intent intent;
     ValueEventListener seenListener;
@@ -136,21 +137,6 @@ public class MessageActivity extends AppCompatActivity {
 
         reference = FirebaseDatabase.getInstance("https://exchainge-db047-default-rtdb.europe-west1.firebasedatabase.app/").getReference("Users").child(userid);
 
-        //SET THE CLICK LISTENER FOR THE SEND MESSAGE
-        btn_send.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                notify = true;
-                String msg = text_send.getText().toString();
-                if (!msg.equals("")) {
-                    sendMessage(fuser.getUid(), userid, msg);
-                } else {
-                    Toast.makeText(MessageActivity.this, "You cannot send empty messages", Toast.LENGTH_SHORT).show();
-                }
-                text_send.setText("");
-            }
-        });
-
         //SET USERNAME, TAGLINE, PROFILE PICTURE IN MESSAGE SCREEN
         reference.addValueEventListener(new ValueEventListener() {
             @Override
@@ -182,13 +168,29 @@ public class MessageActivity extends AppCompatActivity {
             public void callback(CreateLocalAndRemoteUser data) {
                 System.out.println(data);
                 try {
-                    EncryptedSession encryptedSession = new EncryptedSession(data.getEncryptedLocalUser(), data.getEncryptedRemoteUser());
+                    encryptedSession = new EncryptedSession(data.getEncryptedLocalUser(), data.getEncryptedRemoteUser());
                     System.out.println("the encrypted session was built! :):):):):)");
                 } catch (Exception e) {
                     System.out.println("The Encrypted session could not be build, not too sure why just yet!");
                 }
             }
         }, fuser, userid, sharedPreferences);
+
+
+        //SET THE CLICK LISTENER FOR THE SEND MESSAGE
+        btn_send.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                notify = true;
+                String msg = text_send.getText().toString();
+                if (!msg.equals("")) {
+                    sendMessage(fuser.getUid(), userid, msg);
+                } else {
+                    Toast.makeText(MessageActivity.this, "You cannot send empty messages", Toast.LENGTH_SHORT).show();
+                }
+                text_send.setText("");
+            }
+        });
 
         seenMessage(userid);
         isContact(userid);
@@ -220,11 +222,8 @@ public class MessageActivity extends AppCompatActivity {
 
     private void sendMessage(String sender, String receiver, String message){
 
-        ////
-        //CHANGE THIS SO THAT IT CREATES THE REFERENCE BASED ON WHICH OF THE TWO USER IDS HAS A LOWER VALUE AT THE START OR SOMETHING SIMILAR
-        //THEN CREATE A REF WITH THIS VALUE SO THAT IT CAN EASILY BE RE-CALCULATED AS NECESSARY
-        ////
         String chat_db_ref = GlobalMethods.compareIdsToCreateReference(sender, receiver);
+        String encryptedMessage = encryptedSession.encrypt(message);
 
         DatabaseReference reference = FirebaseDatabase.getInstance("https://exchainge-db047-default-rtdb.europe-west1.firebasedatabase.app/").getReference("Chats");
         final String userid = intent.getStringExtra("userid");
@@ -236,7 +235,7 @@ public class MessageActivity extends AppCompatActivity {
         HashMap<String, Object> hashMap = new HashMap<>();
         hashMap.put("sender", sender);
         hashMap.put("receiver", receiver);
-        hashMap.put("message", message);
+        hashMap.put("message", encryptedMessage);
         hashMap.put("isSeen", false);
         hashMap.put("messageTimestamp", ts);
 
@@ -279,7 +278,7 @@ public class MessageActivity extends AppCompatActivity {
         });
 
 
-        final String msg = message;
+        final String msg = encryptedMessage;
 
         reference = FirebaseDatabase.getInstance().getReference("Users").child(fuser.getUid());
         reference.addValueEventListener(new ValueEventListener() {
@@ -296,6 +295,16 @@ public class MessageActivity extends AppCompatActivity {
 
             }
         });
+
+        // SAVE THE MESSAGES LOCALLY
+        String storageString = fuser.getUid() + userid + "_" + ts;
+        SharedPreferences sharedPreferences = getSharedPreferences(storageString, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString("sender", sender);
+        editor.putString("receiver", receiver);
+        editor.putString("message", message);
+        editor.putBoolean("isSeen", false);
+        editor.putString("messageTimestamp", ts);
     }
 
     private void sendNotification(String receiver, String username, String message) {
@@ -346,11 +355,14 @@ public class MessageActivity extends AppCompatActivity {
                 mChat.clear();
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                     Chat chat = snapshot.getValue(Chat.class);
-                    System.out.println("Here is the chat item from the snapshot " + chat);
+
 //                    if (chat.getReceiver() != null  || chat.getSender() != null) {
                     assert chat != null;
                     if (chat.getReceiver() != null && chat.getSender() != null && chat.getReceiver().equals(myid) && chat.getSender().equals(userid) ||
                             chat.getReceiver() != null && chat.getSender() != null && chat.getReceiver().equals(userid) && chat.getSender().equals(myid)) {
+                            String encryptedMessage = chat.getMessage();
+                            String decryptedMessage = encryptedSession.decrypt(encryptedMessage);
+                            chat.setMessage(decryptedMessage);
                             mChat.add(chat);
                         }
 
