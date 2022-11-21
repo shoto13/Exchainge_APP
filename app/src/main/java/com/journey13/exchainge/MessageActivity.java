@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.util.Log;
@@ -20,6 +21,7 @@ import android.widget.Toast;
 import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.room.Room;
 
 import com.bumptech.glide.Glide;
 import com.google.firebase.auth.FirebaseAuth;
@@ -62,10 +64,14 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 
+import Kotlin.ChatDao;
+import Kotlin.ChatsDatabase;
 import de.hdodenhof.circleimageview.CircleImageView;
+import kotlin.jvm.internal.Intrinsics;
 import retrofit2.Call;
 import retrofit2.Callback;
 import java.sql.Timestamp;
+import java.util.concurrent.ThreadLocalRandom;
 
 public class MessageActivity extends AppCompatActivity {
 
@@ -96,6 +102,8 @@ public class MessageActivity extends AppCompatActivity {
 
     APIService apiService;
     boolean notify = false;
+
+    private ChatsDatabase db;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -194,6 +202,56 @@ public class MessageActivity extends AppCompatActivity {
 
         seenMessage(userid);
         isContact(userid);
+
+        db = Room.databaseBuilder(getApplicationContext(), ChatsDatabase.class, "chats-db").build();
+
+        // SAVE THE MESSAGES LOCALLY
+        //SET UP DATABASE INSTANCE
+        new AddItems().execute();
+
+    }
+
+    //ASYNC TASK TO ADD CHAT ITEMS TO THE CHAT DATABASE.
+    private class AddItems extends AsyncTask<Void,Void,Void> {
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            //Perform pre-adding operation here.
+        }
+
+        @Override
+        protected Void doInBackground(Void... voids) {
+
+            //Create random id
+            int randomId1 = ThreadLocalRandom.current().nextInt(1000, 100000);
+            int randomId2 = ThreadLocalRandom.current().nextInt(1000,100000);
+            //CREATE CHAT ITEM FROM PARAMS ABOVE
+            //Kotlin.Chat chat1 = new Kotlin.Chat()
+
+            //ADD CAHT TO THE DATABASE
+            Kotlin.Chat chat1 = new Kotlin.Chat(randomId1,true, "Hey, how are you today", "09:56", "receiver", "sender");
+            Kotlin.Chat chat2 = new Kotlin.Chat(randomId2, false, "Hello? Are you there? What's up?", "09:57", "receiver", "sender");
+            db.chatDao().insert(chat1);
+            db.chatDao().insert(chat2);
+
+
+            List<Kotlin.Chat> chats = db.chatDao().getAll();
+
+
+            for (Kotlin.Chat chat : chats) {
+                System.out.println("Here is a chat item, please fucking work this time!!! " + chat);
+            }
+
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+        }
+
+
     }
 
     private void seenMessage(String userid) {
@@ -296,10 +354,11 @@ public class MessageActivity extends AppCompatActivity {
             }
         });
 
+        //new AddItems().execute();
+
         String ts_spacesRemoved = ts.replaceAll("\\s+", "_");
         ts_spacesRemoved = ts_spacesRemoved.replaceAll("/", "-");
 
-        // SAVE THE MESSAGES LOCALLY
 
         //TODO set up a local database to store local messages, so that they do not need to be stored on the db.
         String storageString = fuser.getUid() + userid + "_" + ts_spacesRemoved;

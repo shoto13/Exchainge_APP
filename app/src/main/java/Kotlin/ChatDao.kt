@@ -19,5 +19,12 @@ interface ChatDao {
     @Query("SELECT * FROM chats " + " WHERE receiver LIKE :receiver")
     fun findChatsByUserReceiver(receiver: String): List<Chat>
 
+    @Query("SELECT * FROM chats")
+    fun getAll(): List<Chat?>?
+
+    @Query("SELECT COUNT(message) FROM chats")
+    fun getRowCount(): Int
+
+
 
 }
