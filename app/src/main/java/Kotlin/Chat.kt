@@ -5,23 +5,20 @@ import androidx.room.Ignore
 import androidx.room.PrimaryKey
 import java.lang.reflect.Constructor
 
-@Entity(tableName = "chats")
-data class Chat (
-        @PrimaryKey()
-        val id : Int,
-        val isSeen :  Boolean,
-        val message : String,
-        val messageTimestamp : String,
-        val receiver : String,
-        val sender : String,
 
-
-//@Ignore
-//public Chat(Boolean isSeen, String message, String messageTimestamp, String receiver, String sender) {
-//        this.isSeen = isSeen;
-//        this.message = message;
-//        this.messageTimestamp = messageTimestamp;
-//        this.receiver = receiver;
-//        this.sender = sender;
-//}
-)
+@Entity(tableName = "chats_table")
+class Chat(var message: String, var messageTimestamp: String, var receiver: String, var sender: String) {
+        @PrimaryKey(autoGenerate = true)
+        var id = 0
+}
+//@Entity(tableName = "chats_table")
+//data class Chat (
+//        @PrimaryKey(autoGenerate = true)
+//        val id : Int,
+//
+//        val message : String,
+//        val messageTimestamp : String,
+//        val receiver : String,
+//        val sender : String,
+//
+//)

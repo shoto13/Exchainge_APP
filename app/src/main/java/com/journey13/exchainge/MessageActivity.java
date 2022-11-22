@@ -19,6 +19,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.widget.Toolbar;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.room.Room;
@@ -65,6 +67,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import Kotlin.ChatDao;
+import Kotlin.ChatViewModel;
 import Kotlin.ChatsDatabase;
 import de.hdodenhof.circleimageview.CircleImageView;
 import kotlin.jvm.internal.Intrinsics;
@@ -145,6 +148,7 @@ public class MessageActivity extends AppCompatActivity {
 
         reference = FirebaseDatabase.getInstance("https://exchainge-db047-default-rtdb.europe-west1.firebasedatabase.app/").getReference("Users").child(userid);
 
+
         //SET USERNAME, TAGLINE, PROFILE PICTURE IN MESSAGE SCREEN
         reference.addValueEventListener(new ValueEventListener() {
             @Override
@@ -203,56 +207,27 @@ public class MessageActivity extends AppCompatActivity {
         seenMessage(userid);
         isContact(userid);
 
-        db = Room.databaseBuilder(getApplicationContext(), ChatsDatabase.class, "chats-db").build();
+        //SET UP DATABASE INSTANCE
+        ChatViewModel viewModel = ViewModelProviders.of(this).get(ChatViewModel.class);
+       // db = Room.databaseBuilder(getApplicationContext(), ChatsDatabase.class, "chats-db").allowMainThreadQueries().build();
 
         // SAVE THE MESSAGES LOCALLY
-        //SET UP DATABASE INSTANCE
-        new AddItems().execute();
+        Kotlin.Chat chat1 = new Kotlin.Chat("hello dick ween", "12/12/1222", "joe swanson", "peter griffin");
+        Kotlin.Chat chat2 = new Kotlin.Chat("What's up douche bag", "13/12/1222","peter griffin", "joe swanson");
 
-    }
+        viewModel.insertChat(chat1);
+        viewModel.insertChat(chat2);
 
-    //ASYNC TASK TO ADD CHAT ITEMS TO THE CHAT DATABASE.
-    private class AddItems extends AsyncTask<Void,Void,Void> {
+        viewModel.getAllChats().observe(this, chatsList -> {
 
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            //Perform pre-adding operation here.
-        }
-
-        @Override
-        protected Void doInBackground(Void... voids) {
-
-            //Create random id
-            int randomId1 = ThreadLocalRandom.current().nextInt(1000, 100000);
-            int randomId2 = ThreadLocalRandom.current().nextInt(1000,100000);
-            //CREATE CHAT ITEM FROM PARAMS ABOVE
-            //Kotlin.Chat chat1 = new Kotlin.Chat()
-
-            //ADD CAHT TO THE DATABASE
-            Kotlin.Chat chat1 = new Kotlin.Chat(randomId1,true, "Hey, how are you today", "09:56", "receiver", "sender");
-            Kotlin.Chat chat2 = new Kotlin.Chat(randomId2, false, "Hello? Are you there? What's up?", "09:57", "receiver", "sender");
-            db.chatDao().insert(chat1);
-            db.chatDao().insert(chat2);
-
-
-            List<Kotlin.Chat> chats = db.chatDao().getAll();
-
-
-            for (Kotlin.Chat chat : chats) {
-                System.out.println("Here is a chat item, please fucking work this time!!! " + chat);
+            for (Kotlin.Chat item : chatsList) {
+                Log.d("Chat", item.getMessage() + " sent by: " + item.getSender());
             }
 
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(Void aVoid) {
-            super.onPostExecute(aVoid);
-        }
-
+        });
 
     }
+
 
     private void seenMessage(String userid) {
 
