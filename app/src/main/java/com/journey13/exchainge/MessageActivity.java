@@ -148,7 +148,6 @@ public class MessageActivity extends AppCompatActivity {
 
         reference = FirebaseDatabase.getInstance("https://exchainge-db047-default-rtdb.europe-west1.firebasedatabase.app/").getReference("Users").child(userid);
 
-
         //SET USERNAME, TAGLINE, PROFILE PICTURE IN MESSAGE SCREEN
         reference.addValueEventListener(new ValueEventListener() {
             @Override
@@ -209,7 +208,6 @@ public class MessageActivity extends AppCompatActivity {
 
         //SET UP DATABASE INSTANCE
         ChatViewModel viewModel = ViewModelProviders.of(this).get(ChatViewModel.class);
-       // db = Room.databaseBuilder(getApplicationContext(), ChatsDatabase.class, "chats-db").allowMainThreadQueries().build();
 
         // SAVE THE MESSAGES LOCALLY
         Kotlin.Chat chat1 = new Kotlin.Chat("hello dick ween", "12/12/1222", "joe swanson", "peter griffin");
