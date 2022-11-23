@@ -21,7 +21,7 @@ interface ChatDao {
 
     //Search for chats based on message receiver
     @Query("SELECT * FROM chats_table " + " WHERE receiver LIKE :receiver")
-    fun findChatsByUserReceiver(receiver: String): List<Chat>
+    fun findChatsByUserReceiver(receiver: String): LiveData<List<Chat>>
 
     @Query("SELECT * FROM chats_table ORDER BY id ASC")
     fun readAllData(): LiveData<List<Chat>>

@@ -24,6 +24,7 @@ public class ChatRepository {
         new insertAsyncTask(chatDao).execute(chat);
     }
 
+
     private static class insertAsyncTask extends AsyncTask<Chat, Void, Void>{
         private ChatDao taskDao;
 

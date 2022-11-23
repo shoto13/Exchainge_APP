@@ -17,4 +17,5 @@ class ChatViewModel(application: Application?) : AndroidViewModel(application!!)
     fun insertChat(chat: Chat?) {
         repository.insert(chat)
     }
+
 }

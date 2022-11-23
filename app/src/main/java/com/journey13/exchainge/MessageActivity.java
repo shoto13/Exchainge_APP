@@ -100,6 +100,7 @@ public class MessageActivity extends AppCompatActivity {
     EncryptedRemoteUser encryptedRemoteUser;
     EncryptedLocalUser encryptedLocalUser;
     EncryptedSession encryptedSession;
+    private List<Kotlin.Chat> localChatsForReceiver;
 
     Intent intent;
     ValueEventListener seenListener;
@@ -214,10 +215,15 @@ public class MessageActivity extends AppCompatActivity {
         seenMessage(userid);
         isContact(userid);
 
-        viewModel.getAllChats().observe(this, chatsList -> {
 
+        viewModel.getAllChats().observe(this, chatsList -> {
             for (Kotlin.Chat item : chatsList) {
-                Log.d("Chat", item.getMessage() + " sent by: " + item.getSender());
+                //Log.d("Chat", item.getMessage() + " sent by: " + item.getSender() + " Sent to: " + item.getReceiver());
+                if (item.getReceiver().equals(userid)) {
+                    localChatsForReceiver.add(item);
+                    Log.d("Chat", item.getMessage() + " sent by " + item.getSender() + " send to: " +item.getReceiver());
+                }
+                //Log.d("Chat", item.getMessage() + " sent by: " + item.getSender() + " Sent to: " + item.getReceiver());
             }
         });
 
