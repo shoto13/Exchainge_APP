@@ -90,6 +90,7 @@ public class MessageActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
     private Toolbar addContactToolbar;
     private String userid;
+    private ChatViewModel viewModel;
 
     //REMOTE USER ENCRYPTED VARIABLES
     String identityKeyPair;
@@ -187,15 +188,22 @@ public class MessageActivity extends AppCompatActivity {
             }
         }, fuser, userid, sharedPreferences);
 
-
+        //SET UP DATABASE INSTANCE
+        viewModel = ViewModelProviders.of(this).get(ChatViewModel.class);
         //SET THE CLICK LISTENER FOR THE SEND MESSAGE
         btn_send.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 notify = true;
                 String msg = text_send.getText().toString();
+
+                Calendar calendar = Calendar.getInstance();
+                SimpleDateFormat sdf = new SimpleDateFormat("HH:mm dd/MM/yy");
+                String ts = sdf.format(calendar.getTime());
+
                 if (!msg.equals("")) {
-                    sendMessage(fuser.getUid(), userid, msg);
+                    sendMessage(fuser.getUid(), userid, msg, ts);
+                    storeLocalMessage(fuser.getUid(), userid, msg, ts, viewModel);
                 } else {
                     Toast.makeText(MessageActivity.this, "You cannot send empty messages", Toast.LENGTH_SHORT).show();
                 }
@@ -206,26 +214,14 @@ public class MessageActivity extends AppCompatActivity {
         seenMessage(userid);
         isContact(userid);
 
-        //SET UP DATABASE INSTANCE
-        ChatViewModel viewModel = ViewModelProviders.of(this).get(ChatViewModel.class);
-
-        // SAVE THE MESSAGES LOCALLY
-        Kotlin.Chat chat1 = new Kotlin.Chat("hello dick ween", "12/12/1222", "joe swanson", "peter griffin");
-        Kotlin.Chat chat2 = new Kotlin.Chat("What's up douche bag", "13/12/1222","peter griffin", "joe swanson");
-
-        viewModel.insertChat(chat1);
-        viewModel.insertChat(chat2);
-
         viewModel.getAllChats().observe(this, chatsList -> {
 
             for (Kotlin.Chat item : chatsList) {
                 Log.d("Chat", item.getMessage() + " sent by: " + item.getSender());
             }
-
         });
 
     }
-
 
     private void seenMessage(String userid) {
 
@@ -251,7 +247,7 @@ public class MessageActivity extends AppCompatActivity {
         });
     }
 
-    private void sendMessage(String sender, String receiver, String message){
+    private void sendMessage(String sender, String receiver, String message, String timestampString){
 
         String chat_db_ref = GlobalMethods.compareIdsToCreateReference(sender, receiver);
         String encryptedMessage = encryptedSession.encrypt(message);
@@ -259,16 +255,12 @@ public class MessageActivity extends AppCompatActivity {
         DatabaseReference reference = FirebaseDatabase.getInstance("https://exchainge-db047-default-rtdb.europe-west1.firebasedatabase.app/").getReference("Chats");
         final String userid = intent.getStringExtra("userid");
 
-        Calendar calendar = Calendar.getInstance();
-        SimpleDateFormat sdf = new SimpleDateFormat("HH:mm dd/MM/yy");
-        String ts = sdf.format(calendar.getTime());
-
         HashMap<String, Object> hashMap = new HashMap<>();
         hashMap.put("sender", sender);
         hashMap.put("receiver", receiver);
         hashMap.put("message", encryptedMessage);
         hashMap.put("isSeen", false);
-        hashMap.put("messageTimestamp", ts);
+        hashMap.put("messageTimestamp", timestampString);
 
         reference.child(chat_db_ref).push().setValue(hashMap);
 
@@ -329,7 +321,7 @@ public class MessageActivity extends AppCompatActivity {
 
         //new AddItems().execute();
 
-        String ts_spacesRemoved = ts.replaceAll("\\s+", "_");
+        String ts_spacesRemoved = timestampString.replaceAll("\\s+", "_");
         ts_spacesRemoved = ts_spacesRemoved.replaceAll("/", "-");
 
 
@@ -341,7 +333,14 @@ public class MessageActivity extends AppCompatActivity {
         editor.putString("receiver", receiver);
         editor.putString("message", message);
         editor.putBoolean("isSeen", false);
-        editor.putString("messageTimestamp", ts);
+        editor.putString("messageTimestamp", timestampString);
+    }
+
+    private void storeLocalMessage(String senderid, String receiverid, String message, String timestampString, ChatViewModel viewModel) {
+        // SAVE THE MESSAGES LOCALLY
+        Kotlin.Chat chat = new Kotlin.Chat(message, timestampString, receiverid, senderid);
+
+        viewModel.insertChat(chat);
     }
 
     private void sendNotification(String receiver, String username, String message) {
