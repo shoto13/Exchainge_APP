@@ -2,8 +2,10 @@ package com.journey13.exchainge;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
+import androidx.lifecycle.LifecycleOwner;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -13,6 +15,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.journey13.exchainge.Fragments.UsersFragment;
+import com.journey13.exchainge.Model.Chat;
 
 import org.whispersystems.libsignal.IdentityKeyPair;
 import org.whispersystems.libsignal.InvalidKeyException;
@@ -28,6 +31,9 @@ import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
 import java.util.Random;
+
+import Kotlin.ChatViewModel;
+import retrofit2.http.PUT;
 
 public class GlobalMethods {
 
@@ -224,4 +230,72 @@ public class GlobalMethods {
     }
 
 
+    //METHOD WHICH TAKES THE CHAT PARTICIPANTS AND RETURNS AN ORDERED LIST OF THE
+    //CHATS WHICH CAN THEN BE FED INTO A RECYCLERVIEW FOR NOW THE METHOD SHOULD READ AND DECRYPT
+    //EACH TIME BUT IN FUTURE, THE DECRYPT SHOULD HAPPEN JUST ONCE, THEN BE STORED LOCALLY.
+//    public static void readMessages(@NonNull MyCallback<List<Chat>> completeChatList,
+//                                    final String myid,
+//                                    final String userid,
+//                                    final String imageurl,
+//                                    EncryptedSession encryptedSession,
+//                                    ChatViewModel viewModel,
+//                                    Context mContext) {
+//
+//        DatabaseReference reference = FirebaseDatabase.getInstance("https://exchainge-db047-default-rtdb.europe-west1.firebasedatabase.app/").getReference("Users").child(userid);
+//
+//        List<Chat> mChat;
+//        List<Kotlin.Chat> localChatsForReceiver = new ArrayList<>();
+//
+//        //  READ MESSAGES FROM THE REMOTE DATABASE
+//        String idRef = GlobalMethods.compareIdsToCreateReference(myid, userid);
+//        mChat = new ArrayList<>();
+//        reference = FirebaseDatabase.getInstance("https://exchainge-db047-default-rtdb.europe-west1.firebasedatabase.app/").getReference("Chats").child(idRef);
+//        reference.addValueEventListener(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+//                mChat.clear();
+//                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+//                    Chat chat = snapshot.getValue(Chat.class);
+//
+////                    if (chat.getReceiver() != null  || chat.getSender() != null) {
+//                    assert chat != null;
+//                    if (chat.getReceiver() != null && chat.getSender() != null && chat.getReceiver().equals(myid) && chat.getSender().equals(userid) ||
+//                            chat.getReceiver() != null && chat.getSender() != null && chat.getReceiver().equals(userid) && chat.getSender().equals(myid)) {
+//                        String encryptedMessage = chat.getMessage();
+//                        String decryptedMessage = encryptedSession.decrypt(encryptedMessage);
+//                        chat.setMessage(decryptedMessage);
+//                        mChat.add(chat);
+//                    }
+//
+//                }
+//                //messageAdapter.updateList(mChat);
+//
+//            }
+//            @Override
+//            public void onCancelled(@NonNull DatabaseError error) {
+//
+//            }
+//        });
+//
+//        //READ MESSAGES ON THE LOCAL DATABASE
+//        viewModel.getAllChats().observe((LifecycleOwner) mContext, chatsList -> {
+//            for (Kotlin.Chat item : chatsList) {
+//                //Log.d("Chat", item.getMessage() + " sent by: " + item.getSender() + " Sent to: " + item.getReceiver());
+//                if (item.getReceiver().equals(userid)) {
+//                    localChatsForReceiver.add(item);
+//                    Log.d("Chat", item.getMessage() + " sent by " + item.getSender() + " send to: " +item.getReceiver());
+//                    Chat itemj = new Chat(item.getSender(), item.getReceiver(), item.getMessage(), false, item.getMessageTimestamp());
+//                    mChat.add(itemj);
+//                }
+//                //Log.d("Chat", item.getMessage() + " sent by: " + item.getSender() + " Sent to: " + item.getReceiver());
+//            }
+//        });
+//
+//        completeChatList.callback((List<Chat>) mChat);
+//
+//
+//        //initRecycler(mChat, imageurl);
+//
+//
+//    }
 }

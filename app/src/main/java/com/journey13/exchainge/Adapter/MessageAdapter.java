@@ -8,6 +8,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
@@ -15,6 +16,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.journey13.exchainge.Model.Chat;
 import com.journey13.exchainge.R;
+import com.journey13.exchainge.RecyclerDiffUtilCallback;
 
 import java.util.List;
 
@@ -99,6 +101,28 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
         } else {
             return MSG_TYPE_LEFT;
         }
+    }
+
+    //DIFF CALLBACK STATE
+    public void insertdata(List<Chat> insertList){
+        /**
+         * Insert list insert data to list
+         */
+        RecyclerDiffUtilCallback diffUtilCallback = new RecyclerDiffUtilCallback(mChat,insertList);
+        DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(diffUtilCallback);
+        mChat.addAll(insertList);
+        diffResult.dispatchUpdatesTo(this);
+    }
+
+    public void updateList(List<Chat> newList){
+        /**
+         * update list clear old data and update new data
+         */
+        RecyclerDiffUtilCallback diffUtilCallback = new RecyclerDiffUtilCallback(mChat,newList);
+        DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(diffUtilCallback);
+        mChat.clear();
+        mChat.addAll(newList);
+        diffResult.dispatchUpdatesTo(this);
     }
 
 }

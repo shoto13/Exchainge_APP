@@ -19,6 +19,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.widget.Toolbar;
+import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -91,6 +92,7 @@ public class MessageActivity extends AppCompatActivity {
     private Toolbar addContactToolbar;
     private String userid;
     private ChatViewModel viewModel;
+    private User user;
 
     //REMOTE USER ENCRYPTED VARIABLES
     String identityKeyPair;
@@ -150,27 +152,6 @@ public class MessageActivity extends AppCompatActivity {
 
         reference = FirebaseDatabase.getInstance("https://exchainge-db047-default-rtdb.europe-west1.firebasedatabase.app/").getReference("Users").child(userid);
 
-        //SET USERNAME, TAGLINE, PROFILE PICTURE IN MESSAGE SCREEN
-        reference.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                User user = dataSnapshot.getValue(User.class);
-                username.setText(user.getUsername());
-                tagline.setText(user.getTagline());
-                if (user.getImageURL().equals("default")) {
-                    profile_image.setImageResource(R.mipmap.ic_launcher);
-                } else {
-
-                    Glide.with(getApplicationContext()).load(user.getImageURL()).into(profile_image);
-                }
-                readMessages(fuser.getUid(), userid, user.getImageURL());
-            }
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
-            }
-        });
-
         //SET UP THE SHARED PREFERENCES STRING AND REFERENCE, TO BE SENT TO OUR METHOD
         String storageString = fuser.getUid() + "_STORED_KEY_PREFS";
         SharedPreferences sharedPreferences = getSharedPreferences(storageString, Context.MODE_PRIVATE);
@@ -189,8 +170,38 @@ public class MessageActivity extends AppCompatActivity {
             }
         }, fuser, userid, sharedPreferences);
 
+        //SET USERNAME, TAGLINE, PROFILE PICTURE IN MESSAGE SCREEN
+        reference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                user = dataSnapshot.getValue(User.class);
+                username.setText(user.getUsername());
+                tagline.setText(user.getTagline());
+                if (user.getImageURL().equals("default")) {
+                    profile_image.setImageResource(R.mipmap.ic_launcher);
+                } else {
+
+                    Glide.with(getApplicationContext()).load(user.getImageURL()).into(profile_image);
+                }
+                readMessages(fuser.getUid(), userid, user.getImageURL());
+//                readMessages2(new MyCallback<List<Chat>>() {
+//                    @Override
+//                    public void callback(List<Chat> data) {
+//                        mChat = data;
+//                        initRecycler(mChat, user.getImageURL());
+//                    }
+//                }, fuser.getUid(), userid, user.getImageURL());
+            }
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
         //SET UP DATABASE INSTANCE
         viewModel = ViewModelProviders.of(this).get(ChatViewModel.class);
+        Context mContext = getApplicationContext();
+
+
         //SET THE CLICK LISTENER FOR THE SEND MESSAGE
         btn_send.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -202,9 +213,14 @@ public class MessageActivity extends AppCompatActivity {
                 SimpleDateFormat sdf = new SimpleDateFormat("HH:mm dd/MM/yy");
                 String ts = sdf.format(calendar.getTime());
 
+                List<Chat> newChatList = new ArrayList<>();
+                Chat newChat = new Chat(fuser.getUid(), userid, msg, false, ts);
+                newChatList.add(newChat);
+
                 if (!msg.equals("")) {
                     sendMessage(fuser.getUid(), userid, msg, ts);
                     storeLocalMessage(fuser.getUid(), userid, msg, ts, viewModel);
+                    updateRecycler(newChatList);
                 } else {
                     Toast.makeText(MessageActivity.this, "You cannot send empty messages", Toast.LENGTH_SHORT).show();
                 }
@@ -215,17 +231,8 @@ public class MessageActivity extends AppCompatActivity {
         seenMessage(userid);
         isContact(userid);
 
+        localChatsForReceiver = new ArrayList<>();
 
-        viewModel.getAllChats().observe(this, chatsList -> {
-            for (Kotlin.Chat item : chatsList) {
-                //Log.d("Chat", item.getMessage() + " sent by: " + item.getSender() + " Sent to: " + item.getReceiver());
-                if (item.getReceiver().equals(userid)) {
-                    localChatsForReceiver.add(item);
-                    Log.d("Chat", item.getMessage() + " sent by " + item.getSender() + " send to: " +item.getReceiver());
-                }
-                //Log.d("Chat", item.getMessage() + " sent by: " + item.getSender() + " Sent to: " + item.getReceiver());
-            }
-        });
 
     }
 
@@ -330,7 +337,6 @@ public class MessageActivity extends AppCompatActivity {
         String ts_spacesRemoved = timestampString.replaceAll("\\s+", "_");
         ts_spacesRemoved = ts_spacesRemoved.replaceAll("/", "-");
 
-
         //TODO set up a local database to store local messages, so that they do not need to be stored on the db.
         String storageString = fuser.getUid() + userid + "_" + ts_spacesRemoved;
         SharedPreferences sharedPreferences = getSharedPreferences(storageString, Context.MODE_PRIVATE);
@@ -340,6 +346,11 @@ public class MessageActivity extends AppCompatActivity {
         editor.putString("message", message);
         editor.putBoolean("isSeen", false);
         editor.putString("messageTimestamp", timestampString);
+
+//        Chat new_chat = new Chat(sender, receiver, message, false, timestampString);
+//        mChat.add(new_chat);
+//        messageAdapter.insertdata(mChat);
+
     }
 
     private void storeLocalMessage(String senderid, String receiverid, String message, String timestampString, ChatViewModel viewModel) {
@@ -387,9 +398,9 @@ public class MessageActivity extends AppCompatActivity {
 
     private void readMessages(final String myid, final String userid, final String imageurl) {
 
+        //  READ MESSAGES FROM THE REMOTE DATABASE
         String idRef = GlobalMethods.compareIdsToCreateReference(myid, userid);
         mChat = new ArrayList<>();
-
         reference = FirebaseDatabase.getInstance("https://exchainge-db047-default-rtdb.europe-west1.firebasedatabase.app/").getReference("Chats").child(idRef);
         reference.addValueEventListener(new ValueEventListener() {
             @Override
@@ -407,21 +418,49 @@ public class MessageActivity extends AppCompatActivity {
                             chat.setMessage(decryptedMessage);
                             mChat.add(chat);
                         }
-
+                    //messageAdapter.updateList(mChat);
+                    initRecycler(mChat, imageurl);
                 }
 
-                //TODO retrieve the local messages from the database
-
-                //TODO SORT THE MESSAGES BY TIMESTAMP SO THAT THEY CAN BE LOADED IN THE CORRECT ORDER
-
-                messageAdapter = new MessageAdapter(MessageActivity.this, mChat, imageurl);
-                recyclerView.setAdapter(messageAdapter);
             }
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
 
             }
         });
+
+        //READ MESSAGES ON THE LOCAL DATABASE
+        viewModel.getAllChats().observe(this, chatsList -> {
+            for (Kotlin.Chat item : chatsList) {
+                //Log.d("Chat", item.getMessage() + " sent by: " + item.getSender() + " Sent to: " + item.getReceiver());
+                if (item.getReceiver().equals(userid)) {
+                    localChatsForReceiver.add(item);
+                    Log.d("Chat", item.getMessage() + " sent by " + item.getSender() + " send to: " +item.getReceiver());
+                    Chat itemj = new Chat(item.getSender(), item.getReceiver(), item.getMessage(), false, item.getMessageTimestamp());
+                    //mChat.add(itemj);
+                }
+                //Log.d("Chat", item.getMessage() + " sent by: " + item.getSender() + " Sent to: " + item.getReceiver());
+            }
+        });
+
+        // TODO ADD BOTH LOTS OF MESSAGES TO A LIST
+        // TODO SORT LIST BY TIMESTAMP
+        // TODO ADD TO RECYCLERVIEW
+        // TODO UPDATE RECYCLER WITH NEW MESSAGES INSTANTLY
+        //Currently the database is not getting the messages as the recycler is started within the for loop ( this is currently the only way to instantly update messages) figure out how to get local and remote messages and then update the recycler
+        //CREATE MESSAGE ADAPTER
+
+
+
+    }
+
+    private void initRecycler(List<Chat> mChat, String imageurl) {
+        messageAdapter = new MessageAdapter(MessageActivity.this, mChat, imageurl);
+        recyclerView.setAdapter(messageAdapter);
+    }
+
+    private void updateRecycler(List<Chat> newChatList) {
+        messageAdapter.insertdata(newChatList);
     }
 
     private void currentUser(String userid) {
@@ -484,6 +523,70 @@ public class MessageActivity extends AppCompatActivity {
         };
         userIdContactsReference.addListenerForSingleValueEvent(eventListener);
     }
+
+    public static interface MyCallback<T> {
+        void callback(T data);
+    }
+
+//    public void readMessages2(@NonNull MyCallback<List<Chat>> completeChatList, final String myid, final String userid, final String imageurl) {
+//
+//        DatabaseReference reference = FirebaseDatabase.getInstance("https://exchainge-db047-default-rtdb.europe-west1.firebasedatabase.app/").getReference("Users").child(userid);
+//
+//        List<Chat> mChat;
+//        List<Kotlin.Chat> localChatsForReceiver = new ArrayList<>();
+//
+//        //  READ MESSAGES FROM THE REMOTE DATABASE
+//        String idRef = GlobalMethods.compareIdsToCreateReference(myid, userid);
+//        mChat = new ArrayList<>();
+//        reference = FirebaseDatabase.getInstance("https://exchainge-db047-default-rtdb.europe-west1.firebasedatabase.app/").getReference("Chats").child(idRef);
+//        reference.addValueEventListener(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+//                mChat.clear();
+//                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+//                    Chat chat = snapshot.getValue(Chat.class);
+//
+////                    if (chat.getReceiver() != null  || chat.getSender() != null) {
+//                    assert chat != null;
+//                    if (chat.getReceiver() != null && chat.getSender() != null && chat.getReceiver().equals(myid) && chat.getSender().equals(userid) ||
+//                            chat.getReceiver() != null && chat.getSender() != null && chat.getReceiver().equals(userid) && chat.getSender().equals(myid)) {
+//                        String encryptedMessage = chat.getMessage();
+//                        String decryptedMessage = encryptedSession.decrypt(encryptedMessage);
+//                        chat.setMessage(decryptedMessage);
+//                        mChat.add(chat);
+//                    }
+//
+//                }
+//                //messageAdapter.updateList(mChat);
+//
+//            }
+//            @Override
+//            public void onCancelled(@NonNull DatabaseError error) {
+//
+//            }
+//        });
+//
+//        //READ MESSAGES ON THE LOCAL DATABASE
+//        viewModel.getAllChats().observe(this, chatsList -> {
+//            for (Kotlin.Chat item : chatsList) {
+//                //Log.d("Chat", item.getMessage() + " sent by: " + item.getSender() + " Sent to: " + item.getReceiver());
+//                if (item.getReceiver().equals(userid)) {
+//                    localChatsForReceiver.add(item);
+//                    Log.d("Chat", item.getMessage() + " sent by " + item.getSender() + " send to: " +item.getReceiver());
+//                    Chat itemj = new Chat(item.getSender(), item.getReceiver(), item.getMessage(), false, item.getMessageTimestamp());
+//                    mChat.add(itemj);
+//                }
+//                //Log.d("Chat", item.getMessage() + " sent by: " + item.getSender() + " Sent to: " + item.getReceiver());
+//            }
+//        });
+//
+//        completeChatList.callback((List<Chat>) mChat);
+//
+//
+//        //initRecycler(mChat, imageurl);
+//
+//
+//    }
 
     @Override
     protected void onResume() {
