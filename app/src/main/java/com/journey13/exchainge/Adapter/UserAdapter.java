@@ -2,6 +2,7 @@ package com.journey13.exchainge.Adapter;
 
 import android.content.Context;
 import android.content.Intent;
+import android.os.Bundle;
 import android.os.Message;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -115,7 +116,19 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
                 @Override
                 public void onClick(View view) {
                     Intent intent = new Intent(mContext, MessageActivity.class);
-                    intent.putExtra("userid", user.getId());
+                    Bundle user_extras = new Bundle();
+                    user_extras.putString("user_id", user.getId());
+                    user_extras.putString("username", user.getUsername());
+                    user_extras.putString("tagline", user.getTagline());
+                    user_extras.putString("imageURL", user.getImageURL());
+                    user_extras.putString("status", user.getStatus());
+                    user_extras.putString("search", user.getSearch());
+                    user_extras.putString("first_name", user.getFirstName());
+                    user_extras.putString("second_name", user.getSecondName());
+                    user_extras.putString("searchable", user.getSearchable().toString());
+                    user_extras.putString("searchable_by_email", user.getSearchableByEmail().toString());
+                    user_extras.putString("searchable_by_username", user.getSearchableByUsername().toString());
+                    intent.putExtras(user_extras);
                     mContext.startActivity(intent);
                 }
             });

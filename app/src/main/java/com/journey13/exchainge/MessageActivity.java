@@ -147,6 +147,10 @@ public class MessageActivity extends AppCompatActivity {
         mChat = new ArrayList<>();
         intent = getIntent();
         String userid = intent.getStringExtra("userid");
+        User remoteUser = getUserFromExtras();
+
+        Log.d("remote_userr", "Here is the fully created remote user " + remoteUser.getUsername() + " " + remoteUser.getId() + " " + remoteUser.getFirstName());
+
         fuser = FirebaseAuth.getInstance().getCurrentUser();
 
         reference = FirebaseDatabase.getInstance("https://exchainge-db047-default-rtdb.europe-west1.firebasedatabase.app/").getReference("Users").child(userid);
@@ -158,8 +162,17 @@ public class MessageActivity extends AppCompatActivity {
         Chat tempChat = new Chat("test", "test", "aaa", false, "today");
         mChat.add(tempChat);
 
-        //INITIALISE THE RECYCLER
-        initRecycler(mChat, "");
+        //TODO get extras from intent and create a new user item with them!!!
+        //TODO HERE RORY
+        //TODO HERE...
+        //TODO HELLO RORY LOOK AT ME
+        //TODO HERE!!!
+        //TODO YES... HERE.
+
+
+
+//        //INITIALISE THE RECYCLER
+//        initRecycler(mChat, "");
 
         //CALLBACK FOR THE REMOTE/LOCAL ENCRYPTED USER
         GlobalMethods.getRemoteAndLocalEncryptedUser(new GlobalMethods.MyCallback<CreateLocalAndRemoteUser>()  {
@@ -187,6 +200,8 @@ public class MessageActivity extends AppCompatActivity {
                 } else {
                     Glide.with(getApplicationContext()).load(user.getImageURL()).into(profile_image);
                 }
+                //INITIALISE THE RECYCLER
+                initRecycler(mChat, user.getImageURL());
                 readMessages(fuser.getUid(), userid, user.getImageURL());
 
             }
@@ -229,6 +244,28 @@ public class MessageActivity extends AppCompatActivity {
         localChatsForReceiver = new ArrayList<>();
 
 
+    }
+
+    private User getUserFromExtras() {
+
+        Boolean searchable = Boolean.parseBoolean(intent.getStringExtra("searchable"));
+        Boolean searchable_by_email = Boolean.parseBoolean(intent.getStringExtra("searchable_by_email"));
+        Boolean searchable_by_username = Boolean.parseBoolean(intent.getStringExtra("searchable_by_username"));
+
+        User remoteUser = new User(
+                intent.getStringExtra("user_id"),
+                intent.getStringExtra("username"),
+                intent.getStringExtra("tagline"),
+                intent.getStringExtra("imageURL"),
+                intent.getStringExtra("status"),
+                intent.getStringExtra("search"),
+                intent.getStringExtra("first_name"),
+                intent.getStringExtra("second_name"),
+                searchable,
+                searchable_by_email,
+                searchable_by_username);
+
+        return remoteUser;
     }
 
     private void seenMessage(String userid) {
@@ -408,7 +445,6 @@ public class MessageActivity extends AppCompatActivity {
                 mChat.clear();
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                     Chat chat = snapshot.getValue(Chat.class);
-
 //                    if (chat.getReceiver() != null  || chat.getSender() != null) {
                     //chat.getReceiver() != null && chat.getSender() != null && chat.getReceiver().equals(userid) && chat.getSender().equals(myid)
                     assert chat != null;

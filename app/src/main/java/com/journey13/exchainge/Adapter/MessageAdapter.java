@@ -56,7 +56,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
 
         Chat chat = mChat.get(position);
         holder.show_message.setText(chat.getMessage());
-        if(imageurl.equals("default")) {
+        if(imageurl.equals("")) {
             holder.profile_image.setImageResource(R.mipmap.ic_launcher);
         } else {
             Glide.with(mContext).load(imageurl).into(holder.profile_image);
