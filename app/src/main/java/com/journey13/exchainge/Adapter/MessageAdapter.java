@@ -1,6 +1,7 @@
 package com.journey13.exchainge.Adapter;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -110,6 +111,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
          */
         RecyclerDiffUtilCallback diffUtilCallback = new RecyclerDiffUtilCallback(mChat,insertList);
         DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(diffUtilCallback);
+        Log.d("Inserter", "Here is the diff result of the two lists");
         mChat.addAll(insertList);
         diffResult.dispatchUpdatesTo(this);
     }

@@ -113,7 +113,6 @@
             android:layout_alignParentRight="true"
             android:background="@drawable/ic_action_name" />
 
-
     </RelativeLayout>
 
 

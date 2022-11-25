@@ -3,11 +3,13 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="com.journey13.exchainge">
 
+    <uses-sdk
+        android:minSdkVersion="26"
+        android:targetSdkVersion="31" />
+
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-    <uses-sdk android:minSdkVersion="26" android:targetSdkVersion="31" />
-
 
     <application
         android:allowBackup="true"
@@ -17,52 +19,52 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Exchainge">
         <activity
-            android:name=".PreKeyRegisterAndTransmit"
+            android:name="com.journey13.exchainge.PreKeyRegisterAndTransmit"
             android:exported="false">
             <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />
         </activity>
         <activity
-            android:name=".settingsChangeNotifications"
+            android:name="com.journey13.exchainge.settingsChangeNotifications"
             android:exported="false">
             <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />
         </activity>
         <activity
-            android:name=".newContactsSearch"
+            android:name="com.journey13.exchainge.newContactsSearch"
             android:exported="false" />
         <activity
-            android:name=".blockedUsers"
+            android:name="com.journey13.exchainge.blockedUsers"
             android:exported="false" />
         <activity
-            android:name=".settingsChangePrivacy"
+            android:name="com.journey13.exchainge.settingsChangePrivacy"
             android:exported="false" />
         <activity
-            android:name=".settingsChangeTagline"
+            android:name="com.journey13.exchainge.settingsChangeTagline"
             android:exported="true" />
         <activity
-            android:name=".settingsChangeUsername"
+            android:name="com.journey13.exchainge.settingsChangeUsername"
             android:exported="true" />
         <activity
-            android:name=".ResetPasswordActivity"
+            android:name="com.journey13.exchainge.ResetPasswordActivity"
             android:exported="false"
-            android:parentActivityName=".login" />
+            android:parentActivityName="com.journey13.exchainge.login" />
         <activity
-            android:name=".MessageActivity"
+            android:name="com.journey13.exchainge.MessageActivity"
             android:exported="false" />
         <activity
-            android:name=".signup"
+            android:name="com.journey13.exchainge.signup"
             android:exported="true" />
         <activity
-            android:name=".login"
+            android:name="com.journey13.exchainge.login"
             android:exported="true" />
         <activity
-            android:name=".init_landing"
+            android:name="com.journey13.exchainge.init_landing"
             android:exported="true" />
         <activity
-            android:name=".MainActivity"
+            android:name="com.journey13.exchainge.MainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -72,7 +74,7 @@
         </activity>
 
         <service
-            android:name=".Notifications.FirebaseIDService"
+            android:name="com.journey13.exchainge.Notifications.FirebaseIDService"
             android:enabled="true"
             android:exported="true">
             <intent-filter>
@@ -80,7 +82,7 @@
             </intent-filter>
         </service>
         <service
-            android:name=".Notifications.MyFirebaseMessaging"
+            android:name="com.journey13.exchainge.Notifications.MyFirebaseMessaging"
             android:enabled="true"
             android:exported="true">
             <intent-filter>
