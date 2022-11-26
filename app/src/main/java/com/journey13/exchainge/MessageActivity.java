@@ -146,14 +146,15 @@ public class MessageActivity extends AppCompatActivity {
         mUsers = new ArrayList<>();
         mChat = new ArrayList<>();
         intent = getIntent();
-        String userid = intent.getStringExtra("userid");
         User remoteUser = getUserFromExtras();
+        String userid = remoteUser.getId();
+
 
         Log.d("remote_userr", "Here is the fully created remote user " + remoteUser.getUsername() + " " + remoteUser.getId() + " " + remoteUser.getFirstName());
 
         fuser = FirebaseAuth.getInstance().getCurrentUser();
 
-        reference = FirebaseDatabase.getInstance("https://exchainge-db047-default-rtdb.europe-west1.firebasedatabase.app/").getReference("Users").child(userid);
+        reference = FirebaseDatabase.getInstance("https://exchainge-db047-default-rtdb.europe-west1.firebasedatabase.app/").getReference("Users").child(remoteUser.getId());
 
         //SET UP THE SHARED PREFERENCES STRING AND REFERENCE, TO BE SENT TO OUR METHOD
         String storageString = fuser.getUid() + "_STORED_KEY_PREFS";
@@ -186,7 +187,7 @@ public class MessageActivity extends AppCompatActivity {
                     System.out.println("The Encrypted session could not be build, not too sure why just yet!");
                 }
             }
-        }, fuser, userid, sharedPreferences);
+        }, fuser, remoteUser.getId(), sharedPreferences);
 
         //SET USERNAME, TAGLINE, PROFILE PICTURE IN MESSAGE SCREEN
         reference.addValueEventListener(new ValueEventListener() {
@@ -202,7 +203,7 @@ public class MessageActivity extends AppCompatActivity {
                 }
                 //INITIALISE THE RECYCLER
                 initRecycler(mChat, user.getImageURL());
-                readMessages(fuser.getUid(), userid, user.getImageURL());
+                readMessages(fuser.getUid(), remoteUser, user.getImageURL());
 
             }
             @Override
@@ -229,8 +230,8 @@ public class MessageActivity extends AppCompatActivity {
                 String ts = sdf.format(calendar.getTime());
 
                 if (!msg.equals("")) {
-                    sendMessage(fuser.getUid(), userid, msg, ts);
-                    storeLocalMessage(fuser.getUid(), userid, msg, ts, viewModel);
+                    sendMessage(fuser.getUid(), remoteUser.getId(), msg, ts);
+                    storeLocalMessage(fuser.getUid(), remoteUser.getId(), msg, ts, viewModel);
                 } else {
                     Toast.makeText(MessageActivity.this, "You cannot send empty messages", Toast.LENGTH_SHORT).show();
                 }
@@ -238,8 +239,8 @@ public class MessageActivity extends AppCompatActivity {
             }
         });
 
-        seenMessage(userid);
-        isContact(userid);
+        seenMessage(remoteUser);
+        isContact(remoteUser);
 
         localChatsForReceiver = new ArrayList<>();
 
@@ -268,9 +269,9 @@ public class MessageActivity extends AppCompatActivity {
         return remoteUser;
     }
 
-    private void seenMessage(String userid) {
+    private void seenMessage(User remoteUser) {
 
-        String idRef = GlobalMethods.compareIdsToCreateReference(fuser.getUid(), userid);
+        String idRef = GlobalMethods.compareIdsToCreateReference(fuser.getUid(), remoteUser.getId());
 
         reference = FirebaseDatabase.getInstance("https://exchainge-db047-default-rtdb.europe-west1.firebasedatabase.app/").getReference("Chats").child(idRef);
         seenListener = reference.addValueEventListener(new ValueEventListener() {
@@ -278,7 +279,7 @@ public class MessageActivity extends AppCompatActivity {
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                     Chat chat = snapshot.getValue(Chat.class);
-                    if (chat.getReceiver().equals(fuser.getUid()) && chat.getSender().equals(userid)) {
+                    if (chat.getReceiver().equals(fuser.getUid()) && chat.getSender().equals(remoteUser.getId())) {
                         HashMap<String, Object> hashMap = new HashMap<>();
                         hashMap.put("isSeen", true);
                         snapshot.getRef().updateChildren(hashMap);
@@ -301,7 +302,7 @@ public class MessageActivity extends AppCompatActivity {
         String encryptedMessage = message;
 
         DatabaseReference reference = FirebaseDatabase.getInstance("https://exchainge-db047-default-rtdb.europe-west1.firebasedatabase.app/").getReference("Chats");
-        final String userid = intent.getStringExtra("userid");
+        final String userid = receiver;
 
         HashMap<String, Object> hashMap = new HashMap<>();
         hashMap.put("sender", sender);
@@ -407,7 +408,7 @@ public class MessageActivity extends AppCompatActivity {
                             R.mipmap.ic_launcher,
                             username+": "+message,
                             "New Message",
-                            userid
+                            receiver
                     );
 
                     Sender sender = new Sender(data, token.getToken());
@@ -433,10 +434,11 @@ public class MessageActivity extends AppCompatActivity {
 
     //private void getMessageUpdates()
 
-    private void readMessages(final String myid, final String userid, final String imageurl) {
+    private void readMessages(final String myid, final User remoteUser, final String imageurl) {
 
+        String userid = remoteUser.getId();
         //  READ MESSAGES FROM THE REMOTE DATABASE
-        String idRef = GlobalMethods.compareIdsToCreateReference(myid, userid);
+        String idRef = GlobalMethods.compareIdsToCreateReference(myid, remoteUser.getId());
         mChat = new ArrayList<>();
         reference = FirebaseDatabase.getInstance("https://exchainge-db047-default-rtdb.europe-west1.firebasedatabase.app/").getReference("Chats").child(idRef);
         reference.addValueEventListener(new ValueEventListener() {
@@ -510,9 +512,9 @@ public class MessageActivity extends AppCompatActivity {
         reference.updateChildren(hashMap);
     }
 
-    private void isContact(String userid) {
+    private void isContact(User remoteUser) {
         DatabaseReference contactsReference = FirebaseDatabase.getInstance("https://exchainge-db047-default-rtdb.europe-west1.firebasedatabase.app/").getReference("Contacts").child(fuser.getUid());
-        DatabaseReference userIdContactsReference = contactsReference.child("contacts").child(userid);
+        DatabaseReference userIdContactsReference = contactsReference.child("contacts").child(remoteUser.getId());
 
         ValueEventListener eventListener = new ValueEventListener() {
             @Override
@@ -531,7 +533,7 @@ public class MessageActivity extends AppCompatActivity {
                             public boolean onMenuItemClick(MenuItem menuItem) {
                                 // Toast message on menu item clicked
                                 Toast.makeText(MessageActivity.this, "User added to contacts", Toast.LENGTH_LONG).show();
-                                contactsReference.child("contacts").child(userid).setValue(userid);
+                                contactsReference.child("contacts").child(remoteUser.getId()).setValue(remoteUser.getId());
                                 addContactToolbar.setVisibility(View.GONE);
                                 return true;
                             }
