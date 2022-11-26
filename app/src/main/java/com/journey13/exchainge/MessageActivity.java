@@ -146,6 +146,8 @@ public class MessageActivity extends AppCompatActivity {
         mUsers = new ArrayList<>();
         mChat = new ArrayList<>();
         intent = getIntent();
+        // // // // // // // // //
+
 
         //Build the remote user item from the intent extras
         User remoteUser = getUserFromExtras();
@@ -161,10 +163,6 @@ public class MessageActivity extends AppCompatActivity {
         Chat tempChat = new Chat("test", "test", "aaa", false, "today");
         mChat.add(tempChat);
 
-
-//        //INITIALISE THE RECYCLER
-//        initRecycler(mChat, "");
-
         //CALLBACK FOR THE REMOTE/LOCAL ENCRYPTED USER
         GlobalMethods.getRemoteAndLocalEncryptedUser(new GlobalMethods.MyCallback<CreateLocalAndRemoteUser>()  {
             @Override
@@ -179,8 +177,22 @@ public class MessageActivity extends AppCompatActivity {
             }
         }, fuser, remoteUser.getId(), sharedPreferences);
 
+        //SET UP VIEWMODEL AND GET LOCAL MESSAGES STORED IN THE ROOM DATABASE
+        viewModel = ViewModelProviders.of(this).get(ChatViewModel.class);
+        Context mContext = getApplicationContext();
+        List<Chat> chats = getLocalMessages();
+
+        if (chats.isEmpty()) {
+            Log.d("empty_chat_notifier", "The chat item was likely not initialised correctly, therefore the local chat item is empty");
+        }
+        for (Chat chat : chats) {
+            Log.d("local_chat_item", "Here is one of the local chats we recovered : " + chat.getMessage());
+        }
+
+        // INITIALISE THE RECYCLERVIEW
         initRecycler(mChat, remoteUser.getImageURL());
-        readMessages(fuser.getUid(), remoteUser, remoteUser.getImageURL());
+
+        //readMessages(fuser.getUid(), remoteUser, remoteUser.getImageURL());
 
 //        reference.addValueEventListener(new ValueEventListener() {
 //            @Override
@@ -204,10 +216,7 @@ public class MessageActivity extends AppCompatActivity {
 //            }
 //        });
 
-
         //SET UP DATABASE INSTANCE
-        viewModel = ViewModelProviders.of(this).get(ChatViewModel.class);
-        Context mContext = getApplicationContext();
 
         //SET THE CLICK LISTENER FOR THE SEND MESSAGE
         btn_send.setOnClickListener(new View.OnClickListener() {
@@ -234,8 +243,6 @@ public class MessageActivity extends AppCompatActivity {
         isContact(remoteUser);
 
         localChatsForReceiver = new ArrayList<>();
-
-
     }
 
     private User getUserFromExtras() {
@@ -266,6 +273,26 @@ public class MessageActivity extends AppCompatActivity {
         }
 
         return remoteUser;
+    }
+
+    private List<Chat> getLocalMessages() {
+        List<Chat> localChatList = new ArrayList<>();
+        viewModel.getAllChats().observe(this, chatsList -> {
+
+            for (Kotlin.Chat item : chatsList) {
+                //Log.d("Chat", item.getMessage() + " sent by: " + item.getSender() + " Sent to: " + item.getReceiver());
+                if (item.getReceiver().equals(userid)) {
+                    localChatsForReceiver.add(item);
+                    Log.d("Chat", item.getMessage() + " sent by " + item.getSender() + " send to: " +item.getReceiver());
+                    Chat itemj = new Chat(item.getSender(), item.getReceiver(), item.getMessage(), false, item.getMessageTimestamp());
+                    localChatList.add(itemj);
+                }
+                Log.d("Chatster", item.getMessage() + " sent by: " + item.getSender() + " Sent to: " + item.getReceiver());
+            }
+            //initRecycler(localChatList, remoteUser.getImageURL());
+        });
+        // INITIALISE THE RECYCLERVIEW
+        return localChatList;
     }
 
     private void seenMessage(User remoteUser) {
@@ -431,8 +458,6 @@ public class MessageActivity extends AppCompatActivity {
         });
     }
 
-    //private void getMessageUpdates()
-
     private void readMessages(final String myid, final User remoteUser, final String imageurl) {
 
         String userid = remoteUser.getId();
@@ -461,7 +486,7 @@ public class MessageActivity extends AppCompatActivity {
                             mChat.add(chat);
                         }
                 }
-//                // READ MESSAGES ON THE LOCAL DATABASE
+                // READ MESSAGES ON THE LOCAL DATABASE
 //                viewModel.getAllChats().observe(MessageActivity.this, chatsList -> {
 //                    for (Kotlin.Chat item : chatsList) {
 //                        //Log.d("Chat", item.getMessage() + " sent by: " + item.getSender() + " Sent to: " + item.getReceiver());
@@ -557,69 +582,9 @@ public class MessageActivity extends AppCompatActivity {
         userIdContactsReference.addListenerForSingleValueEvent(eventListener);
     }
 
-    public static interface MyCallback<T> {
+    public interface MyCallback<T> {
         void callback(T data);
     }
-
-//    public void readMessages2(@NonNull MyCallback<List<Chat>> completeChatList, final String myid, final String userid, final String imageurl) {
-//
-//        DatabaseReference reference = FirebaseDatabase.getInstance("https://exchainge-db047-default-rtdb.europe-west1.firebasedatabase.app/").getReference("Users").child(userid);
-//
-//        List<Chat> mChat;
-//        List<Kotlin.Chat> localChatsForReceiver = new ArrayList<>();
-//
-//        //  READ MESSAGES FROM THE REMOTE DATABASE
-//        String idRef = GlobalMethods.compareIdsToCreateReference(myid, userid);
-//        mChat = new ArrayList<>();
-//        reference = FirebaseDatabase.getInstance("https://exchainge-db047-default-rtdb.europe-west1.firebasedatabase.app/").getReference("Chats").child(idRef);
-//        reference.addValueEventListener(new ValueEventListener() {
-//            @Override
-//            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-//                mChat.clear();
-//                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-//                    Chat chat = snapshot.getValue(Chat.class);
-//
-////                    if (chat.getReceiver() != null  || chat.getSender() != null) {
-//                    assert chat != null;
-//                    if (chat.getReceiver() != null && chat.getSender() != null && chat.getReceiver().equals(myid) && chat.getSender().equals(userid) ||
-//                            chat.getReceiver() != null && chat.getSender() != null && chat.getReceiver().equals(userid) && chat.getSender().equals(myid)) {
-//                        String encryptedMessage = chat.getMessage();
-//                        String decryptedMessage = encryptedSession.decrypt(encryptedMessage);
-//                        chat.setMessage(decryptedMessage);
-//                        mChat.add(chat);
-//                    }
-//
-//                }
-//                //messageAdapter.updateList(mChat);
-//
-//            }
-//            @Override
-//            public void onCancelled(@NonNull DatabaseError error) {
-//
-//            }
-//        });
-//
-//        //READ MESSAGES ON THE LOCAL DATABASE
-//        viewModel.getAllChats().observe(this, chatsList -> {
-//            for (Kotlin.Chat item : chatsList) {
-//                //Log.d("Chat", item.getMessage() + " sent by: " + item.getSender() + " Sent to: " + item.getReceiver());
-//                if (item.getReceiver().equals(userid)) {
-//                    localChatsForReceiver.add(item);
-//                    Log.d("Chat", item.getMessage() + " sent by " + item.getSender() + " send to: " +item.getReceiver());
-//                    Chat itemj = new Chat(item.getSender(), item.getReceiver(), item.getMessage(), false, item.getMessageTimestamp());
-//                    mChat.add(itemj);
-//                }
-//                //Log.d("Chat", item.getMessage() + " sent by: " + item.getSender() + " Sent to: " + item.getReceiver());
-//            }
-//        });
-//
-//        completeChatList.callback((List<Chat>) mChat);
-//
-//
-//        //initRecycler(mChat, imageurl);
-//
-//
-//    }
 
     @Override
     protected void onResume() {
