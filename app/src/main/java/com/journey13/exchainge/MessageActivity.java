@@ -177,10 +177,13 @@ public class MessageActivity extends AppCompatActivity {
             }
         }, fuser, remoteUser.getId(), sharedPreferences);
 
+        // INITIALISE THE RECYCLERVIEW
+        initRecycler(mChat, remoteUser.getImageURL());
+
         //SET UP VIEWMODEL AND GET LOCAL MESSAGES STORED IN THE ROOM DATABASE
         viewModel = ViewModelProviders.of(this).get(ChatViewModel.class);
         Context mContext = getApplicationContext();
-        List<Chat> chats = getLocalMessages();
+        List<Chat> chats = getLocalMessages(remoteUser);
 
         if (chats.isEmpty()) {
             Log.d("empty_chat_notifier", "The chat item was likely not initialised correctly, therefore the local chat item is empty");
@@ -189,8 +192,8 @@ public class MessageActivity extends AppCompatActivity {
             Log.d("local_chat_item", "Here is one of the local chats we recovered : " + chat.getMessage());
         }
 
-        // INITIALISE THE RECYCLERVIEW
-        initRecycler(mChat, remoteUser.getImageURL());
+//        // INITIALISE THE RECYCLERVIEW
+//        initRecycler(mChat, remoteUser.getImageURL());
 
         //readMessages(fuser.getUid(), remoteUser, remoteUser.getImageURL());
 
@@ -275,21 +278,21 @@ public class MessageActivity extends AppCompatActivity {
         return remoteUser;
     }
 
-    private List<Chat> getLocalMessages() {
+
+    //TODO try making this get local messages function a callback so that we call it once then return the data and update the recycler list only at this point
+    private List<Chat> getLocalMessages(User remoteUser) {
         List<Chat> localChatList = new ArrayList<>();
         viewModel.getAllChats().observe(this, chatsList -> {
-
             for (Kotlin.Chat item : chatsList) {
                 //Log.d("Chat", item.getMessage() + " sent by: " + item.getSender() + " Sent to: " + item.getReceiver());
-                if (item.getReceiver().equals(userid)) {
+                if (item.getReceiver().equals(remoteUser.getId())) {
                     localChatsForReceiver.add(item);
-                    Log.d("Chat", item.getMessage() + " sent by " + item.getSender() + " send to: " +item.getReceiver());
+                    Log.d("Chat, why no work?", item.getMessage() + " sent by " + item.getSender() + " send to: " +item.getReceiver());
                     Chat itemj = new Chat(item.getSender(), item.getReceiver(), item.getMessage(), false, item.getMessageTimestamp());
                     localChatList.add(itemj);
+                    Log.d("Updater", "We are in the get local messages function again");
                 }
-                Log.d("Chatster", item.getMessage() + " sent by: " + item.getSender() + " Sent to: " + item.getReceiver());
             }
-            //initRecycler(localChatList, remoteUser.getImageURL());
         });
         // INITIALISE THE RECYCLERVIEW
         return localChatList;
@@ -409,9 +412,6 @@ public class MessageActivity extends AppCompatActivity {
         editor.putBoolean("isSeen", false);
         editor.putString("messageTimestamp", timestampString);
 
-//        Chat new_chat = new Chat(sender, receiver, message, false, timestampString);
-//        mChat.add(new_chat);
-//        messageAdapter.insertdata(mChat);
 
     }
 
@@ -515,10 +515,6 @@ public class MessageActivity extends AppCompatActivity {
     private void initRecycler(List<Chat> mChat, String imageurl) {
         messageAdapter = new MessageAdapter(MessageActivity.this, mChat, imageurl);
         recyclerView.setAdapter(messageAdapter);
-    }
-
-    private void updateRecycler(List<Chat> newChatList) {
-        messageAdapter.insertdata(newChatList);
     }
 
     private void currentUser(String userid) {
