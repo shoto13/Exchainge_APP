@@ -146,14 +146,12 @@ public class MessageActivity extends AppCompatActivity {
         mUsers = new ArrayList<>();
         mChat = new ArrayList<>();
         intent = getIntent();
+
+        //Build the remote user item from the intent extras
         User remoteUser = getUserFromExtras();
         String userid = remoteUser.getId();
 
-
-        Log.d("remote_userr", "Here is the fully created remote user " + remoteUser.getUsername() + " " + remoteUser.getId() + " " + remoteUser.getFirstName());
-
         fuser = FirebaseAuth.getInstance().getCurrentUser();
-
         reference = FirebaseDatabase.getInstance("https://exchainge-db047-default-rtdb.europe-west1.firebasedatabase.app/").getReference("Users").child(remoteUser.getId());
 
         //SET UP THE SHARED PREFERENCES STRING AND REFERENCE, TO BE SENT TO OUR METHOD
@@ -162,14 +160,6 @@ public class MessageActivity extends AppCompatActivity {
 
         Chat tempChat = new Chat("test", "test", "aaa", false, "today");
         mChat.add(tempChat);
-
-        //TODO get extras from intent and create a new user item with them!!!
-        //TODO HERE RORY
-        //TODO HERE...
-        //TODO HELLO RORY LOOK AT ME
-        //TODO HERE!!!
-        //TODO YES... HERE.
-
 
 
 //        //INITIALISE THE RECYCLER
@@ -189,34 +179,35 @@ public class MessageActivity extends AppCompatActivity {
             }
         }, fuser, remoteUser.getId(), sharedPreferences);
 
-        //SET USERNAME, TAGLINE, PROFILE PICTURE IN MESSAGE SCREEN
-        reference.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                user = dataSnapshot.getValue(User.class);
-                username.setText(user.getUsername());
-                tagline.setText(user.getTagline());
-                if (user.getImageURL().equals("default")) {
-                    profile_image.setImageResource(R.mipmap.ic_launcher);
-                } else {
-                    Glide.with(getApplicationContext()).load(user.getImageURL()).into(profile_image);
-                }
-                //INITIALISE THE RECYCLER
-                initRecycler(mChat, user.getImageURL());
-                readMessages(fuser.getUid(), remoteUser, user.getImageURL());
+        initRecycler(mChat, remoteUser.getImageURL());
+        readMessages(fuser.getUid(), remoteUser, remoteUser.getImageURL());
 
-            }
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
-            }
-        });
+//        reference.addValueEventListener(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+////                user = dataSnapshot.getValue(User.class);
+////                username.setText(user.getUsername());
+////                tagline.setText(user.getTagline());
+////                if (user.getImageURL().equals("default")) {
+////                    profile_image.setImageResource(R.mipmap.ic_launcher);
+////                } else {
+////                    Glide.with(getApplicationContext()).load(user.getImageURL()).into(profile_image);
+////                }
+//                //INITIALISE THE RECYCLER
+//               //initRecycler(mChat, remoteUser.getImageURL());
+//               readMessages(fuser.getUid(), remoteUser, remoteUser.getImageURL());
+//
+//            }
+//            @Override
+//            public void onCancelled(@NonNull DatabaseError error) {
+//
+//            }
+//        });
 
 
         //SET UP DATABASE INSTANCE
         viewModel = ViewModelProviders.of(this).get(ChatViewModel.class);
         Context mContext = getApplicationContext();
-
 
         //SET THE CLICK LISTENER FOR THE SEND MESSAGE
         btn_send.setOnClickListener(new View.OnClickListener() {
@@ -265,6 +256,14 @@ public class MessageActivity extends AppCompatActivity {
                 searchable,
                 searchable_by_email,
                 searchable_by_username);
+
+        username.setText(remoteUser.getUsername());
+        tagline.setText(remoteUser.getTagline());
+        if (remoteUser.getImageURL().equals("default")) {
+            profile_image.setImageResource(R.mipmap.ic_launcher);
+        } else {
+            Glide.with(getApplicationContext()).load(remoteUser.getImageURL()).into(profile_image);
+        }
 
         return remoteUser;
     }
