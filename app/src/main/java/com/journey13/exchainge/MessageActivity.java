@@ -160,7 +160,7 @@ public class MessageActivity extends AppCompatActivity {
         String storageString = fuser.getUid() + "_STORED_KEY_PREFS";
         SharedPreferences sharedPreferences = getSharedPreferences(storageString, Context.MODE_PRIVATE);
 
-        Chat tempChat = new Chat("test", "test", "aaa", false, "today");
+        Chat tempChat = new Chat("test", "test", "message", false, "today");
         mChat.add(tempChat);
 
         //CALLBACK FOR THE REMOTE/LOCAL ENCRYPTED USER
@@ -177,49 +177,13 @@ public class MessageActivity extends AppCompatActivity {
             }
         }, fuser, remoteUser.getId(), sharedPreferences);
 
-        // INITIALISE THE RECYCLERVIEW
+        //INITIALISE THE RECYCLERVIEW
         initRecycler(mChat, remoteUser.getImageURL());
 
         //SET UP VIEWMODEL AND GET LOCAL MESSAGES STORED IN THE ROOM DATABASE
         viewModel = ViewModelProviders.of(this).get(ChatViewModel.class);
         Context mContext = getApplicationContext();
-        List<Chat> chats = getLocalMessages(remoteUser);
-
-        if (chats.isEmpty()) {
-            Log.d("empty_chat_notifier", "The chat item was likely not initialised correctly, therefore the local chat item is empty");
-        }
-        for (Chat chat : chats) {
-            Log.d("local_chat_item", "Here is one of the local chats we recovered : " + chat.getMessage());
-        }
-
-//        // INITIALISE THE RECYCLERVIEW
-//        initRecycler(mChat, remoteUser.getImageURL());
-
-        //readMessages(fuser.getUid(), remoteUser, remoteUser.getImageURL());
-
-//        reference.addValueEventListener(new ValueEventListener() {
-//            @Override
-//            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-////                user = dataSnapshot.getValue(User.class);
-////                username.setText(user.getUsername());
-////                tagline.setText(user.getTagline());
-////                if (user.getImageURL().equals("default")) {
-////                    profile_image.setImageResource(R.mipmap.ic_launcher);
-////                } else {
-////                    Glide.with(getApplicationContext()).load(user.getImageURL()).into(profile_image);
-////                }
-//                //INITIALISE THE RECYCLER
-//               //initRecycler(mChat, remoteUser.getImageURL());
-//               readMessages(fuser.getUid(), remoteUser, remoteUser.getImageURL());
-//
-//            }
-//            @Override
-//            public void onCancelled(@NonNull DatabaseError error) {
-//
-//            }
-//        });
-
-        //SET UP DATABASE INSTANCE
+        getLocalMessages(remoteUser);
 
         //SET THE CLICK LISTENER FOR THE SEND MESSAGE
         btn_send.setOnClickListener(new View.OnClickListener() {
@@ -233,7 +197,7 @@ public class MessageActivity extends AppCompatActivity {
                 String ts = sdf.format(calendar.getTime());
 
                 if (!msg.equals("")) {
-                    sendMessage(fuser.getUid(), remoteUser.getId(), msg, ts);
+                    storeMessageOnDb(fuser.getUid(), remoteUser.getId(), msg, ts);
                     storeLocalMessage(fuser.getUid(), remoteUser.getId(), msg, ts, viewModel);
                 } else {
                     Toast.makeText(MessageActivity.this, "You cannot send empty messages", Toast.LENGTH_SHORT).show();
@@ -278,24 +242,20 @@ public class MessageActivity extends AppCompatActivity {
         return remoteUser;
     }
 
-
-    //TODO try making this get local messages function a callback so that we call it once then return the data and update the recycler list only at this point
-    private List<Chat> getLocalMessages(User remoteUser) {
-        List<Chat> localChatList = new ArrayList<>();
+    private void getLocalMessages(User remoteUser) {
         viewModel.getAllChats().observe(this, chatsList -> {
+            List<Chat> localChatList = new ArrayList<>();
             for (Kotlin.Chat item : chatsList) {
                 //Log.d("Chat", item.getMessage() + " sent by: " + item.getSender() + " Sent to: " + item.getReceiver());
-                if (item.getReceiver().equals(remoteUser.getId())) {
+                if (item.getReceiver().equals(remoteUser.getId()) && item.getSender().equals(fuser.getUid())) {
                     localChatsForReceiver.add(item);
                     Log.d("Chat, why no work?", item.getMessage() + " sent by " + item.getSender() + " send to: " +item.getReceiver());
                     Chat itemj = new Chat(item.getSender(), item.getReceiver(), item.getMessage(), false, item.getMessageTimestamp());
                     localChatList.add(itemj);
-                    Log.d("Updater", "We are in the get local messages function again");
                 }
             }
+            messageAdapter.updateList(localChatList);
         });
-        // INITIALISE THE RECYCLERVIEW
-        return localChatList;
     }
 
     private void seenMessage(User remoteUser) {
@@ -322,7 +282,7 @@ public class MessageActivity extends AppCompatActivity {
         });
     }
 
-    private void sendMessage(String sender, String receiver, String message, String timestampString){
+    private void storeMessageOnDb(String sender, String receiver, String message, String timestampString){
 
         String chat_db_ref = GlobalMethods.compareIdsToCreateReference(sender, receiver);
 
@@ -378,7 +338,6 @@ public class MessageActivity extends AppCompatActivity {
             public void onCancelled(@NonNull DatabaseError error) {}
         });
 
-
         final String msg = encryptedMessage;
 
         reference = FirebaseDatabase.getInstance().getReference("Users").child(fuser.getUid());
@@ -397,21 +356,8 @@ public class MessageActivity extends AppCompatActivity {
             }
         });
 
-        //new AddItems().execute();
-
         String ts_spacesRemoved = timestampString.replaceAll("\\s+", "_");
         ts_spacesRemoved = ts_spacesRemoved.replaceAll("/", "-");
-
-        //TODO set up a local database to store local messages, so that they do not need to be stored on the db.
-        String storageString = fuser.getUid() + userid + "_" + ts_spacesRemoved;
-        SharedPreferences sharedPreferences = getSharedPreferences(storageString, Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putString("sender", sender);
-        editor.putString("receiver", receiver);
-        editor.putString("message", message);
-        editor.putBoolean("isSeen", false);
-        editor.putString("messageTimestamp", timestampString);
-
 
     }
 

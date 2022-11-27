@@ -111,7 +111,6 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
          */
         RecyclerDiffUtilCallback diffUtilCallback = new RecyclerDiffUtilCallback(mChat,insertList);
         DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(diffUtilCallback);
-        Log.d("Inserter", "Here is the diff result of the two lists");
         mChat.addAll(insertList);
         diffResult.dispatchUpdatesTo(this);
     }
@@ -121,6 +120,13 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
          * update list clear old data and update new data
          */
         RecyclerDiffUtilCallback diffUtilCallback = new RecyclerDiffUtilCallback(mChat,newList);
+        for (Chat chat : mChat){
+            Log.d("chat_item", "Original_list_item " + chat.getMessage()+ " " + chat.getMessageTimestamp() + " " + chat.getSender() + " " + chat.getReceiver() + " " + chat.isSeen());
+        }
+        for (Chat chat : newList) {
+            Log.d("chat_item", "new_list_item " + chat.getMessage()+ " " + chat.getMessageTimestamp() + " " + chat.getSender() + " " + chat.getReceiver() + " " + chat.isSeen());
+        }
+
         DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(diffUtilCallback);
         mChat.clear();
         mChat.addAll(newList);
