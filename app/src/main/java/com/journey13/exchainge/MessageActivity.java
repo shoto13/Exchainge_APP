@@ -103,6 +103,7 @@ public class MessageActivity extends AppCompatActivity {
     EncryptedLocalUser encryptedLocalUser;
     EncryptedSession encryptedSession;
     private List<Kotlin.Chat> localChatsForReceiver;
+    List<Chat> localChatList;
 
     Intent intent;
     ValueEventListener seenListener;
@@ -146,6 +147,7 @@ public class MessageActivity extends AppCompatActivity {
         mUsers = new ArrayList<>();
         mChat = new ArrayList<>();
         intent = getIntent();
+        localChatList = new ArrayList<>();
         // // // // // // // // //
 
 
@@ -244,7 +246,7 @@ public class MessageActivity extends AppCompatActivity {
 
     private void getLocalMessages(User remoteUser) {
         viewModel.getAllChats().observe(this, chatsList -> {
-            List<Chat> localChatList = new ArrayList<>();
+            localChatList.clear();
             for (Kotlin.Chat item : chatsList) {
                 //Log.d("Chat", item.getMessage() + " sent by: " + item.getSender() + " Sent to: " + item.getReceiver());
                 if (item.getReceiver().equals(remoteUser.getId()) && item.getSender().equals(fuser.getUid())) {
@@ -432,20 +434,6 @@ public class MessageActivity extends AppCompatActivity {
                             mChat.add(chat);
                         }
                 }
-                // READ MESSAGES ON THE LOCAL DATABASE
-//                viewModel.getAllChats().observe(MessageActivity.this, chatsList -> {
-//                    for (Kotlin.Chat item : chatsList) {
-//                        //Log.d("Chat", item.getMessage() + " sent by: " + item.getSender() + " Sent to: " + item.getReceiver());
-//                        if (item.getReceiver().equals(userid)) {
-//                            localChatsForReceiver.add(item);
-//                            Log.d("Chat", item.getMessage() + " sent by " + item.getSender() + " send to: " +item.getReceiver());
-//                            Chat itemj = new Chat(item.getSender(), item.getReceiver(), item.getMessage(), false, item.getMessageTimestamp());
-//                            mChat.add(itemj);
-//                        }
-//                        //Log.d("Chat", item.getMessage() + " sent by: " + item.getSender() + " Sent to: " + item.getReceiver());
-//                    }
-//                });
-                messageAdapter.updateList(mChat);
             }
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
