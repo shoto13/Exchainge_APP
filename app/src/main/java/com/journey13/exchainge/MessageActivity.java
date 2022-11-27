@@ -212,6 +212,10 @@ public class MessageActivity extends AppCompatActivity {
         isContact(remoteUser);
 
         localChatsForReceiver = new ArrayList<>();
+
+        //TODO : LOCAL MESSAGES NOW DISPLAYING CORRECTLY FROM THE LOCAL DB, NOW WE NEED SIMPLY TO
+        //TODO : UPDATE THE SAME LIST WHEN A NEW MESSAGE IS DETECTED ON THE SERVER SO WE HAVE
+        //TODO : BOTH REMOTE AND LOCAL MESSAGES DISPLAYING, AND NEW MESSAGES ARE BEING STORED ON THE LOCAL DEVICE
     }
 
     private User getUserFromExtras() {
@@ -358,8 +362,6 @@ public class MessageActivity extends AppCompatActivity {
             }
         });
 
-        String ts_spacesRemoved = timestampString.replaceAll("\\s+", "_");
-        ts_spacesRemoved = ts_spacesRemoved.replaceAll("/", "-");
 
     }
 
@@ -422,16 +424,14 @@ public class MessageActivity extends AppCompatActivity {
 //                    if (chat.getReceiver() != null  || chat.getSender() != null) {
                     //chat.getReceiver() != null && chat.getSender() != null && chat.getReceiver().equals(userid) && chat.getSender().equals(myid)
                     assert chat != null;
-                    if (chat.getReceiver() != null && chat.getSender() != null && chat.getReceiver().equals(myid) && chat.getSender().equals(userid) ||
-                    chat.getReceiver() != null && chat.getSender() != null && chat.getReceiver().equals(userid) && chat.getSender().equals(myid)) {
+                    if (chat.getReceiver() != null && chat.getSender() != null && chat.getReceiver().equals(myid) && chat.getSender().equals(userid)) {
                             String encryptedMessage = chat.getMessage();
 
                             // TODO REPLACE THIS LINE WHEN WE ARE READY TO ENCRYPT/DECRYPT AGAIN
                             //String decryptedMessage = encryptedSession.decrypt(encryptedMessage);
                             String decryptedMessage = encryptedMessage;
-
                             chat.setMessage(decryptedMessage);
-                            mChat.add(chat);
+
                         }
                 }
             }
