@@ -1,5 +1,7 @@
 package com.journey13.exchainge.Model;
 
+import java.util.UUID;
+
 public class Chat {
 
     private String sender;
@@ -7,6 +9,7 @@ public class Chat {
     private String message;
     private boolean isSeen;
     private String messageTimestamp;
+    private String UMID;
 
     public Chat(String sender, String receiver, String message, boolean isSeen, String messageTimestamp) {
         this.sender = sender;
@@ -14,6 +17,16 @@ public class Chat {
         this.message = message;
         this.isSeen = isSeen;
         this.messageTimestamp = messageTimestamp;
+        this.UMID = UUID.randomUUID().toString();
+    }
+
+    public Chat(String sender, String receiver, String message, boolean isSeen, String messageTimestamp, String UMID) {
+        this.sender = sender;
+        this.receiver = receiver;
+        this.message = message;
+        this.isSeen = isSeen;
+        this.messageTimestamp = messageTimestamp;
+        this.UMID = UMID;
     }
 
     public Chat() {
@@ -57,5 +70,9 @@ public class Chat {
 
     public void setMessageTimestamp(String messageTimestamp) {
         this.messageTimestamp = messageTimestamp;
+    }
+
+    public String getUMID() {
+        return UMID;
     }
 }

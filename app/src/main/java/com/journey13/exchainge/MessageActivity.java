@@ -87,7 +87,7 @@ public class MessageActivity extends AppCompatActivity {
     private ImageButton btn_send, decline_contact_button;
     private EditText text_send;
     private MessageAdapter messageAdapter;
-    private List<Chat> mChat;
+    private List<Chat> mChat, chatty;
     private RecyclerView recyclerView;
     private Toolbar addContactToolbar;
     private String userid;
@@ -146,6 +146,7 @@ public class MessageActivity extends AppCompatActivity {
         decline_contact_button = findViewById(R.id.decline_contact_button);
         mUsers = new ArrayList<>();
         mChat = new ArrayList<>();
+        chatty = new ArrayList<>();
         intent = getIntent();
         localChatList = new ArrayList<>();
         // // // // // // // // //
@@ -163,7 +164,7 @@ public class MessageActivity extends AppCompatActivity {
         SharedPreferences sharedPreferences = getSharedPreferences(storageString, Context.MODE_PRIVATE);
 
         Chat tempChat = new Chat("test", "test", "message", false, "today");
-        mChat.add(tempChat);
+        chatty.add(tempChat);
 
         //CALLBACK FOR THE REMOTE/LOCAL ENCRYPTED USER
         GlobalMethods.getRemoteAndLocalEncryptedUser(new GlobalMethods.MyCallback<CreateLocalAndRemoteUser>()  {
@@ -180,12 +181,26 @@ public class MessageActivity extends AppCompatActivity {
         }, fuser, remoteUser.getId(), sharedPreferences);
 
         //INITIALISE THE RECYCLERVIEW
-        initRecycler(mChat, remoteUser.getImageURL());
+        initRecycler(chatty, remoteUser.getImageURL());
 
         //SET UP VIEWMODEL AND GET LOCAL MESSAGES STORED IN THE ROOM DATABASE
         viewModel = ViewModelProviders.of(this).get(ChatViewModel.class);
         Context mContext = getApplicationContext();
-        getLocalMessages(remoteUser);
+
+        getRemoteMessages(new MyCallback<ArrayList<Chat>>() {
+            @Override
+            public void callback(ArrayList<Chat> data) {
+                //storeLocalMessagesAsList(data);
+                getLocalMessages(remoteUser, data);
+                for (Chat item : data) {
+                    Log.d("info_Return", item.getMessage());
+                }
+            }
+        }, remoteUser, fuser);
+
+
+        //getLocalMessages(remoteUser);
+        //getRemoteMessages(remoteUser);
 
         //SET THE CLICK LISTENER FOR THE SEND MESSAGE
         btn_send.setOnClickListener(new View.OnClickListener() {
@@ -198,9 +213,11 @@ public class MessageActivity extends AppCompatActivity {
                 SimpleDateFormat sdf = new SimpleDateFormat("HH:mm dd/MM/yy");
                 String ts = sdf.format(calendar.getTime());
 
-                if (!msg.equals("")) {
-                    storeMessageOnDb(fuser.getUid(), remoteUser.getId(), msg, ts);
-                    storeLocalMessage(fuser.getUid(), remoteUser.getId(), msg, ts, viewModel);
+                Chat chat = new Chat(fuser.getUid(), remoteUser.getId(), msg, false, ts);
+
+                if (!chat.getMessage().equals("")) {
+                    storeMessageOnDb(chat);
+                    storeLocalMessage(chat, viewModel);
                 } else {
                     Toast.makeText(MessageActivity.this, "You cannot send empty messages", Toast.LENGTH_SHORT).show();
                 }
@@ -216,6 +233,7 @@ public class MessageActivity extends AppCompatActivity {
         //TODO : LOCAL MESSAGES NOW DISPLAYING CORRECTLY FROM THE LOCAL DB, NOW WE NEED SIMPLY TO
         //TODO : UPDATE THE SAME LIST WHEN A NEW MESSAGE IS DETECTED ON THE SERVER SO WE HAVE
         //TODO : BOTH REMOTE AND LOCAL MESSAGES DISPLAYING, AND NEW MESSAGES ARE BEING STORED ON THE LOCAL DEVICE
+
     }
 
     private User getUserFromExtras() {
@@ -248,16 +266,18 @@ public class MessageActivity extends AppCompatActivity {
         return remoteUser;
     }
 
-    private void getLocalMessages(User remoteUser) {
+    private void getLocalMessages(User remoteUser, List<Chat> remoteMessages) {
         viewModel.getAllChats().observe(this, chatsList -> {
             localChatList.clear();
             for (Kotlin.Chat item : chatsList) {
-                //Log.d("Chat", item.getMessage() + " sent by: " + item.getSender() + " Sent to: " + item.getReceiver());
-                if (item.getReceiver().equals(remoteUser.getId()) && item.getSender().equals(fuser.getUid())) {
-                    localChatsForReceiver.add(item);
-                    Log.d("Chat, why no work?", item.getMessage() + " sent by " + item.getSender() + " send to: " +item.getReceiver());
-                    Chat itemj = new Chat(item.getSender(), item.getReceiver(), item.getMessage(), false, item.getMessageTimestamp());
-                    localChatList.add(itemj);
+                if (item.getReceiver().equals(remoteUser.getId()) && item.getSender().equals(fuser.getUid()) ||
+                    item.getReceiver().equals(fuser.getUid()) && item.getSender().equals(remoteUser.getId())) {
+                    //localChatsForReceiver.add(item);
+                    Log.d("Chat_messager_listing", item.getMessage() + " sent by " + item.getSender() + " send to: " +item.getReceiver() + "here is the UMID " + item.getUMID());
+                    Chat itemj = new Chat(item.getSender(), item.getReceiver(), item.getMessage(), false, item.getMessageTimestamp(), item.getUMID());
+                    if (!localChatList.contains(itemj)) {
+                        localChatList.add(itemj);
+                    }
                 }
             }
             messageAdapter.updateList(localChatList);
@@ -288,23 +308,25 @@ public class MessageActivity extends AppCompatActivity {
         });
     }
 
-    private void storeMessageOnDb(String sender, String receiver, String message, String timestampString){
+    private void storeMessageOnDb(Chat chat_to_store){
 
-        String chat_db_ref = GlobalMethods.compareIdsToCreateReference(sender, receiver);
+        //hat chat_to_add = new Chat(sender, receiver, message, false, timestampString);
+        String chat_db_ref = GlobalMethods.compareIdsToCreateReference(chat_to_store.getSender(), chat_to_store.getReceiver());
 
         //TODO SWAP BACK TO THIS WHEN READY TO ENCRYPT MESSAGES AGAIN
         //String encryptedMessage = encryptedSession.encrypt(message);
-        String encryptedMessage = message;
+        String encryptedMessage = chat_to_store.getMessage();
 
         DatabaseReference reference = FirebaseDatabase.getInstance("https://exchainge-db047-default-rtdb.europe-west1.firebasedatabase.app/").getReference("Chats");
-        final String userid = receiver;
+        final String userid = chat_to_store.getReceiver();
 
         HashMap<String, Object> hashMap = new HashMap<>();
-        hashMap.put("sender", sender);
-        hashMap.put("receiver", receiver);
+        hashMap.put("sender", chat_to_store.getSender());
+        hashMap.put("receiver", chat_to_store.getReceiver());
         hashMap.put("message", encryptedMessage);
         hashMap.put("isSeen", false);
-        hashMap.put("messageTimestamp", timestampString);
+        hashMap.put("messageTimestamp", chat_to_store.getMessageTimestamp());
+        hashMap.put("UMID", chat_to_store.getUMID());
 
         reference.child(chat_db_ref).push().setValue(hashMap);
 
@@ -352,7 +374,7 @@ public class MessageActivity extends AppCompatActivity {
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 User user = snapshot.getValue(User.class);
                 if (notify) {
-                    sendNotification(receiver, user.getUsername(), msg);
+                    sendNotification(chat_to_store.getReceiver(), user.getUsername(), msg);
                 }
                 notify = false;
             }
@@ -361,15 +383,36 @@ public class MessageActivity extends AppCompatActivity {
 
             }
         });
+    }
 
+    private void storeLocalMessage(Chat chat_to_store, ChatViewModel viewModel) {
+        // SAVE THE MESSAGES LOCALLY
+        Kotlin.Chat chat = new Kotlin.Chat(chat_to_store.getMessage(), chat_to_store.getMessageTimestamp(), chat_to_store.getReceiver(), chat_to_store.getSender(), chat_to_store.getUMID());
+        viewModel.insertChat(chat);
+
+//        viewModel.getAllChats().observe(this, chatsList -> {
+//            int i = 0;
+//            for (Kotlin.Chat item : chatsList) {
+//                if (item.getUMID() != chat.getUMID()) {
+//                    i++;
+//                    if (i == chatsList.size()) {
+//                        viewModel.insertChat(chat);
+//
+//                    }
+//                }
+//            }
+//        });
 
     }
 
-    private void storeLocalMessage(String senderid, String receiverid, String message, String timestampString, ChatViewModel viewModel) {
-        // SAVE THE MESSAGES LOCALLY
-        Kotlin.Chat chat = new Kotlin.Chat(message, timestampString, receiverid, senderid);
 
-        viewModel.insertChat(chat);
+    private void storeLocalMessagesFromList(List<Chat> chat_list) {
+
+        for (Chat item : chat_list) {
+            Kotlin.Chat chat = new Kotlin.Chat(item.getMessage(), item.getMessageTimestamp(), item.getReceiver(), item.getSender(), item.getUMID());
+
+            viewModel.insertChat(chat);
+        }
     }
 
     private void sendNotification(String receiver, String username, String message) {
@@ -441,9 +484,44 @@ public class MessageActivity extends AppCompatActivity {
             }
         });
 
+    }
 
+    private void getRemoteMessages(@NonNull MyCallback<ArrayList<Chat>> remoteChats, User remoteUser, FirebaseUser localUser) {
+        String userid = remoteUser.getId();
+        //  READ MESSAGES FROM THE REMOTE DATABASE
+        String idRef = GlobalMethods.compareIdsToCreateReference(localUser.getUid(), remoteUser.getId());
+        List<Chat> remChats = new ArrayList<>();
+        reference = FirebaseDatabase.getInstance("https://exchainge-db047-default-rtdb.europe-west1.firebasedatabase.app/").getReference("Chats").child(idRef);
+        reference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                remChats.clear();
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                    Chat chat = snapshot.getValue(Chat.class);
+//                    if (chat.getReceiver() != null  || chat.getSender() != null) {
+                    //chat.getReceiver() != null && chat.getSender() != null && chat.getReceiver().equals(userid) && chat.getSender().equals(myid)localUser.getUid()
+                    assert chat != null;
+                    if (chat.getReceiver() != null && chat.getSender() != null && chat.getReceiver().equals(fuser.getUid()) && chat.getSender().equals(remoteUser.getId())) {
+                        String encryptedMessage = chat.getMessage();
+                        // TODO REPLACE THIS LINE WHEN WE ARE READY TO ENCRYPT/DECRYPT AGAIN
+                        //String decryptedMessage = encryptedSession.decrypt(encryptedMessage);
+                        String decryptedMessage = encryptedMessage;
+                        chat.setMessage(decryptedMessage);
+                        remChats.add(chat);
+                        //storeLocalMessageFromJavaChat(chat);
+                    }
+                }
+                storeLocalMessagesFromList(remChats);
+                remoteChats.callback((ArrayList<Chat>) remChats);
 
+            }
 
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+
+        });
     }
 
     private void initRecycler(List<Chat> mChat, String imageurl) {

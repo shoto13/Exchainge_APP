@@ -4,15 +4,16 @@ import androidx.lifecycle.LiveData
 import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
+import androidx.room.OnConflictStrategy
 import androidx.room.Query
 
 @Dao
 interface ChatDao {
     //Insert new chat
-    @Insert
+    @Insert (onConflict = OnConflictStrategy.IGNORE)
     fun insert(chat: Chat)
 
-    @Insert
+    @Insert (onConflict = OnConflictStrategy.IGNORE)
     fun insertAll(chat: Chat);
 
     //Delete chat item
