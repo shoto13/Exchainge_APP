@@ -151,7 +151,6 @@ public class MessageActivity extends AppCompatActivity {
         localChatList = new ArrayList<>();
         // // // // // // // // //
 
-
         //Build the remote user item from the intent extras
         User remoteUser = getUserFromExtras();
         String userid = remoteUser.getId();
@@ -163,22 +162,35 @@ public class MessageActivity extends AppCompatActivity {
         String storageString = fuser.getUid() + "_STORED_KEY_PREFS";
         SharedPreferences sharedPreferences = getSharedPreferences(storageString, Context.MODE_PRIVATE);
 
-        Chat tempChat = new Chat("test", "test", "message", false, "today");
+        Chat tempChat = new Chat("test", "test", "", false, "today");
         chatty.add(tempChat);
 
         //CALLBACK FOR THE REMOTE/LOCAL ENCRYPTED USER
-        GlobalMethods.getRemoteAndLocalEncryptedUser(new GlobalMethods.MyCallback<CreateLocalAndRemoteUser>()  {
-            @Override
-            public void callback(CreateLocalAndRemoteUser data) {
-                System.out.println(data);
-                try {
-                    encryptedSession = new EncryptedSession(data.getEncryptedLocalUser(), data.getEncryptedRemoteUser());
-                    System.out.println("the encrypted session was built! :):):):):)");
-                } catch (Exception e) {
-                    System.out.println("The Encrypted session could not be build, not too sure why just yet!");
+        if (encryptedSession == null) {
+            GlobalMethods.getRemoteAndLocalEncryptedUser(new GlobalMethods.MyCallback<CreateLocalAndRemoteUser>() {
+                @Override
+                public void callback(CreateLocalAndRemoteUser data) {
+                    System.out.println(data);
+                    try {
+                        encryptedSession = new EncryptedSession(data.getEncryptedLocalUser(), data.getEncryptedRemoteUser());
+                        Log.d("Encrypted_session_notifier", "the encrypted session was built! :):):):):)");
+
+                        getRemoteMessages(new MyCallback<ArrayList<Chat>>() {
+                            @Override
+                            public void callback(ArrayList<Chat> data) {
+                                //storeLocalMessagesAsList(data);
+                                getLocalMessages(remoteUser, data);
+                                for (Chat item : data) {
+                                    Log.d("info_Return", item.getMessage());
+                                }
+                            }
+                        }, remoteUser, fuser);
+                    } catch (Exception e) {
+                        Log.d("Encrypted_session_notifier", "The encrypted session could not be built");
+                    }
                 }
-            }
-        }, fuser, remoteUser.getId(), sharedPreferences);
+            }, fuser, remoteUser.getId(), sharedPreferences);
+        }
 
         //INITIALISE THE RECYCLERVIEW
         initRecycler(chatty, remoteUser.getImageURL());
@@ -187,20 +199,17 @@ public class MessageActivity extends AppCompatActivity {
         viewModel = ViewModelProviders.of(this).get(ChatViewModel.class);
         Context mContext = getApplicationContext();
 
-        getRemoteMessages(new MyCallback<ArrayList<Chat>>() {
-            @Override
-            public void callback(ArrayList<Chat> data) {
-                //storeLocalMessagesAsList(data);
-                getLocalMessages(remoteUser, data);
-                for (Chat item : data) {
-                    Log.d("info_Return", item.getMessage());
-                }
-            }
-        }, remoteUser, fuser);
+//        getRemoteMessages(new MyCallback<ArrayList<Chat>>() {
+//            @Override
+//            public void callback(ArrayList<Chat> data) {
+//                //storeLocalMessagesAsList(data);
+//                getLocalMessages(remoteUser, data);
+//                for (Chat item : data) {
+//                    Log.d("info_Return", item.getMessage());
+//                }
+//            }
+//        }, remoteUser, fuser);
 
-
-        //getLocalMessages(remoteUser);
-        //getRemoteMessages(remoteUser);
 
         //SET THE CLICK LISTENER FOR THE SEND MESSAGE
         btn_send.setOnClickListener(new View.OnClickListener() {
@@ -229,11 +238,6 @@ public class MessageActivity extends AppCompatActivity {
         isContact(remoteUser);
 
         localChatsForReceiver = new ArrayList<>();
-
-        //TODO : LOCAL MESSAGES NOW DISPLAYING CORRECTLY FROM THE LOCAL DB, NOW WE NEED SIMPLY TO
-        //TODO : UPDATE THE SAME LIST WHEN A NEW MESSAGE IS DETECTED ON THE SERVER SO WE HAVE
-        //TODO : BOTH REMOTE AND LOCAL MESSAGES DISPLAYING, AND NEW MESSAGES ARE BEING STORED ON THE LOCAL DEVICE
-
     }
 
     private User getUserFromExtras() {
@@ -315,7 +319,9 @@ public class MessageActivity extends AppCompatActivity {
 
         //TODO SWAP BACK TO THIS WHEN READY TO ENCRYPT MESSAGES AGAIN
         //String encryptedMessage = encryptedSession.encrypt(message);
-        String encryptedMessage = chat_to_store.getMessage();
+        //String encryptedMessage = chat_to_store.getMessage();
+
+        String encryptedMessage = encryptedSession.encrypt(chat_to_store.getMessage());
 
         DatabaseReference reference = FirebaseDatabase.getInstance("https://exchainge-db047-default-rtdb.europe-west1.firebasedatabase.app/").getReference("Chats");
         final String userid = chat_to_store.getReceiver();
@@ -390,21 +396,7 @@ public class MessageActivity extends AppCompatActivity {
         Kotlin.Chat chat = new Kotlin.Chat(chat_to_store.getMessage(), chat_to_store.getMessageTimestamp(), chat_to_store.getReceiver(), chat_to_store.getSender(), chat_to_store.getUMID());
         viewModel.insertChat(chat);
 
-//        viewModel.getAllChats().observe(this, chatsList -> {
-//            int i = 0;
-//            for (Kotlin.Chat item : chatsList) {
-//                if (item.getUMID() != chat.getUMID()) {
-//                    i++;
-//                    if (i == chatsList.size()) {
-//                        viewModel.insertChat(chat);
-//
-//                    }
-//                }
-//            }
-//        });
-
     }
-
 
     private void storeLocalMessagesFromList(List<Chat> chat_list) {
 
@@ -451,41 +443,6 @@ public class MessageActivity extends AppCompatActivity {
         });
     }
 
-    private void readMessages(final String myid, final User remoteUser, final String imageurl) {
-
-        String userid = remoteUser.getId();
-        //  READ MESSAGES FROM THE REMOTE DATABASE
-        String idRef = GlobalMethods.compareIdsToCreateReference(myid, remoteUser.getId());
-        mChat = new ArrayList<>();
-        reference = FirebaseDatabase.getInstance("https://exchainge-db047-default-rtdb.europe-west1.firebasedatabase.app/").getReference("Chats").child(idRef);
-        reference.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                mChat.clear();
-                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                    Chat chat = snapshot.getValue(Chat.class);
-//                    if (chat.getReceiver() != null  || chat.getSender() != null) {
-                    //chat.getReceiver() != null && chat.getSender() != null && chat.getReceiver().equals(userid) && chat.getSender().equals(myid)
-                    assert chat != null;
-                    if (chat.getReceiver() != null && chat.getSender() != null && chat.getReceiver().equals(myid) && chat.getSender().equals(userid)) {
-                            String encryptedMessage = chat.getMessage();
-
-                            // TODO REPLACE THIS LINE WHEN WE ARE READY TO ENCRYPT/DECRYPT AGAIN
-                            //String decryptedMessage = encryptedSession.decrypt(encryptedMessage);
-                            String decryptedMessage = encryptedMessage;
-                            chat.setMessage(decryptedMessage);
-
-                        }
-                }
-            }
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
-            }
-        });
-
-    }
-
     private void getRemoteMessages(@NonNull MyCallback<ArrayList<Chat>> remoteChats, User remoteUser, FirebaseUser localUser) {
         String userid = remoteUser.getId();
         //  READ MESSAGES FROM THE REMOTE DATABASE
@@ -504,10 +461,16 @@ public class MessageActivity extends AppCompatActivity {
                     if (chat.getReceiver() != null && chat.getSender() != null && chat.getReceiver().equals(fuser.getUid()) && chat.getSender().equals(remoteUser.getId())) {
                         String encryptedMessage = chat.getMessage();
                         // TODO REPLACE THIS LINE WHEN WE ARE READY TO ENCRYPT/DECRYPT AGAIN
-                        //String decryptedMessage = encryptedSession.decrypt(encryptedMessage);
-                        String decryptedMessage = encryptedMessage;
-                        chat.setMessage(decryptedMessage);
-                        remChats.add(chat);
+
+                        if (encryptedMessage != null ) {
+                            Log.d("encrypted_message", "Here is the encrypted message item " + encryptedMessage);
+                            Log.d("encrypted_message", "Here is the encrypted message directly from the chat item " + chat.getMessage());
+                            String decryptedMessage = encryptedSession.decrypt(encryptedMessage);
+                            chat.setMessage(decryptedMessage);
+                            remChats.add(chat);
+                        }
+                        //String decryptedMessage = encryptedMessage;
+
                         //storeLocalMessageFromJavaChat(chat);
                     }
                 }
