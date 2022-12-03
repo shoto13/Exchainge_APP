@@ -199,18 +199,6 @@ public class MessageActivity extends AppCompatActivity {
         viewModel = ViewModelProviders.of(this).get(ChatViewModel.class);
         Context mContext = getApplicationContext();
 
-//        getRemoteMessages(new MyCallback<ArrayList<Chat>>() {
-//            @Override
-//            public void callback(ArrayList<Chat> data) {
-//                //storeLocalMessagesAsList(data);
-//                getLocalMessages(remoteUser, data);
-//                for (Chat item : data) {
-//                    Log.d("info_Return", item.getMessage());
-//                }
-//            }
-//        }, remoteUser, fuser);
-
-
         //SET THE CLICK LISTENER FOR THE SEND MESSAGE
         btn_send.setOnClickListener(new View.OnClickListener() {
             @Override

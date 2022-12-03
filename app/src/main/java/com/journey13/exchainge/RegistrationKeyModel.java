@@ -1,5 +1,7 @@
 package com.journey13.exchainge;
 
+import android.util.Log;
+
 import com.google.firebase.installations.Utils;
 import com.google.gson.Gson;
 
@@ -81,8 +83,11 @@ public class RegistrationKeyModel {
         List<String> preKeyList = new ArrayList<>();
         for (PreKeyRecord preKey : preKeys) {
             byte[] serialized = preKey.serialize();
+            Log.d("Prekey_info", "here is a single serialized prekey " + serialized);
             preKeyList.add(Base64.getEncoder().encodeToString(serialized));
         }
+        Log.d("Prekey_info", "Here is what the prekey info being sent back to the prekeyregistermethod looks like as a string " + preKeyList.toString());
+
         return preKeyList.toString();
     }
 

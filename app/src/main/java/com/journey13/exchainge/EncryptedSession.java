@@ -1,5 +1,7 @@
 package com.journey13.exchainge;
 
+import android.util.Log;
+
 import org.whispersystems.libsignal.DuplicateMessageException;
 import org.whispersystems.libsignal.InvalidKeyException;
 import org.whispersystems.libsignal.InvalidKeyIdException;
@@ -55,6 +57,8 @@ public class EncryptedSession {
         protocolStore.storeSignedPreKey(localUser.getSignedPreKey().getId(), localUser.getSignedPreKey());
 
         //Session
+        Log.d("Prekey_info", "Here is the preKeyid being passed to the session builder prekeybundle builder " + remoteUser.getPreKeyId());
+
         SessionBuilder sessionBuilder = new SessionBuilder(protocolStore, remoteUser.getSignalProtocolAddress());
         PreKeyBundle preKeyBundle = new PreKeyBundle(
                 remoteUser.getRegistrationId(),
@@ -66,6 +70,7 @@ public class EncryptedSession {
                 remoteUser.getSignedPreKeySignature(),
                 remoteUser.getIdentityKeyPairPublicKey()
         );
+
 
         sessionBuilder.process(preKeyBundle);
         mSessionCipher = new SessionCipher(protocolStore, protocolAddress);
