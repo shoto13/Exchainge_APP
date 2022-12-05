@@ -83,7 +83,7 @@ public class RegistrationKeyModel {
         List<String> preKeyList = new ArrayList<>();
         for (PreKeyRecord preKey : preKeys) {
             byte[] serialized = preKey.serialize();
-            Log.d("Prekey_info", "here is a single serialized prekey " + serialized);
+            Log.d("Prekey_info", "here is a single serialized prekey " + serialized.toString());
             preKeyList.add(Base64.getEncoder().encodeToString(serialized));
         }
         Log.d("Prekey_info", "Here is what the prekey info being sent back to the prekeyregistermethod looks like as a string " + preKeyList.toString());
