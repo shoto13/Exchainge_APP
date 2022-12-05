@@ -69,6 +69,7 @@ public class EncryptedSession {
                 remoteUser.getSignedPreKeyPublicKey(),
                 remoteUser.getSignedPreKeySignature(),
                 remoteUser.getIdentityKeyPairPublicKey()
+
         );
 
 
