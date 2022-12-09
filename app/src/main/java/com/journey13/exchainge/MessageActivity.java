@@ -75,6 +75,7 @@ import kotlin.jvm.internal.Intrinsics;
 import retrofit2.Call;
 import retrofit2.Callback;
 import java.sql.Timestamp;
+import java.util.ServiceConfigurationError;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class MessageActivity extends AppCompatActivity {
@@ -93,6 +94,7 @@ public class MessageActivity extends AppCompatActivity {
     private String userid;
     private ChatViewModel viewModel;
     private User user;
+    private List<String> serverDeletionMessageList;
 
     //REMOTE USER ENCRYPTED VARIABLES
     String identityKeyPair;
@@ -149,6 +151,7 @@ public class MessageActivity extends AppCompatActivity {
         chatty = new ArrayList<>();
         intent = getIntent();
         localChatList = new ArrayList<>();
+        serverDeletionMessageList = new ArrayList<>();
         // // // // // // // // //
 
         //Build the remote user item from the intent extras
@@ -179,6 +182,7 @@ public class MessageActivity extends AppCompatActivity {
                             @Override
                             public void callback(ArrayList<Chat> data) {
                                 //storeLocalMessagesAsList(data);
+                                deleteServerMessages(fuser, remoteUser, serverDeletionMessageList);
                                 getLocalMessages(remoteUser, data);
                                 for (Chat item : data) {
                                     Log.d("info_Return", item.getMessage());
@@ -222,7 +226,7 @@ public class MessageActivity extends AppCompatActivity {
             }
         });
 
-        seenMessage(remoteUser);
+        //seenMessage(remoteUser);
         isContact(remoteUser);
 
         localChatsForReceiver = new ArrayList<>();
@@ -443,13 +447,13 @@ public class MessageActivity extends AppCompatActivity {
                 remChats.clear();
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                     Chat chat = snapshot.getValue(Chat.class);
+                    String messageid = snapshot.getKey();
 //                    if (chat.getReceiver() != null  || chat.getSender() != null) {
                     //chat.getReceiver() != null && chat.getSender() != null && chat.getReceiver().equals(userid) && chat.getSender().equals(myid)localUser.getUid()
                     assert chat != null;
                     if (chat.getReceiver() != null && chat.getSender() != null && chat.getReceiver().equals(fuser.getUid()) && chat.getSender().equals(remoteUser.getId())) {
                         String encryptedMessage = chat.getMessage();
-                        // TODO REPLACE THIS LINE WHEN WE ARE READY TO ENCRYPT/DECRYPT AGAIN
-
+                        serverDeletionMessageList.add(messageid);
                         if (encryptedMessage != null ) {
                             Log.d("encrypted_message", "Here is the encrypted message item " + encryptedMessage);
                             Log.d("encrypted_message", "Here is the encrypted message directly from the chat item " + chat.getMessage());
@@ -462,6 +466,8 @@ public class MessageActivity extends AppCompatActivity {
                         //storeLocalMessageFromJavaChat(chat);
                     }
                 }
+
+                //decryptListOfMessagesFromServer(remChats)
                 storeLocalMessagesFromList(remChats);
                 remoteChats.callback((ArrayList<Chat>) remChats);
 
@@ -473,6 +479,17 @@ public class MessageActivity extends AppCompatActivity {
             }
 
         });
+
+    }
+
+    private void deleteServerMessages(FirebaseUser localUser, User remoteUser, List<String> messagesToDelete) {
+
+        String idRef = GlobalMethods.compareIdsToCreateReference(localUser.getUid(), remoteUser.getId());
+        reference = FirebaseDatabase.getInstance("https://exchainge-db047-default-rtdb.europe-west1.firebasedatabase.app/").getReference("Chats").child(idRef);
+
+        for (String id : messagesToDelete) {
+            reference.child(id).removeValue();
+        }
     }
 
     private void initRecycler(List<Chat> mChat, String imageurl) {

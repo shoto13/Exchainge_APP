@@ -82,17 +82,20 @@ public class EncryptedSession {
             createSession(Operation.ENCRYPT);
             CiphertextMessage ciphertextMessage = mSessionCipher.encrypt(message.getBytes());
             PreKeySignalMessage preKeySignalMessage = new PreKeySignalMessage(ciphertextMessage.serialize());
+            //return preKeySignalMessage.serialize().toString();
             return Base64.getEncoder().encodeToString(preKeySignalMessage.serialize());
         } catch (UntrustedIdentityException | InvalidKeyException | InvalidVersionException | InvalidMessageException e) {
             return e.getMessage();
         }
     }
 
+// | DuplicateMessageException | InvalidMessageException | InvalidKeyIdException | InvalidVersionException | LegacyMessageException
     public String decrypt(String message) {
         try {
             createSession(Operation.DECRYPT);
             //byte[] bytes = message.getBytes(StandardCharsets.UTF_8);
             byte[] bytes = Base64.getDecoder().decode(message);
+            //return new String(bytes, StandardCharsets.UTF_8);
             byte[] decryptedMessage = mSessionCipher.decrypt(new PreKeySignalMessage(bytes));
             return new String(decryptedMessage, StandardCharsets.UTF_8);
         } catch (UntrustedIdentityException | InvalidKeyException | DuplicateMessageException | InvalidMessageException | InvalidKeyIdException | InvalidVersionException | LegacyMessageException e) {

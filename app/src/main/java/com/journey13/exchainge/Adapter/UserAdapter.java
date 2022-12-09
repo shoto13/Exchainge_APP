@@ -262,115 +262,115 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
     private void lastMessage(String userid, TextView last_message, TextView message_timestamp) {
 
         lastMessage = "default";
-        lastMessageTime = "";
+        lastMessageTime = "222";
         FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
 
         String idRef = GlobalMethods.compareIdsToCreateReference(firebaseUser.getUid(), userid);
 
         System.out.println("the idref in this case is " + idRef);
 
-        DatabaseReference reference = FirebaseDatabase.getInstance("https://exchainge-db047-default-rtdb.europe-west1.firebasedatabase.app/").getReference("Chats").child(idRef);
+       // DatabaseReference reference = FirebaseDatabase.getInstance("https://exchainge-db047-default-rtdb.europe-west1.firebasedatabase.app/").getReference("Chats").child(idRef);
 
-        reference.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                    Chat chat = snapshot.getValue(Chat.class);
-                    if (chat.getReceiver().equals(firebaseUser.getUid()) && chat.getSender().equals(userid)
-                            || chat.getReceiver().equals(userid) && chat.getSender().equals(firebaseUser.getUid())) {
-                        lastMessage = chat.getMessage();
-                        lastMessageTime = chat.getMessageTimestamp();}
-                }
-
-                Calendar calendar = Calendar.getInstance();
-                SimpleDateFormat sdf = new SimpleDateFormat("HH:mm dd/MM/yy");
-                String ts = sdf.format(calendar.getTime());
-
-                //SPLIT OUT THE DATE STRINGS SO WE CAN COMPARE THEM
-                //VAl 1 is month (MM)
-                //Val 2 is year (YY)
-                String[] current_date_split = ts.split("/");
-                String[] message_date_split = lastMessageTime.split("/");
-
-                //VAL 0 is hh:mm
-                //VAL 1 is Day (DD)
-                String[] time_day_split_current = current_date_split[0].split(" ");
-                String[] time_day_split_message = message_date_split[0].split(" ");
-
-                // TIME VALS ONLY hh:mm
-                String current_time_only = time_day_split_current[0];
-                String message_time_only = time_day_split_message[0];
-
-                System.out.println("The current time in line 262 is: " + current_time_only);
-                System.out.println("The message time in line 263 is : " + message_time_only);
-
-                //SPLIT time strings into minutes and hours
-                String[] minute_time_current = current_time_only.split(":");
-                String[] minute_time_message = message_time_only.split(":");
-
-                System.out.println("The minute time of the message is as follows: " + minute_time_message);
-                System.out.println("The minute time currently is as follows: " + minute_time_message);
-
-                //CONVERT MINUTES AND HOURS INTO INTEGERS
-                int current_mins = Integer.parseInt(minute_time_current[1]);
-                int current_hours = Integer.parseInt(minute_time_current[0]);
-
-                System.out.println("Current Minutes from the current mins int " + current_mins);
-                System.out.println("Current hours from the current hours int " + current_hours);
-
-                int message_mins = Integer.parseInt(minute_time_message[1]);
-                int message_hours = Integer.parseInt(minute_time_message[0]);
-
-                int current_mins_total = current_hours * 60 + current_mins;
-                int message_mins_total = message_hours * 60 + message_mins;
-
-                // GET THE DIFFERENCE BETWEEN THE TWO TIMES IN MINUTES
-                int message_current_time_difference = current_mins_total - message_mins_total;
-
-                // IF STATEMENTS BELOW DETERMINE HOW LONG AGO MESSAGES WERE SEND AND THEN FORMATS THE OUTPUT TO THE USER
-                if (ts.equals(lastMessageTime)) {
-                    message_timestamp.setText("Now");
-                } else if (message_current_time_difference < 60
-                            && message_current_time_difference > 1
-                            && current_date_split[1].equals(message_date_split[1])
-                            && current_date_split[2].equals(message_date_split[2])
-                            && time_day_split_current[1].equals(time_day_split_message[1])) {
-
-                    String displayString = message_current_time_difference + " minutes ago";
-                    message_timestamp.setText(displayString);
-
-                } else if (current_date_split[1].equals(message_date_split[1])
-                        && current_date_split[2].equals(message_date_split[2])
-                        && time_day_split_current[1].equals(time_day_split_message[1])) {
-                    if (message_current_time_difference >=60 && message_current_time_difference < 120) {
-                        message_timestamp.setText("an hour ago");
-                    } else if (message_current_time_difference >= 120 && message_current_time_difference < 180) {
-                        message_timestamp.setText("2 hours ago");
-                    } else if (message_current_time_difference >= 180 && message_current_time_difference < 240) {
-                        message_timestamp.setText("3 hours ago");
-                    } else {
-                        message_timestamp.setText(message_time_only);
-                    }
-                } else if (current_date_split[2].equals(message_date_split[2])) {
-                    String day_month = time_day_split_message[1] + "/" + message_date_split[1];
-                    message_timestamp.setText(day_month);
-                }
-
-                switch (lastMessage) {
-                    case "default":
-                        last_message.setText("~~~");
-                        break;
-
-                    default:
-                        last_message.setText(lastMessage);
-                        break;
-                }
-                lastMessage = "default";
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {}
-        });
+//        reference.addValueEventListener(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+//                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+//                    Chat chat = snapshot.getValue(Chat.class);
+//                    if (chat.getReceiver().equals(firebaseUser.getUid()) && chat.getSender().equals(userid)
+//                            || chat.getReceiver().equals(userid) && chat.getSender().equals(firebaseUser.getUid())) {
+//                        lastMessage = chat.getMessage();
+//                        lastMessageTime = chat.getMessageTimestamp();}
+//                }
+//
+//                Calendar calendar = Calendar.getInstance();
+//                SimpleDateFormat sdf = new SimpleDateFormat("HH:mm dd/MM/yy");
+//                String ts = sdf.format(calendar.getTime());
+//
+//                //SPLIT OUT THE DATE STRINGS SO WE CAN COMPARE THEM
+//                //VAl 1 is month (MM)
+//                //Val 2 is year (YY)
+//                String[] current_date_split = ts.split("/");
+//                String[] message_date_split = lastMessageTime.split("/");
+//
+//                //VAL 0 is hh:mm
+//                //VAL 1 is Day (DD)
+//                String[] time_day_split_current = current_date_split[0].split(" ");
+//                String[] time_day_split_message = message_date_split[0].split(" ");
+//
+//                // TIME VALS ONLY hh:mm
+//                String current_time_only = time_day_split_current[0];
+//                String message_time_only = time_day_split_message[0];
+//
+//                System.out.println("The current time in line 262 is: " + current_time_only);
+//                System.out.println("The message time in line 263 is : " + message_time_only);
+//
+//                //SPLIT time strings into minutes and hours
+//                String[] minute_time_current = current_time_only.split(":");
+//                String[] minute_time_message = message_time_only.split(":");
+//
+//                System.out.println("The minute time of the message is as follows: " + minute_time_message);
+//                System.out.println("The minute time currently is as follows: " + minute_time_message);
+//
+//                //CONVERT MINUTES AND HOURS INTO INTEGERS
+//                int current_mins = Integer.parseInt(minute_time_current[1]);
+//                int current_hours = Integer.parseInt(minute_time_current[0]);
+//
+//                System.out.println("Current Minutes from the current mins int " + current_mins);
+//                System.out.println("Current hours from the current hours int " + current_hours);
+//
+//                int message_mins = Integer.parseInt(minute_time_message[1]);
+//                int message_hours = Integer.parseInt(minute_time_message[0]);
+//
+//                int current_mins_total = current_hours * 60 + current_mins;
+//                int message_mins_total = message_hours * 60 + message_mins;
+//
+//                // GET THE DIFFERENCE BETWEEN THE TWO TIMES IN MINUTES
+//                int message_current_time_difference = current_mins_total - message_mins_total;
+//
+//                // IF STATEMENTS BELOW DETERMINE HOW LONG AGO MESSAGES WERE SEND AND THEN FORMATS THE OUTPUT TO THE USER
+//                if (ts.equals(lastMessageTime)) {
+//                    message_timestamp.setText("Now");
+//                } else if (message_current_time_difference < 60
+//                            && message_current_time_difference > 1
+//                            && current_date_split[1].equals(message_date_split[1])
+//                            && current_date_split[2].equals(message_date_split[2])
+//                            && time_day_split_current[1].equals(time_day_split_message[1])) {
+//
+//                    String displayString = message_current_time_difference + " minutes ago";
+//                    message_timestamp.setText(displayString);
+//
+//                } else if (current_date_split[1].equals(message_date_split[1])
+//                        && current_date_split[2].equals(message_date_split[2])
+//                        && time_day_split_current[1].equals(time_day_split_message[1])) {
+//                    if (message_current_time_difference >=60 && message_current_time_difference < 120) {
+//                        message_timestamp.setText("an hour ago");
+//                    } else if (message_current_time_difference >= 120 && message_current_time_difference < 180) {
+//                        message_timestamp.setText("2 hours ago");
+//                    } else if (message_current_time_difference >= 180 && message_current_time_difference < 240) {
+//                        message_timestamp.setText("3 hours ago");
+//                    } else {
+//                        message_timestamp.setText(message_time_only);
+//                    }
+//                } else if (current_date_split[2].equals(message_date_split[2])) {
+//                    String day_month = time_day_split_message[1] + "/" + message_date_split[1];
+//                    message_timestamp.setText(day_month);
+//                }
+//
+//                switch (lastMessage) {
+//                    case "default":
+//                        last_message.setText("~~~");
+//                        break;
+//
+//                    default:
+//                        last_message.setText(lastMessage);
+//                        break;
+//                }
+//                lastMessage = "default";
+//            }
+//
+//            @Override
+//            public void onCancelled(@NonNull DatabaseError error) {}
+//        });
     }
 
     //FUNCTION TO ADD A NEW USER
