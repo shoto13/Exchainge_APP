@@ -182,6 +182,7 @@ public class MessageActivity extends AppCompatActivity {
                             @Override
                             public void callback(ArrayList<Chat> data) {
                                 //storeLocalMessagesAsList(data);
+                                //seenMessage(remoteUser);
                                 deleteServerMessages(fuser, remoteUser, serverDeletionMessageList);
                                 getLocalMessages(remoteUser, data);
                                 for (Chat item : data) {
@@ -289,11 +290,13 @@ public class MessageActivity extends AppCompatActivity {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                    Chat chat = snapshot.getValue(Chat.class);
-                    if (chat.getReceiver().equals(fuser.getUid()) && chat.getSender().equals(remoteUser.getId())) {
-                        HashMap<String, Object> hashMap = new HashMap<>();
-                        hashMap.put("isSeen", true);
-                        snapshot.getRef().updateChildren(hashMap);
+                    if (dataSnapshot.getChildren() != null) {
+                        Chat chat = snapshot.getValue(Chat.class);
+                        if (chat.getReceiver().equals(fuser.getUid()) && chat.getSender().equals(remoteUser.getId())) {
+                            HashMap<String, Object> hashMap = new HashMap<>();
+                            hashMap.put("isSeen", true);
+                            snapshot.getRef().updateChildren(hashMap);
+                        }
                     }
                 }
             }
@@ -572,7 +575,7 @@ public class MessageActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
-        reference.removeEventListener(seenListener);
+        //reference.removeEventListener(seenListener);
         status("Offline");
         currentUser("none");
 
