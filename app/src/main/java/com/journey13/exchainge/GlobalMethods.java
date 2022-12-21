@@ -120,11 +120,11 @@ public class GlobalMethods {
     // THE REMOTE USER IS THEN BUILT FROM THE PREKEYS AND PUBLIC KEYS RETRIEVED. IF BOTH BUILDS
     // COMPLETE SUCCESSFULLY, THE CREATELOCALANDREMOTEUSER CLASS RETURNS WITH BOTH USERS STORED WITHIN
     // THIS ALLOWS THE CALLBACK FUNCTION TO TAKE IN BOTH USERS.
-    public static void getRemoteAndLocalEncryptedUser(@NonNull MyCallback<CreateLocalAndRemoteUser> localRemoteUsers, FirebaseUser fuser, String remoteUserId, SharedPreferences sharedPreferences) {
+    public static void getRemoteAndLocalEncryptedUser(@NonNull MyCallback<LocalAndRemoteUserModel> localRemoteUsers, FirebaseUser fuser, String remoteUserId, SharedPreferences sharedPreferences) {
         EncryptedLocalUser encryptedLocalUser;
         EncryptedRemoteUser encryptedRemoteUser;
 
-        CreateLocalAndRemoteUser localAndRemoteUser = new CreateLocalAndRemoteUser();
+        LocalAndRemoteUserModel localAndRemoteUser = new LocalAndRemoteUserModel();
 
         // ATTEMPT TO BUILD THE ENCRYPTED LOCAL USER
         try {
@@ -207,7 +207,7 @@ public class GlobalMethods {
                                     remoteUserKeyModel.getPublicIdentityKey()
                             );
                             localAndRemoteUser.setEncryptedRemoteUser(encryptedRemoteUser);
-                            localRemoteUsers.callback((CreateLocalAndRemoteUser) localAndRemoteUser);
+                            localRemoteUsers.callback((LocalAndRemoteUserModel) localAndRemoteUser);
 
                         } catch (Exception e) {
 

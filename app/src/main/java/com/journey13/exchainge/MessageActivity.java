@@ -35,6 +35,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
+import com.google.gson.Gson;
 import com.journey13.exchainge.Adapter.MessageAdapter;
 import com.journey13.exchainge.Adapter.UserAdapter;
 import com.journey13.exchainge.Fragments.APIService;
@@ -169,33 +170,35 @@ public class MessageActivity extends AppCompatActivity {
         chatty.add(tempChat);
 
         //CALLBACK FOR THE REMOTE/LOCAL ENCRYPTED USER
-        if (encryptedSession == null) {
-            GlobalMethods.getRemoteAndLocalEncryptedUser(new GlobalMethods.MyCallback<CreateLocalAndRemoteUser>() {
+            GlobalMethods.getRemoteAndLocalEncryptedUser(new GlobalMethods.MyCallback<LocalAndRemoteUserModel>() {
                 @Override
-                public void callback(CreateLocalAndRemoteUser data) {
+                public void callback(LocalAndRemoteUserModel data) {
                     System.out.println(data);
                     try {
-                        encryptedSession = new EncryptedSession(data.getEncryptedLocalUser(), data.getEncryptedRemoteUser());
-                        Log.d("Encrypted_session_notifier", "the encrypted session was built! :):):):):)");
+                            Log.d("VARIABLE_SESSION_LISTENER", "the session was equal to null, i.e. the session did not exist");
+                            encryptedSession = new EncryptedSession(data.getEncryptedLocalUser(), data.getEncryptedRemoteUser());
 
-                        getRemoteMessages(new MyCallback<ArrayList<Chat>>() {
-                            @Override
-                            public void callback(ArrayList<Chat> data) {
-                                //storeLocalMessagesAsList(data);
-                                //seenMessage(remoteUser);
-                                deleteServerMessages(fuser, remoteUser, serverDeletionMessageList);
-                                getLocalMessages(remoteUser, data);
-                                for (Chat item : data) {
-                                    Log.d("info_Return", item.getMessage());
+                            Log.d("Encrypted_session_notifier", "the encrypted session was built! :):):):):)");
+
+                            getRemoteMessages(new MyCallback<ArrayList<Chat>>() {
+                                @Override
+                                public void callback(ArrayList<Chat> data) {
+                                    //storeLocalMessagesAsList(data);
+                                    //seenMessage(remoteUser);
+                                    deleteServerMessages(fuser, remoteUser, serverDeletionMessageList);
+                                    getLocalMessages(remoteUser, data);
+                                    for (Chat item : data) {
+                                        Log.d("info_Return", item.getMessage());
+                                    }
                                 }
-                            }
-                        }, remoteUser, fuser);
+                            }, remoteUser, fuser);
+
+
                     } catch (Exception e) {
                         Log.d("Encrypted_session_notifier", "The encrypted session could not be built");
                     }
                 }
             }, fuser, remoteUser.getId(), sharedPreferences);
-        }
 
         //INITIALISE THE RECYCLERVIEW
         initRecycler(chatty, remoteUser.getImageURL());
@@ -465,7 +468,6 @@ public class MessageActivity extends AppCompatActivity {
                             remChats.add(chat);
                         }
                         //String decryptedMessage = encryptedMessage;
-
                         //storeLocalMessageFromJavaChat(chat);
                     }
                 }
@@ -475,7 +477,6 @@ public class MessageActivity extends AppCompatActivity {
                 remoteChats.callback((ArrayList<Chat>) remChats);
 
             }
-
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
 
