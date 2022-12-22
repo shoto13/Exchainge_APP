@@ -110,6 +110,7 @@ public class MessageActivity extends AppCompatActivity {
 
     Intent intent;
     ValueEventListener seenListener;
+    ValueEventListener remoteMessageListener;
     APIService apiService;
     boolean notify = false;
     private ChatsDatabase db;
@@ -447,29 +448,33 @@ public class MessageActivity extends AppCompatActivity {
         String idRef = GlobalMethods.compareIdsToCreateReference(localUser.getUid(), remoteUser.getId());
         List<Chat> remChats = new ArrayList<>();
         reference = FirebaseDatabase.getInstance("https://exchainge-db047-default-rtdb.europe-west1.firebasedatabase.app/").getReference("Chats").child(idRef);
-        reference.addValueEventListener(new ValueEventListener() {
+        remoteMessageListener = reference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 remChats.clear();
-                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                    Chat chat = snapshot.getValue(Chat.class);
-                    String messageid = snapshot.getKey();
+                if (dataSnapshot.exists()) {
+                    for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                        Chat chat = snapshot.getValue(Chat.class);
+                        String messageid = snapshot.getKey();
 //                    if (chat.getReceiver() != null  || chat.getSender() != null) {
-                    //chat.getReceiver() != null && chat.getSender() != null && chat.getReceiver().equals(userid) && chat.getSender().equals(myid)localUser.getUid()
-                    assert chat != null;
-                    if (chat.getReceiver() != null && chat.getSender() != null && chat.getReceiver().equals(fuser.getUid()) && chat.getSender().equals(remoteUser.getId())) {
-                        String encryptedMessage = chat.getMessage();
-                        serverDeletionMessageList.add(messageid);
-                        if (encryptedMessage != null ) {
-                            Log.d("encrypted_message", "Here is the encrypted message item " + encryptedMessage);
-                            Log.d("encrypted_message", "Here is the encrypted message directly from the chat item " + chat.getMessage());
-                            String decryptedMessage = encryptedSession.decrypt(encryptedMessage);
-                            chat.setMessage(decryptedMessage);
-                            remChats.add(chat);
+                        //chat.getReceiver() != null && chat.getSender() != null && chat.getReceiver().equals(userid) && chat.getSender().equals(myid)localUser.getUid()
+                        assert chat != null;
+                        if (chat.getReceiver() != null && chat.getSender() != null && chat.getReceiver().equals(fuser.getUid()) && chat.getSender().equals(remoteUser.getId())) {
+                            String encryptedMessage = chat.getMessage();
+                            serverDeletionMessageList.add(messageid);
+                            if (encryptedMessage != null) {
+                                Log.d("encrypted_message", "Here is the encrypted message item " + encryptedMessage);
+                                Log.d("encrypted_message", "Here is the encrypted message directly from the chat item " + chat.getMessage());
+                                String decryptedMessage = encryptedSession.decrypt(encryptedMessage);
+                                chat.setMessage(decryptedMessage);
+                                remChats.add(chat);
+                            }
+                            //String decryptedMessage = encryptedMessage;
+                            //storeLocalMessageFromJavaChat(chat);
                         }
-                        //String decryptedMessage = encryptedMessage;
-                        //storeLocalMessageFromJavaChat(chat);
                     }
+                } else {
+                    Log.d("encrypted_message_notifier", "There was no relevant messages on the server to retrieve");
                 }
 
                 //decryptListOfMessagesFromServer(remChats)
@@ -576,6 +581,7 @@ public class MessageActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
+        reference.removeEventListener(remoteMessageListener);
         //reference.removeEventListener(seenListener);
         status("Offline");
         currentUser("none");
