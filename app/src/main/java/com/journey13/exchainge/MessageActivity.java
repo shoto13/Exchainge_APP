@@ -112,7 +112,7 @@ public class MessageActivity extends AppCompatActivity {
     ValueEventListener seenListener;
     ValueEventListener remoteMessageListener;
     APIService apiService;
-    boolean notify = false;
+    boolean notify = true;
     private ChatsDatabase db;
 
     @Override
@@ -409,6 +409,7 @@ public class MessageActivity extends AppCompatActivity {
     private void sendNotification(String receiver, String username, String message) {
         DatabaseReference tokens = FirebaseDatabase.getInstance().getReference("Tokens");
         Query query = tokens.orderByKey().equalTo(receiver);
+        Log.d("Notification_notifier", "We are inside the sendnotification function within the messageactivity");
         query.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {

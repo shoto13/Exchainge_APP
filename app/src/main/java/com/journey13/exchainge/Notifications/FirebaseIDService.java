@@ -10,7 +10,6 @@ import com.google.firebase.messaging.FirebaseMessagingService;
 
 public class FirebaseIDService extends FirebaseMessagingService {
 
-
     @Override
     public void onNewToken(String theToken) {
 
@@ -20,7 +19,6 @@ public class FirebaseIDService extends FirebaseMessagingService {
         if (firebaseUser != null) {
             updateToken(theToken);
         }
-
     }
 
 

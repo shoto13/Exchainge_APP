@@ -1,5 +1,7 @@
 package com.journey13.exchainge.Notifications;
 
+
+//Object to handle the notification item
 public class Data {
     private String user;
     private int icon;

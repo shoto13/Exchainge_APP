@@ -10,6 +10,7 @@ import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.core.app.NotificationCompat;
@@ -29,11 +30,10 @@ public class MyFirebaseMessaging extends FirebaseMessagingService {
         String sentMessage = remoteMessage.getData().get("sentMessage");
         String user = remoteMessage.getData().get("user");
 
-        System.out.println("WE ARE HERE IN THE NOTIFICATION MESSAGING CODE");
+        Log.d("Notification_notifier", "We are inside the local notification code");
 
         SharedPreferences preferences = getSharedPreferences("PREFS", MODE_PRIVATE);
         String currentUser = preferences.getString("currentuser", "none");
-
 
         FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
 
@@ -76,7 +76,6 @@ public class MyFirebaseMessaging extends FirebaseMessagingService {
         }
 
         oreoNotification.getManager().notify(i, builder.build());
-
 
     }
 
