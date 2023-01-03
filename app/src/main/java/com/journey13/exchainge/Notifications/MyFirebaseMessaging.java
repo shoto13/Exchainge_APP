@@ -27,10 +27,10 @@ public class MyFirebaseMessaging extends FirebaseMessagingService {
     public void onMessageReceived(@NonNull RemoteMessage remoteMessage) {
         super.onMessageReceived(remoteMessage);
 
+        Log.d("Notification_notifier_9", "We are inside the local notification code (on message received)");
+
         String sentMessage = remoteMessage.getData().get("sentMessage");
         String user = remoteMessage.getData().get("user");
-
-        Log.d("Notification_notifier", "We are inside the local notification code");
 
         SharedPreferences preferences = getSharedPreferences("PREFS", MODE_PRIVATE);
         String currentUser = preferences.getString("currentuser", "none");
@@ -55,6 +55,9 @@ public class MyFirebaseMessaging extends FirebaseMessagingService {
         String icon = remoteMessage.getData().get("icon");
         String title = remoteMessage.getData().get("title");
         String body = remoteMessage.getData().get("body");
+
+        Log.d("Notification_notifier_9", "We are inside the local notification code (oreo notifi)");
+
 
         RemoteMessage.Notification notification = remoteMessage.getNotification();
         int j = Integer.parseInt(user.replaceAll("[\\D]", ""));
@@ -85,6 +88,9 @@ public class MyFirebaseMessaging extends FirebaseMessagingService {
         String icon = remoteMessage.getData().get("icon");
         String title = remoteMessage.getData().get("title");
         String body = remoteMessage.getData().get("body");
+
+        Log.d("Notification_notifier_9", "We are inside the local notification code (regular notifi)");
+
 
         RemoteMessage.Notification notification = remoteMessage.getNotification();
         int j = Integer.parseInt(user.replaceAll("[\\D]", ""));

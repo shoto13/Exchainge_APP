@@ -316,10 +316,6 @@ public class MessageActivity extends AppCompatActivity {
         //hat chat_to_add = new Chat(sender, receiver, message, false, timestampString);
         String chat_db_ref = GlobalMethods.compareIdsToCreateReference(chat_to_store.getSender(), chat_to_store.getReceiver());
 
-        //TODO SWAP BACK TO THIS WHEN READY TO ENCRYPT MESSAGES AGAIN
-        //String encryptedMessage = encryptedSession.encrypt(message);
-        //String encryptedMessage = chat_to_store.getMessage();
-
         String encryptedMessage = encryptedSession.encrypt(chat_to_store.getMessage());
 
         DatabaseReference reference = FirebaseDatabase.getInstance("https://exchainge-db047-default-rtdb.europe-west1.firebasedatabase.app/").getReference("Chats");
@@ -374,13 +370,18 @@ public class MessageActivity extends AppCompatActivity {
         final String msg = encryptedMessage;
 
         reference = FirebaseDatabase.getInstance().getReference("Users").child(fuser.getUid());
+        Log.d("Notification_notifier_1", "So we are in the store message on db function, before the notifier begins");
         reference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
+                Log.d("Notification_notifier_2", "The data has changed so we are looking at the snapshot");
+
                 User user = snapshot.getValue(User.class);
                 if (notify) {
-                    sendNotification(chat_to_store.getReceiver(), user.getUsername(), msg);
+                    Log.d("Notification_notifier_3", "We are inside the if stateent for the notifier inside the message activity");
+                    sendNotification(chat_to_store.getReceiver(), user.getUsername(), "test notification");
                 }
+                //TODO notification switch should be switched off maybe? CHECK?
                 notify = false;
             }
             @Override
@@ -407,13 +408,14 @@ public class MessageActivity extends AppCompatActivity {
     }
 
     private void sendNotification(String receiver, String username, String message) {
-        DatabaseReference tokens = FirebaseDatabase.getInstance().getReference("Tokens");
+        DatabaseReference tokens = FirebaseDatabase.getInstance("https://exchainge-db047-default-rtdb.europe-west1.firebasedatabase.app/").getReference("Tokens");
         Query query = tokens.orderByKey().equalTo(receiver);
-        Log.d("Notification_notifier", "We are inside the sendnotification function within the messageactivity");
+        Log.d("Notification_notifier_4", "We are now inside the send notification function in messageactivity");
         query.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                    Log.d("Notification_notifier_5", "Inside the ondatachange for the tokens in the sendnotification function");
                     Token token = snapshot.getValue(Token.class);
                     Data data = new Data(fuser.getUid(),
                             R.mipmap.ic_launcher,
@@ -427,10 +429,14 @@ public class MessageActivity extends AppCompatActivity {
                             .enqueue(new Callback<Response>() {
                                 @Override
                                 public void onResponse(Call<Response> call, retrofit2.Response<Response> response) {
+                                    Log.d("Notification_notifier_6", "We are inside the apiservice send notification service");
                                     if (response.code() == 200) {
+                                        Log.d("Notification_notifier_7", "inside the response service here is the response code " + response.code());
                                         if (response.body().success == 1) {
                                             Toast.makeText(MessageActivity.this, "Failed!", Toast.LENGTH_SHORT).show();
                                         }
+                                    } else {
+                                        Log.d("Notification_notifier_7", "inside the response service here is the response code " + response.code());
                                     }
                                 }
                                 @Override

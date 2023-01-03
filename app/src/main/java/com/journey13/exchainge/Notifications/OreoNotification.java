@@ -9,6 +9,7 @@ import android.content.Context;
 import android.content.ContextWrapper;
 import android.net.Uri;
 import android.os.Build;
+import android.util.Log;
 
 public class OreoNotification extends ContextWrapper {
 
@@ -20,13 +21,14 @@ public class OreoNotification extends ContextWrapper {
     public OreoNotification(Context base) {
         super(base);
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            createChannel();
-        }
+        createChannel();
     }
+
 
     @TargetApi(Build.VERSION_CODES.O)
     private void createChannel() {
+
+        Log.d("Notification_notifier100", "We are inside oreo notification");
 
         NotificationChannel channel = new NotificationChannel(CHANNEL_ID,
                 CHANNEL_NAME,
