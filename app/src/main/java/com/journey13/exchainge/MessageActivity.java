@@ -378,7 +378,7 @@ public class MessageActivity extends AppCompatActivity {
 
                 User user = snapshot.getValue(User.class);
                 if (notify) {
-                    Log.d("Notification_notifier_3", "We are inside the if stateent for the notifier inside the message activity");
+                    Log.d("Notification_notifier_3", "We are inside the if statement for the notifier inside the message activity");
                     sendNotification(chat_to_store.getReceiver(), user.getUsername(), "test notification");
                 }
                 //TODO notification switch should be switched off maybe? CHECK?
@@ -434,6 +434,8 @@ public class MessageActivity extends AppCompatActivity {
                                         Log.d("Notification_notifier_7", "inside the response service here is the response code " + response.code());
                                         if (response.body().success == 1) {
                                             Toast.makeText(MessageActivity.this, "Failed!", Toast.LENGTH_SHORT).show();
+                                        } else if (response.body().success == 0) {
+                                            Toast.makeText(MessageActivity.this, "Successfully sent noti", Toast.LENGTH_SHORT).show();
                                         }
                                     } else {
                                         Log.d("Notification_notifier_7", "inside the response service here is the response code " + response.code());
