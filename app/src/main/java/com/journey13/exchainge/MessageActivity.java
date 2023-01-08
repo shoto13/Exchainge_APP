@@ -419,7 +419,7 @@ public class MessageActivity extends AppCompatActivity {
                     Token token = snapshot.getValue(Token.class);
                     Data data = new Data(fuser.getUid(),
                             R.mipmap.ic_launcher,
-                            username+": "+message,
+                            username+": "+ message,
                             "New Message",
                             receiver
                     );

@@ -29,7 +29,9 @@ public class MyFirebaseMessaging extends FirebaseMessagingService {
 
         Log.d("Notification_notifier_9", "We are inside the local notification code (on message received)");
 
-        String sentMessage = remoteMessage.getData().get("sentMessage");
+        String sentMessage = remoteMessage.getData().get("sent");
+
+        Log.d("Notification_notifier_10", "Here is the sent message data " + remoteMessage.getData());
         String user = remoteMessage.getData().get("user");
 
         SharedPreferences preferences = getSharedPreferences("PREFS", MODE_PRIVATE);
@@ -51,7 +53,7 @@ public class MyFirebaseMessaging extends FirebaseMessagingService {
 
     private void sendOreoNotification (RemoteMessage remoteMessage) {
 
-        String user = remoteMessage.getData().get("users");
+        String user = remoteMessage.getData().get("user");
         String icon = remoteMessage.getData().get("icon");
         String title = remoteMessage.getData().get("title");
         String body = remoteMessage.getData().get("body");
@@ -66,7 +68,7 @@ public class MyFirebaseMessaging extends FirebaseMessagingService {
         bundle.putString("userid", user);
         intent.putExtras(bundle);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        PendingIntent pendingIntent = PendingIntent.getActivity(this, j, intent, PendingIntent.FLAG_ONE_SHOT);
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, j, intent, PendingIntent.FLAG_MUTABLE);
 
         Uri defaultSound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
 

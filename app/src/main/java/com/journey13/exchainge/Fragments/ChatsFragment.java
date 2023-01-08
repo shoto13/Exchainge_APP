@@ -7,12 +7,14 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -86,7 +88,26 @@ public class ChatsFragment extends Fragment {
             }
         });
 
-        updateToken(FirebaseMessaging.getInstance().getToken().toString());
+        FirebaseMessaging.getInstance().getToken().addOnCompleteListener(new OnCompleteListener<String>() {
+            @Override
+            public void onComplete(@NonNull Task<String> task) {
+                if (!task.isSuccessful()) {
+                    Log.d("FCM TOKEN FAILURE", "The FCM token could not be retrieved");
+
+                    return;
+                }
+
+                String token = task.getResult();
+
+                updateToken(token);
+                Log.d("Token_logger", "Here is the users token: " + token);
+
+
+            }
+        });
+
+        //String fbToken = FirebaseMessaging.getInstance().getToken().toString();
+
         return view;
     }
 
