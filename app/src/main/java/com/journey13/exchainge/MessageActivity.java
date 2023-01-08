@@ -379,9 +379,8 @@ public class MessageActivity extends AppCompatActivity {
                 User user = snapshot.getValue(User.class);
                 if (notify) {
                     Log.d("Notification_notifier_3", "We are inside the if statement for the notifier inside the message activity");
-                    sendNotification(chat_to_store.getReceiver(), user.getUsername(), chat_to_store.getMessage());
+                    sendNotification(chat_to_store.getReceiver(), user.getUsername(), encryptedMessage);
                 }
-                //TODO notification switch should be switched off maybe? CHECK?
                 notify = false;
             }
             @Override
