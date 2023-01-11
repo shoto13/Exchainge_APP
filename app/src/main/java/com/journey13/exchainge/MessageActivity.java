@@ -419,7 +419,7 @@ public class MessageActivity extends AppCompatActivity {
                     Data data = new Data(fuser.getUid(),
                             R.mipmap.ic_launcher,
                             username+": "+ message,
-                            "New Message",
+                            "Exchainge",
                             receiver
                     );
 
@@ -432,7 +432,7 @@ public class MessageActivity extends AppCompatActivity {
                                     if (response.code() == 200) {
                                         Log.d("Notification_notifier_7", "inside the response service here is the response code " + response.code());
                                         if (response.body().success == 1) {
-                                            Toast.makeText(MessageActivity.this, "Failed!", Toast.LENGTH_SHORT).show();
+                                            //Why is there a non 0 success response returning
                                         } else if (response.body().success == 0) {
                                             Toast.makeText(MessageActivity.this, "Successfully sent noti", Toast.LENGTH_SHORT).show();
                                         }
