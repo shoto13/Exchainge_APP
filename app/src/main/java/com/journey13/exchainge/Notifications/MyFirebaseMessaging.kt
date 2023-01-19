@@ -1,125 +1,94 @@
-package com.journey13.exchainge.Notifications;
+package com.journey13.exchainge.Notifications
 
-import android.app.Notification;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
-import android.content.Context;
-import android.content.Intent;
-import android.content.SharedPreferences;
-import android.media.RingtoneManager;
-import android.net.Uri;
-import android.os.Build;
-import android.os.Bundle;
-import android.util.Log;
+import com.google.firebase.messaging.FirebaseMessagingService
+import com.google.firebase.messaging.RemoteMessage
+import android.content.SharedPreferences
+import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.auth.FirebaseAuth
+import android.os.Build
+import android.content.Intent
+import com.journey13.exchainge.MessageActivity
+import android.os.Bundle
+import android.app.PendingIntent
+import android.media.RingtoneManager
+import com.journey13.exchainge.Notifications.OreoNotification
+import android.app.NotificationManager
+import android.util.Log
+import androidx.core.app.NotificationCompat
 
-import androidx.annotation.NonNull;
-import androidx.core.app.NotificationCompat;
-
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.messaging.FirebaseMessagingService;
-import com.google.firebase.messaging.RemoteMessage;
-import com.journey13.exchainge.MessageActivity;
-
-public class MyFirebaseMessaging extends FirebaseMessagingService {
-
-    @Override
-    public void onMessageReceived(@NonNull RemoteMessage remoteMessage) {
-        super.onMessageReceived(remoteMessage);
-
-        Log.d("Notification_notifier_9", "We are inside the local notification code (on message received)");
-
-        String sentMessage = remoteMessage.getData().get("sent");
-
-        Log.d("Notification_notifier_10", "Here is the sent message data " + remoteMessage.getData());
-        String user = remoteMessage.getData().get("user");
-
-        SharedPreferences preferences = getSharedPreferences("PREFS", MODE_PRIVATE);
-        String currentUser = preferences.getString("currentuser", "none");
-
-        FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
-
-        if (firebaseUser != null && sentMessage.equals(firebaseUser.getUid())) {
-            if (!currentUser.equals(user)) {
-
+class MyFirebaseMessaging : FirebaseMessagingService() {
+    override fun onMessageReceived(remoteMessage: RemoteMessage) {
+        super.onMessageReceived(remoteMessage)
+        Log.d("Notification_notifier_9", "We are inside the local notification code (on message received)")
+        val sentMessage = remoteMessage.data["sent"]
+        Log.d("Notification_notifier_10", "Here is the sent message data " + remoteMessage.data)
+        val user = remoteMessage.data["user"]
+        val preferences = getSharedPreferences("PREFS", MODE_PRIVATE)
+        val currentUser = preferences.getString("currentuser", "none")
+        val firebaseUser = FirebaseAuth.getInstance().currentUser
+        if (firebaseUser != null && sentMessage == firebaseUser.uid) {
+            if (currentUser != user) {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                    sendOreoNotification(remoteMessage);
+                    sendOreoNotification(remoteMessage)
                 } else {
-                    sendNotification(remoteMessage);
+                    sendNotification(remoteMessage)
                 }
             }
         }
     }
 
-    private void sendOreoNotification (RemoteMessage remoteMessage) {
-
-        String user = remoteMessage.getData().get("user");
-        String icon = remoteMessage.getData().get("icon");
-        String title = remoteMessage.getData().get("title");
-        String body = remoteMessage.getData().get("body");
-
-        Log.d("Notification_notifier_9", "We are inside the local notification code (oreo notifi)");
-
-
-        RemoteMessage.Notification notification = remoteMessage.getNotification();
-        int j = Integer.parseInt(user.replaceAll("[\\D]", ""));
-        Intent intent = new Intent(this, MessageActivity.class);
-        Bundle bundle = new Bundle();
-        bundle.putString("userid", user);
-        intent.putExtras(bundle);
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        PendingIntent pendingIntent = PendingIntent.getActivity(this, j, intent, PendingIntent.FLAG_MUTABLE);
-
-        Uri defaultSound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
-
-        OreoNotification oreoNotification = new OreoNotification(this);
-        Notification.Builder builder = oreoNotification.getOreoNotification(title, body, pendingIntent, defaultSound, icon);
-
-        int i = 0;
+    private fun sendOreoNotification(remoteMessage: RemoteMessage) {
+        val user = remoteMessage.data["user"]
+        val icon = remoteMessage.data["icon"]
+        val title = remoteMessage.data["title"]
+        val body = remoteMessage.data["body"]
+        Log.d("Notification_notifier_9", "We are inside the local notification code (oreo notifi)")
+        val notification = remoteMessage.notification
+        val j = user!!.replace("[\\D]".toRegex(), "").toInt()
+        val intent = Intent(this, MessageActivity::class.java)
+        val bundle = Bundle()
+        bundle.putString("userid", user)
+        intent.putExtras(bundle)
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+        val pendingIntent = PendingIntent.getActivity(this, j, intent, PendingIntent.FLAG_MUTABLE)
+        val defaultSound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
+        val oreoNotification = OreoNotification(this)
+        val builder = oreoNotification.getOreoNotification(title, body, pendingIntent, defaultSound, icon)
+        var i = 0
         if (j > 0) {
-            i = j;
+            i = j
         }
-
-        oreoNotification.getManager().notify(i, builder.build());
-
+        oreoNotification.manager.notify(i, builder.build())
     }
 
-    private void sendNotification(RemoteMessage remoteMessage) {
-
-        String user = remoteMessage.getData().get("users");
-        String icon = remoteMessage.getData().get("icon");
-        String title = remoteMessage.getData().get("title");
-        String body = remoteMessage.getData().get("body");
-
-        Log.d("Notification_notifier_9", "We are inside the local notification code (regular notifi)");
-
-
-        RemoteMessage.Notification notification = remoteMessage.getNotification();
-        int j = Integer.parseInt(user.replaceAll("[\\D]", ""));
-        Intent intent = new Intent(this, MessageActivity.class);
-        Bundle bundle = new Bundle();
-        bundle.putString("userid", user);
-        intent.putExtras(bundle);
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        PendingIntent pendingIntent = PendingIntent.getActivity(this, j, intent, PendingIntent.FLAG_ONE_SHOT);
-
-        Uri defaultSound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(this)
-                .setSmallIcon(Integer.parseInt(icon))
+    private fun sendNotification(remoteMessage: RemoteMessage) {
+        val user = remoteMessage.data["users"]
+        val icon = remoteMessage.data["icon"]
+        val title = remoteMessage.data["title"]
+        val body = remoteMessage.data["body"]
+        Log.d("Notification_notifier_9", "We are inside the local notification code (regular notifi)")
+        val notification = remoteMessage.notification
+        val j = user!!.replace("[\\D]".toRegex(), "").toInt()
+        val intent = Intent(this, MessageActivity::class.java)
+        val bundle = Bundle()
+        bundle.putString("userid", user)
+        intent.putExtras(bundle)
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+        val pendingIntent = PendingIntent.getActivity(this, j, intent, PendingIntent.FLAG_ONE_SHOT)
+        val defaultSound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
+        val builder = NotificationCompat.Builder(this)
+                .setSmallIcon(icon!!.toInt())
                 .setContentTitle(title)
                 .setContentText(body)
                 .setAutoCancel(true)
                 .setSound(defaultSound)
                 .setContentIntent(pendingIntent)
-                .setContentIntent(pendingIntent);
-        NotificationManager myNotification = (NotificationManager)getSystemService(Context.NOTIFICATION_SERVICE);
-
-        int i = 0;
+                .setContentIntent(pendingIntent)
+        val myNotification = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
+        var i = 0
         if (j > 0) {
-            i = j;
+            i = j
         }
-
-        myNotification.notify(i, builder.build());
-
+        myNotification.notify(i, builder.build())
     }
 }
