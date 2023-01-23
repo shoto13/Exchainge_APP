@@ -19,9 +19,19 @@ import androidx.core.app.NotificationCompat
 class MyFirebaseMessaging : FirebaseMessagingService() {
     override fun onMessageReceived(remoteMessage: RemoteMessage) {
         super.onMessageReceived(remoteMessage)
+
         Log.d("Notification_notifier_9", "We are inside the local notification code (on message received)")
         val sentMessage = remoteMessage.data["sent"]
-        Log.d("Notification_notifier_10", "Here is the sent message data " + remoteMessage.data)
+
+        val messageBody = remoteMessage.data["body"]
+
+        var delimiter = " "
+
+        val msgBodyStringCut = messageBody?.split(delimiter)
+
+
+
+        Log.d("Notification_notifier_10", "Here is the sent message data " + msgBodyStringCut!![1])
         val user = remoteMessage.data["user"]
         val preferences = getSharedPreferences("PREFS", MODE_PRIVATE)
         val currentUser = preferences.getString("currentuser", "none")
