@@ -15,6 +15,8 @@ import com.journey13.exchainge.Notifications.OreoNotification
 import android.app.NotificationManager
 import android.util.Log
 import androidx.core.app.NotificationCompat
+import com.journey13.exchainge.EncryptedSession
+import org.whispersystems.libsignal.SignalProtocolAddress
 
 class MyFirebaseMessaging : FirebaseMessagingService() {
     override fun onMessageReceived(remoteMessage: RemoteMessage) {
@@ -28,6 +30,13 @@ class MyFirebaseMessaging : FirebaseMessagingService() {
         var delimiter = " "
 
         val msgBodyStringCut = messageBody?.split(delimiter)
+
+        val mEncryptedSession = EncryptedSession(
+            mLocalUser,
+            SignalProtocolAddress(username, DEFUALT_DEVICE_ID)
+        )
+
+        val message = mEncryptedSession.decrypt(msgBodyStringCut!![1])
 
 
 
