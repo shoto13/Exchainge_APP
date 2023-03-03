@@ -1,25 +1,39 @@
 package com.journey13.exchainge.Notifications
 
-import com.google.firebase.messaging.FirebaseMessagingService
-import com.google.firebase.messaging.RemoteMessage
-import android.content.SharedPreferences
-import com.google.firebase.auth.FirebaseUser
-import com.google.firebase.auth.FirebaseAuth
-import android.os.Build
-import android.content.Intent
-import com.journey13.exchainge.MessageActivity
-import android.os.Bundle
-import android.app.PendingIntent
-import android.media.RingtoneManager
-import com.journey13.exchainge.Notifications.OreoNotification
 import android.app.NotificationManager
+import android.app.PendingIntent
+import android.content.Intent
+import android.media.RingtoneManager
+import android.os.Build
+import android.os.Bundle
 import android.util.Log
 import androidx.core.app.NotificationCompat
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.messaging.FirebaseMessagingService
+import com.google.firebase.messaging.RemoteMessage
 import com.journey13.exchainge.EncryptedSession
+import com.journey13.exchainge.GlobalMethods
+import com.journey13.exchainge.MessageActivity
 import org.whispersystems.libsignal.SignalProtocolAddress
 
+
 class MyFirebaseMessaging : FirebaseMessagingService() {
+
+    var fuser: FirebaseUser? = null
+    var mEncryptedSession: EncryptedSession? = null
+
+
+
     override fun onMessageReceived(remoteMessage: RemoteMessage) {
+
+        fuser = FirebaseAuth.getInstance().currentUser
+
+        //SET UP THE SHARED PREFERENCES STRING AND REFERENCE, TO BE SENT TO OUR METHOD
+        val storageString = fuser!!.uid + "_STORED_KEY_PREFS"
+        val sharedPreferences = getSharedPreferences(storageString, MODE_PRIVATE)
+
+
         super.onMessageReceived(remoteMessage)
 
         Log.d("Notification_notifier_9", "We are inside the local notification code (on message received)")
@@ -31,29 +45,58 @@ class MyFirebaseMessaging : FirebaseMessagingService() {
 
         val msgBodyStringCut = messageBody?.split(delimiter)
 
-        val mEncryptedSession = EncryptedSession(
-            mLocalUser,
-            SignalProtocolAddress(username, DEFUALT_DEVICE_ID)
-        )
+        Log.d("Notification_notifier_xxx", "Here is the message senders id " + remoteMessage.data["user"])
 
-        val message = mEncryptedSession.decrypt(msgBodyStringCut!![1])
+        // Figure out what part of the data contains the remote user
 
+        //get the remote user and add it to the getremoteandlocaluser call
 
 
-        Log.d("Notification_notifier_10", "Here is the sent message data " + msgBodyStringCut!![1])
-        val user = remoteMessage.data["user"]
-        val preferences = getSharedPreferences("PREFS", MODE_PRIVATE)
-        val currentUser = preferences.getString("currentuser", "none")
-        val firebaseUser = FirebaseAuth.getInstance().currentUser
-        if (firebaseUser != null && sentMessage == firebaseUser.uid) {
-            if (currentUser != user) {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                    sendOreoNotification(remoteMessage)
-                } else {
-                    sendNotification(remoteMessage)
+        //call the global and remote user method from global methods in order to return both local and remote user
+
+        GlobalMethods.getRemoteAndLocalEncryptedUser({ data ->
+            try {
+                println(data)
+                Log.d("Notification_notifier_zzz", "Finally, a successful decrypt " + data.getEncryptedLocalUser())
+                mEncryptedSession = EncryptedSession(data.getEncryptedLocalUser(), data.getEncryptedRemoteUser())
+
+
+                val message = mEncryptedSession?.decrypt(msgBodyStringCut!![1])
+
+                remoteMessage.data["body"] = message
+
+                Log.d("Notification_notifier_ppp", "Here is the decrypted notimessage " + message)
+                Log.d("Notification_notifier_10", "Here is the sent message data " + msgBodyStringCut!![1])
+                val user = remoteMessage.data["user"]
+                val preferences = getSharedPreferences("PREFS", MODE_PRIVATE)
+                val currentUser = preferences.getString("currentuser", "none")
+                val firebaseUser = FirebaseAuth.getInstance().currentUser
+                if (firebaseUser != null && sentMessage == firebaseUser.uid) {
+                    if (currentUser != user) {
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                            sendOreoNotification(remoteMessage)
+                        } else {
+                            sendNotification(remoteMessage)
+                        }
+                    }
                 }
+
+
+            } catch (e: Exception) {
+                Log.d("Error", "remote user pull and session decrypt failed")
             }
-        }
+        }, fuser, remoteMessage.data["user"], sharedPreferences)
+
+
+
+
+        // Create the encrypted session
+
+
+
+
+
+
     }
 
     private fun sendOreoNotification(remoteMessage: RemoteMessage) {
@@ -109,5 +152,9 @@ class MyFirebaseMessaging : FirebaseMessagingService() {
             i = j
         }
         myNotification.notify(i, builder.build())
+    }
+
+    interface MyCallback<T> {
+        fun callback(data: T)
     }
 }

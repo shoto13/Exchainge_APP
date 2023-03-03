@@ -104,7 +104,7 @@ public class MessageActivity extends AppCompatActivity {
     String signedPreKeyRecord;
     EncryptedRemoteUser encryptedRemoteUser;
     EncryptedLocalUser encryptedLocalUser;
-    EncryptedSession encryptedSession;
+    EncryptedSession encryptedSession, mEncryptedSession;
     private List<Kotlin.Chat> localChatsForReceiver;
     List<Chat> localChatList;
 
@@ -169,6 +169,9 @@ public class MessageActivity extends AppCompatActivity {
 
         Chat tempChat = new Chat("test", "test", "", false, "today");
         chatty.add(tempChat);
+
+
+
 
         //CALLBACK FOR THE REMOTE/LOCAL ENCRYPTED USER
             GlobalMethods.getRemoteAndLocalEncryptedUser(new GlobalMethods.MyCallback<LocalAndRemoteUserModel>() {
