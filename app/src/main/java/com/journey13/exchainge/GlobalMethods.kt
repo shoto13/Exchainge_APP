@@ -1,88 +1,73 @@
-package com.journey13.exchainge;
+package com.journey13.exchainge
 
-import android.content.Context;
-import android.content.SharedPreferences;
-import android.util.Log;
+import com.journey13.exchainge.GlobalMethods
+import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import kotlin.Throws
+import com.journey13.exchainge.RegistrationKeyModel
+import org.whispersystems.libsignal.IdentityKeyPair
+import org.whispersystems.libsignal.util.KeyHelper
+import org.whispersystems.libsignal.state.SignedPreKeyRecord
+import org.whispersystems.libsignal.util.Medium
+import org.whispersystems.libsignal.state.PreKeyRecord
+import com.journey13.exchainge.LocalAndRemoteUserModel
+import android.content.SharedPreferences
+import com.journey13.exchainge.EncryptedLocalUser
+import com.journey13.exchainge.EncryptedRemoteUser
+import org.whispersystems.libsignal.InvalidKeyException
+import org.whispersystems.libsignal.ecc.ECKeyPair
+import java.io.IOException
+import java.lang.Exception
+import java.util.*
 
-import androidx.annotation.NonNull;
-import androidx.lifecycle.LifecycleOwner;
+object GlobalMethods {
+    @JvmStatic
+    fun getUserContacts(ids: MyCallback<ArrayList<String>?>) {
+        val fuser = FirebaseAuth.getInstance().currentUser
+        val reference =
+            FirebaseDatabase.getInstance("https://exchainge-db047-default-rtdb.europe-west1.firebasedatabase.app/")
+                .getReference("Contacts").child(
+                fuser!!.uid
+            )
+        val userRef = reference.child("contacts")
+        val new_contacts: MutableList<String> = ArrayList()
+        userRef.addValueEventListener(object : ValueEventListener {
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                for (snapshot in dataSnapshot.children) {
+                    new_contacts.add(snapshot.value.toString())
+                }
+                ids.callback(new_contacts as ArrayList<String>)
+            }
 
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
-import com.journey13.exchainge.Fragments.UsersFragment;
-import com.journey13.exchainge.Model.Chat;
-
-import org.whispersystems.libsignal.IdentityKeyPair;
-import org.whispersystems.libsignal.InvalidKeyException;
-import org.whispersystems.libsignal.ecc.ECKeyPair;
-import org.whispersystems.libsignal.ecc.ECPublicKey;
-import org.whispersystems.libsignal.state.PreKeyRecord;
-import org.whispersystems.libsignal.state.SignedPreKeyRecord;
-import org.whispersystems.libsignal.util.KeyHelper;
-import org.whispersystems.libsignal.util.Medium;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Base64;
-import java.util.List;
-import java.util.Random;
-
-import Kotlin.ChatViewModel;
-import retrofit2.http.PUT;
-
-public class GlobalMethods {
-
-    public static interface MyCallback<T> {
-        void callback(T data);
+            override fun onCancelled(error: DatabaseError) {}
+        })
     }
 
-    public static void getUserContacts(@NonNull MyCallback<ArrayList<String>> ids) {
-        FirebaseUser fuser = FirebaseAuth.getInstance().getCurrentUser();
-        DatabaseReference reference = FirebaseDatabase.getInstance("https://exchainge-db047-default-rtdb.europe-west1.firebasedatabase.app/").getReference("Contacts").child(fuser.getUid());
-        DatabaseReference userRef = reference.child("contacts");
-
-        List<String> new_contacts = new ArrayList<String>();
-
-        userRef.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                    new_contacts.add(snapshot.getValue().toString());
+    @JvmStatic
+    fun getBlockedIds(ids: MyCallback<ArrayList<String>?>) {
+        val fuser = FirebaseAuth.getInstance().currentUser
+        val reference =
+            FirebaseDatabase.getInstance("https://exchainge-db047-default-rtdb.europe-west1.firebasedatabase.app/")
+                .getReference("Blocked").child(
+                fuser!!.uid
+            )
+        val blockedRef = reference.child("contacts")
+        val blocked_users: MutableList<String> = ArrayList()
+        blockedRef.addValueEventListener(object : ValueEventListener {
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                for (snapshot in dataSnapshot.children) {
+                    blocked_users.add(snapshot.value.toString())
                 }
-                ids.callback((ArrayList<String>) new_contacts);
-            }
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {}
-        });
-    }
-
-    public static void getBlockedIds(@NonNull MyCallback<ArrayList<String>> ids) {
-        FirebaseUser fuser = FirebaseAuth.getInstance().getCurrentUser();
-        DatabaseReference reference = FirebaseDatabase.getInstance("https://exchainge-db047-default-rtdb.europe-west1.firebasedatabase.app/").getReference("Blocked").child(fuser.getUid());
-        DatabaseReference blockedRef = reference.child("contacts");
-
-        List<String> blocked_users = new ArrayList<String>();
-
-        blockedRef.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                    blocked_users.add(snapshot.getValue().toString());
-                }
-
-                ids.callback((ArrayList<String>) blocked_users);
+                ids.callback(blocked_users as ArrayList<String>)
             }
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
-            }
-        });
+            override fun onCancelled(error: DatabaseError) {}
+        })
     }
 
     //METHOD WHICH TAKES TWO IDS (THE CURRENT USER AND THE SECONDARY PARTICIPANT IN THE CONVERSATION)
@@ -90,29 +75,32 @@ public class GlobalMethods {
     // STRING TO THE DATABASE BY CONCATENATING THE TWO VALUES WITH THE HIGHEST ONE FIRST
     // THIS CREATES A SIMPLE REPRODUCIBLE REFERENCING SCHEME SO THAT WE DO NOT NEED TO SEARCH EVERY
     // MESSAGE IN THE DB FOR THE CURRENT CONVERSATION
-    public static String compareIdsToCreateReference(String currentUser, String secondaryUser) {
-        Integer x = currentUser.compareTo(secondaryUser);
-        String chat_db_ref;
-
-        if (x > 0) {
-            chat_db_ref = currentUser + secondaryUser;
+    @JvmStatic
+    fun compareIdsToCreateReference(currentUser: String, secondaryUser: String): String {
+        val x = currentUser.compareTo(secondaryUser)
+        val chat_db_ref: String
+        chat_db_ref = if (x > 0) {
+            currentUser + secondaryUser
         } else {
-            chat_db_ref = secondaryUser + currentUser;
+            secondaryUser + currentUser
         }
-        return chat_db_ref;
+        return chat_db_ref
     }
 
-    public static RegistrationKeyModel generateKeys() throws InvalidKeyException, IOException {
-        IdentityKeyPair identityKeyPair = KeyHelper.generateIdentityKeyPair();
-        int registrationId = KeyHelper.generateRegistrationId(false);
-        SignedPreKeyRecord signedPreKey = KeyHelper.generateSignedPreKey(identityKeyPair, new Random().nextInt(Medium.MAX_VALUE - 1));
-        List<PreKeyRecord> preKeys = KeyHelper.generatePreKeys(new Random().nextInt(Medium.MAX_VALUE - 101), 100);
-        return new RegistrationKeyModel(
-                identityKeyPair,
-                registrationId,
-                preKeys,
-                signedPreKey
-        );
+    @JvmStatic
+    @Throws(InvalidKeyException::class, IOException::class)
+    fun generateKeys(): RegistrationKeyModel {
+        val identityKeyPair = KeyHelper.generateIdentityKeyPair()
+        val registrationId = KeyHelper.generateRegistrationId(false)
+        val signedPreKey =
+            KeyHelper.generateSignedPreKey(identityKeyPair, Random().nextInt(Medium.MAX_VALUE - 1))
+        val preKeys = KeyHelper.generatePreKeys(Random().nextInt(Medium.MAX_VALUE - 101), 100)
+        return RegistrationKeyModel(
+            identityKeyPair,
+            registrationId,
+            preKeys,
+            signedPreKey
+        )
     }
 
     // FUNCTION WHICH TAKES THE SHARED PREFS, REMOTEUSERID AND LOCAL USER ID AND ATTEMPTS TO BUILD
@@ -120,111 +108,132 @@ public class GlobalMethods {
     // THE REMOTE USER IS THEN BUILT FROM THE PREKEYS AND PUBLIC KEYS RETRIEVED. IF BOTH BUILDS
     // COMPLETE SUCCESSFULLY, THE CREATELOCALANDREMOTEUSER CLASS RETURNS WITH BOTH USERS STORED WITHIN
     // THIS ALLOWS THE CALLBACK FUNCTION TO TAKE IN BOTH USERS.
-    public static void getRemoteAndLocalEncryptedUser(@NonNull MyCallback<LocalAndRemoteUserModel> localRemoteUsers, FirebaseUser fuser, String remoteUserId, SharedPreferences sharedPreferences) {
-        EncryptedLocalUser encryptedLocalUser;
-        EncryptedRemoteUser encryptedRemoteUser;
-
-        LocalAndRemoteUserModel localAndRemoteUser = new LocalAndRemoteUserModel();
+    @JvmStatic
+    fun getRemoteAndLocalEncryptedUser(
+        localRemoteUsers: MyCallback<LocalAndRemoteUserModel?>,
+        fuser: FirebaseUser,
+        remoteUserId: String?,
+        sharedPreferences: SharedPreferences
+    ) {
+        val encryptedLocalUser: EncryptedLocalUser
+        var encryptedRemoteUser: EncryptedRemoteUser
+        val localAndRemoteUser = LocalAndRemoteUserModel()
 
         // ATTEMPT TO BUILD THE ENCRYPTED LOCAL USER
         try {
-            byte[] decodedIdentityKeyPair = {};
-            byte[] decodedSignedPreKeyRecord = {};
-            String[] preKeysArray = {};
-
-            Integer registrationId = sharedPreferences.getInt("RegistrationId", 0);
-            String identityKeyPairString = sharedPreferences.getString("IdentityKeyPairString", "");
-            String preKeyIdsString = sharedPreferences.getString("PreKeyIds", "");
-            String signedPreKeyRecordString = sharedPreferences.getString("SignedPreKeyRecordString", "");
-
-            decodedIdentityKeyPair = Base64.getDecoder().decode(identityKeyPairString);
-            decodedSignedPreKeyRecord = Base64.getDecoder().decode(signedPreKeyRecordString);
-            String bracketsRemoved = preKeyIdsString.substring(1, preKeyIdsString.length() - 1);
-            preKeysArray = bracketsRemoved.split(", ");
-
+            var decodedIdentityKeyPair: ByteArray? = byteArrayOf()
+            var decodedSignedPreKeyRecord: ByteArray? = byteArrayOf()
+            var preKeysArray = arrayOf<String?>()
+            val registrationId = sharedPreferences.getInt("RegistrationId", 0)
+            val identityKeyPairString = sharedPreferences.getString("IdentityKeyPairString", "")
+            val preKeyIdsString = sharedPreferences.getString("PreKeyIds", "")
+            val signedPreKeyRecordString =
+                sharedPreferences.getString("SignedPreKeyRecordString", "")
+            decodedIdentityKeyPair = Base64.getDecoder().decode(identityKeyPairString)
+            decodedSignedPreKeyRecord = Base64.getDecoder().decode(signedPreKeyRecordString)
+            val bracketsRemoved = preKeyIdsString!!.substring(1, preKeyIdsString.length - 1)
+            preKeysArray = bracketsRemoved.split(", ").toTypedArray()
             try {
-                RegistrationKeyModel localRegistrationKeyModel = new RegistrationKeyModel(decodedIdentityKeyPair, registrationId, preKeysArray, decodedSignedPreKeyRecord);
+                val localRegistrationKeyModel = RegistrationKeyModel(
+                    decodedIdentityKeyPair,
+                    registrationId,
+                    preKeysArray,
+                    decodedSignedPreKeyRecord
+                )
                 try {
-                    encryptedLocalUser = new EncryptedLocalUser(decodedIdentityKeyPair, registrationId, fuser.getUid(), 2, localRegistrationKeyModel.getPreKeysAsByteArrays(), decodedSignedPreKeyRecord);
-                    localAndRemoteUser.setEncryptedLocalUser(encryptedLocalUser);
-                } catch (Exception e) {
-                    e.printStackTrace();
+                    encryptedLocalUser = EncryptedLocalUser(
+                        decodedIdentityKeyPair,
+                        registrationId,
+                        fuser.uid,
+                        2,
+                        localRegistrationKeyModel.preKeysAsByteArrays,
+                        decodedSignedPreKeyRecord
+                    )
+                    localAndRemoteUser.setEncryptedLocalUser(encryptedLocalUser)
+                } catch (e: Exception) {
+                    e.printStackTrace()
                 }
-            } catch (Exception e) {
-                e.printStackTrace();
+            } catch (e: Exception) {
+                e.printStackTrace()
             }
-
-        } catch (Exception e) {
-            System.out.println("THERE WAS AN ERROR WHILE BUILDING THE ENCRYPTED LOCAL USER");
-            e.printStackTrace();
+        } catch (e: Exception) {
+            println("THERE WAS AN ERROR WHILE BUILDING THE ENCRYPTED LOCAL USER")
+            e.printStackTrace()
         }
 
         // ATTEMPT TO BUILD THE ENCRYPTED REMOTE USER AND IF SUCCESSFUL RETURN WITH THE CALLBACK FUNCTION
         try {
-            DatabaseReference reference = FirebaseDatabase.getInstance("https://exchainge-db047-default-rtdb.europe-west1.firebasedatabase.app/").getReference("Keys").child(remoteUserId);
-            reference.addValueEventListener(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                    String identityKeyPair = "";
-                    int registrationId = 0;
-                    String[] preKeysArray = {"", ""};
-                    String signedPreKeyRecord = "";
-                    byte[] decodedIdentityKeyPair = {};
-                    byte[] decodedSignedPreKeyRecord = {};
-                    for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                        if (snapshot.getKey().equals("IdentityKeyPairString")) {
-                            identityKeyPair = snapshot.getValue().toString();
-                            decodedIdentityKeyPair = Base64.getDecoder().decode(identityKeyPair);
-                        } else if (snapshot.getKey().equals("PreKeyIds")) {
-                            String bracketsRemoved = snapshot.getValue().toString().substring(1, snapshot.getValue().toString().length() - 1);
-                            preKeysArray = bracketsRemoved.split(", ");
-                        } else if (snapshot.getKey().equals("RegistrationId")) {
-                            registrationId = Integer.parseInt(snapshot.getValue().toString());
-                        } else if (snapshot.getKey().equals("SignedPreKeyRecordString")) {
-                            signedPreKeyRecord = snapshot.getValue().toString();
-                            decodedSignedPreKeyRecord = Base64.getDecoder().decode(signedPreKeyRecord);
+            val reference =
+                FirebaseDatabase.getInstance("https://exchainge-db047-default-rtdb.europe-west1.firebasedatabase.app/")
+                    .getReference("Keys").child(
+                    remoteUserId!!
+                )
+            reference.addValueEventListener(object : ValueEventListener {
+                override fun onDataChange(dataSnapshot: DataSnapshot) {
+                    var identityKeyPair = ""
+                    var registrationId = 0
+                    var preKeysArray = arrayOf("", "")
+                    var signedPreKeyRecord = ""
+                    var decodedIdentityKeyPair: ByteArray? = byteArrayOf()
+                    var decodedSignedPreKeyRecord: ByteArray? = byteArrayOf()
+                    for (snapshot in dataSnapshot.children) {
+                        if (snapshot.key == "IdentityKeyPairString") {
+                            identityKeyPair = snapshot.value.toString()
+                            decodedIdentityKeyPair = Base64.getDecoder().decode(identityKeyPair)
+                        } else if (snapshot.key == "PreKeyIds") {
+                            val bracketsRemoved = snapshot.value.toString()
+                                .substring(1, snapshot.value.toString().length - 1)
+                            preKeysArray = bracketsRemoved.split(", ").toTypedArray()
+                        } else if (snapshot.key == "RegistrationId") {
+                            registrationId = snapshot.value.toString().toInt()
+                        } else if (snapshot.key == "SignedPreKeyRecordString") {
+                            signedPreKeyRecord = snapshot.value.toString()
+                            decodedSignedPreKeyRecord =
+                                Base64.getDecoder().decode(signedPreKeyRecord)
                         }
                     }
                     try {
-                        RegistrationKeyModel remoteUserKeyModel = new RegistrationKeyModel(decodedIdentityKeyPair, registrationId, preKeysArray, decodedSignedPreKeyRecord);
-                        PreKeyRecord rec = remoteUserKeyModel.getPreKey();
-                        int prekeyid = rec.getId();
-                        ECKeyPair preKeyPub = rec.getKeyPair();
-                        ECPublicKey prekeypublickey = preKeyPub.getPublicKey();
-                        byte[] prekeyPublicKeyArray = prekeypublickey.serialize();
+                        val remoteUserKeyModel = RegistrationKeyModel(
+                            decodedIdentityKeyPair,
+                            registrationId,
+                            preKeysArray,
+                            decodedSignedPreKeyRecord
+                        )
+                        val rec = remoteUserKeyModel.preKey
+                        val prekeyid = rec.id
+                        val preKeyPub = rec.keyPair
+                        val prekeypublickey = preKeyPub.publicKey
+                        val prekeyPublicKeyArray = prekeypublickey.serialize()
                         try {
-                            EncryptedRemoteUser encryptedRemoteUser = new EncryptedRemoteUser(
-                                    remoteUserKeyModel.getRegistrationId(),
-                                    remoteUserId,
-                                    2,
-                                    prekeyid,
-                                    prekeyPublicKeyArray,
-                                    remoteUserKeyModel.getSignedPreKeyId(),
-                                    remoteUserKeyModel.getSignedPreKeyPublicKeyByteArray(),
-                                    remoteUserKeyModel.getSignedPreKeySignatureByteArray(),
-                                    remoteUserKeyModel.getPublicIdentityKey()
-                            );
-                            localAndRemoteUser.setEncryptedRemoteUser(encryptedRemoteUser);
-                            localRemoteUsers.callback((LocalAndRemoteUserModel) localAndRemoteUser);
-
-                        } catch (Exception e) {
-
+                            val encryptedRemoteUser = EncryptedRemoteUser(
+                                remoteUserKeyModel.getRegistrationId(),
+                                remoteUserId,
+                                2,
+                                prekeyid,
+                                prekeyPublicKeyArray,
+                                remoteUserKeyModel.signedPreKeyId,
+                                remoteUserKeyModel.signedPreKeyPublicKeyByteArray,
+                                remoteUserKeyModel.signedPreKeySignatureByteArray,
+                                remoteUserKeyModel.publicIdentityKey
+                            )
+                            localAndRemoteUser.setEncryptedRemoteUser(encryptedRemoteUser)
+                            localRemoteUsers.callback(localAndRemoteUser)
+                        } catch (e: Exception) {
                         }
-                    } catch (Exception e) {
-                        e.printStackTrace();
+                    } catch (e: Exception) {
+                        e.printStackTrace()
                     }
-
-
                 }
-                @Override
-                public void onCancelled(@NonNull DatabaseError databaseError) {}
-            });
 
-        } catch (Exception e) {
-            e.printStackTrace();
-            System.out.println("THERE WAS AN ERROR WHILE BUILDING THE ENCRYPTED REMOTE USER");
+                override fun onCancelled(databaseError: DatabaseError) {}
+            })
+        } catch (e: Exception) {
+            e.printStackTrace()
+            println("THERE WAS AN ERROR WHILE BUILDING THE ENCRYPTED REMOTE USER")
         }
-
     }
 
+    interface MyCallback<T> {
+        fun callback(data: T)
+    }
 }
