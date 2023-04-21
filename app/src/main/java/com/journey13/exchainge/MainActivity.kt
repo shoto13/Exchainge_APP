@@ -1,12 +1,4 @@
-//TASK LIST FOR APP
-//TODO: CREATE SINGNUP AND SIGNIN WIREFRAME  -- COMPLETE
-//TODO: CREATE MESSAGING INTERFACE WIREFRAME
-//TODO: CREATE SETTINS WIREFRAME
-//TODO: CREATE USER SEARCH WIREFRAME
-//TODO: CREATE LOGIN/SIGNUP FUNCTIONALITY (FIREBASE? - MAKE IT REUSABLE SO IT CAN BE USED WITH IOS)
-//TODO: CREATE USER LIST AND ADD AND SEARCH FUNCTIONALITY
-//TODO: CREATE MESSAGING FUNCTIONALITY
-//TODO: CREATE SETTINGS FUNCTIONALITY
+
 package com.journey13.exchainge
 
 import androidx.appcompat.app.AppCompatActivity
@@ -106,7 +98,7 @@ class MainActivity : AppCompatActivity() {
             override fun onCancelled(error: DatabaseError) {}
         })
         if (navigationView.headerCount > 0) {
-            // avoid NPE by first checking if there is at least one Header View available
+            //Checking if there is at least one Header View available
             //View headerLayout = navigationView.getHeaderView(0);
         }
 
@@ -219,7 +211,6 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.menu, menu)
-        println("WE HAVE SUCCESSFUL INFLATION!!!!")
         return true
     }
 
