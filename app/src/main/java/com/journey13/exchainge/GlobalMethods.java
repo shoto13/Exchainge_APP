@@ -176,12 +176,10 @@ public class GlobalMethods {
                             identityKeyPair = snapshot.getValue().toString();
                             decodedIdentityKeyPair = Base64.getDecoder().decode(identityKeyPair);
                         } else if (snapshot.getKey().equals("PreKeyIds")) {
-                            System.out.println("We got the prekeyids " + snapshot.getValue());
                             String bracketsRemoved = snapshot.getValue().toString().substring(1, snapshot.getValue().toString().length() - 1);
                             preKeysArray = bracketsRemoved.split(", ");
                         } else if (snapshot.getKey().equals("RegistrationId")) {
                             registrationId = Integer.parseInt(snapshot.getValue().toString());
-                            System.out.println("The registration id is  " + registrationId);
                         } else if (snapshot.getKey().equals("SignedPreKeyRecordString")) {
                             signedPreKeyRecord = snapshot.getValue().toString();
                             decodedSignedPreKeyRecord = Base64.getDecoder().decode(signedPreKeyRecord);

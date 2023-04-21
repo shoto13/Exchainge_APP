@@ -24,7 +24,6 @@ class MyFirebaseMessaging : FirebaseMessagingService() {
     var mEncryptedSession: EncryptedSession? = null
 
 
-
     override fun onMessageReceived(remoteMessage: RemoteMessage) {
 
         fuser = FirebaseAuth.getInstance().currentUser
@@ -45,28 +44,15 @@ class MyFirebaseMessaging : FirebaseMessagingService() {
 
         val msgBodyStringCut = messageBody?.split(delimiter)
 
-        Log.d("Notification_notifier_xxx", "Here is the message senders id " + remoteMessage.data["user"])
-
-        // Figure out what part of the data contains the remote user
-
-        //get the remote user and add it to the getremoteandlocaluser call
-
-
-        //call the global and remote user method from global methods in order to return both local and remote user
-
         GlobalMethods.getRemoteAndLocalEncryptedUser({ data ->
             try {
                 println(data)
-                Log.d("Notification_notifier_zzz", "Finally, a successful decrypt " + data.getEncryptedLocalUser())
                 mEncryptedSession = EncryptedSession(data.getEncryptedLocalUser(), data.getEncryptedRemoteUser())
-
 
                 val message = mEncryptedSession?.decrypt(msgBodyStringCut!![1])
 
                 remoteMessage.data["body"] = message
 
-                Log.d("Notification_notifier_ppp", "Here is the decrypted notimessage " + message)
-                Log.d("Notification_notifier_10", "Here is the sent message data " + msgBodyStringCut!![1])
                 val user = remoteMessage.data["user"]
                 val preferences = getSharedPreferences("PREFS", MODE_PRIVATE)
                 val currentUser = preferences.getString("currentuser", "none")
@@ -88,15 +74,6 @@ class MyFirebaseMessaging : FirebaseMessagingService() {
         }, fuser, remoteMessage.data["user"], sharedPreferences)
 
 
-
-
-        // Create the encrypted session
-
-
-
-
-
-
     }
 
     private fun sendOreoNotification(remoteMessage: RemoteMessage) {
@@ -104,7 +81,6 @@ class MyFirebaseMessaging : FirebaseMessagingService() {
         val icon = remoteMessage.data["icon"]
         val title = remoteMessage.data["title"]
         val body = remoteMessage.data["body"]
-        Log.d("Notification_notifier_9", "We are inside the local notification code (oreo notifi)")
         val notification = remoteMessage.notification
         val j = user!!.replace("[\\D]".toRegex(), "").toInt()
         val intent = Intent(this, MessageActivity::class.java)
@@ -128,7 +104,6 @@ class MyFirebaseMessaging : FirebaseMessagingService() {
         val icon = remoteMessage.data["icon"]
         val title = remoteMessage.data["title"]
         val body = remoteMessage.data["body"]
-        Log.d("Notification_notifier_9", "We are inside the local notification code (regular notifi)")
         val notification = remoteMessage.notification
         val j = user!!.replace("[\\D]".toRegex(), "").toInt()
         val intent = Intent(this, MessageActivity::class.java)
