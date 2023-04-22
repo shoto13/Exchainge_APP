@@ -1,21 +1,14 @@
 package com.journey13.exchainge
 
-import com.journey13.exchainge.GlobalMethods
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import kotlin.Throws
-import com.journey13.exchainge.RegistrationKeyModel
-import org.whispersystems.libsignal.IdentityKeyPair
 import org.whispersystems.libsignal.util.KeyHelper
-import org.whispersystems.libsignal.state.SignedPreKeyRecord
 import org.whispersystems.libsignal.util.Medium
-import org.whispersystems.libsignal.state.PreKeyRecord
-import com.journey13.exchainge.LocalAndRemoteUserModel
 import android.content.SharedPreferences
 import com.journey13.exchainge.EncryptedLocalUser
 import com.journey13.exchainge.EncryptedRemoteUser
@@ -110,7 +103,7 @@ object GlobalMethods {
     // THIS ALLOWS THE CALLBACK FUNCTION TO TAKE IN BOTH USERS.
     @JvmStatic
     fun getRemoteAndLocalEncryptedUser(
-        localRemoteUsers: MyCallback<LocalAndRemoteUserModel?>,
+        localRemoteUsers: (Any) -> Any,
         fuser: FirebaseUser,
         remoteUserId: String?,
         sharedPreferences: SharedPreferences
