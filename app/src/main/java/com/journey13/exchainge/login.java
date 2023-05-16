@@ -44,6 +44,7 @@ public class login extends AppCompatActivity {
             }
         });
 
+        //Listen to login button and login with auth
         loginButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
