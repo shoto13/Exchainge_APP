@@ -89,24 +89,21 @@ public class MessageActivity extends AppCompatActivity {
     private ImageButton btn_send, decline_contact_button;
     private EditText text_send;
     private MessageAdapter messageAdapter;
-    private List<Chat> mChat, chatty;
+    private List<Chat> mChat, chatty, localChatList;
     private RecyclerView recyclerView;
     private Toolbar addContactToolbar;
-    private String userid;
+    private String userid, identityKeyPair, signedPreKeyRecord;
     private ChatViewModel viewModel;
     private User user;
     private List<String> serverDeletionMessageList;
 
     //REMOTE USER ENCRYPTED VARIABLES
-    String identityKeyPair;
     int registrationId;
     String[] preKeys;
-    String signedPreKeyRecord;
     EncryptedRemoteUser encryptedRemoteUser;
     EncryptedLocalUser encryptedLocalUser;
     EncryptedSession encryptedSession, mEncryptedSession;
     private List<Kotlin.Chat> localChatsForReceiver;
-    List<Chat> localChatList;
 
     Intent intent;
     ValueEventListener seenListener;
@@ -179,10 +176,7 @@ public class MessageActivity extends AppCompatActivity {
                 public void callback(LocalAndRemoteUserModel data) {
                     System.out.println(data);
                     try {
-                            Log.d("VARIABLE_SESSION_LISTENER", "the session was equal to null, i.e. the session did not exist");
                             encryptedSession = new EncryptedSession(data.getEncryptedLocalUser(), data.getEncryptedRemoteUser());
-
-                            Log.d("Encrypted_session_notifier", "the encrypted session was built! :):):):):)");
 
                             getRemoteMessages(new MyCallback<ArrayList<Chat>>() {
                                 @Override
