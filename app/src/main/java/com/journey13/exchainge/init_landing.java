@@ -34,11 +34,13 @@ public class init_landing extends AppCompatActivity {
 
     }
 
+    //Go to login page
     public void gotToLogin(View view) {
         Intent intent = new Intent(this, login.class);
         startActivity(intent);
     }
 
+    //Go to signup page
     public void goToSignUp(View view) {
         Intent intent = new Intent(this, signup.class);
         startActivity(intent);

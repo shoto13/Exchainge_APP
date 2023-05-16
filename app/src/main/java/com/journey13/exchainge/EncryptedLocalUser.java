@@ -18,6 +18,7 @@ public class EncryptedLocalUser extends BaseEncryptedEntity {
     private final List<PreKeyRecord> preKey;
     private final SignedPreKeyRecord signedPreKey;
 
+    //Build the remote local user
     public EncryptedLocalUser(byte[] identityKeyPair,
                               int registrationId,
                               String name,

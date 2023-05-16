@@ -73,8 +73,6 @@ public class login extends AppCompatActivity {
 
     }
 
-
-    //TODO ADD LOGIN CHECKS, STORE DETAILS AND CREATE ACCOUNT
     public void goToHome(View view) {
         Intent intent = new Intent(this, MainActivity.class);
         startActivity(intent);

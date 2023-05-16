@@ -18,6 +18,7 @@ public class EncryptedRemoteUser extends BaseEncryptedEntity {
     private final IdentityKey identityKeyPairPublicKey;
 
 
+    //Build the remote encrypted user
     public EncryptedRemoteUser(
             int registrationId,
             String name,

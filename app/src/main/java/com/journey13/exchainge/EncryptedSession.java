@@ -89,7 +89,7 @@ public class EncryptedSession {
         }
     }
 
-// | DuplicateMessageException | InvalidMessageException | InvalidKeyIdException | InvalidVersionException | LegacyMessageException
+    // | DuplicateMessageException | InvalidMessageException | InvalidKeyIdException | InvalidVersionException | LegacyMessageException
     public String decrypt(String message) {
         try {
             createSession(Operation.DECRYPT);
